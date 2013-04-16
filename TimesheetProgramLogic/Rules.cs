@@ -16,6 +16,7 @@ namespace TimesheetProgramLogic
     /// </summary>
     public class Rules
     {
+        //TEST GIT
         /*
          *DONE - Project can't contain both billable and accountable tasks 
          *DONE - All entries must be in the same month
