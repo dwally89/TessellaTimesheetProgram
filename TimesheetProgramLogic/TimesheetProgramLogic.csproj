@@ -44,7 +44,7 @@
     <Compile Include="Exceptions\InvalidPhaseCodeException.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Exceptions\ProjectCantBeBillableAndAccountableException.cs" />
-    <Compile Include="Rules.cs" />
+    <Content Include="Rules.txt" />
     <Compile Include="Serialization.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SortEntriesViaProjectNumber.cs" />
