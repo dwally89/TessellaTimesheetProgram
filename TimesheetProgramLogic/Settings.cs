@@ -6,7 +6,9 @@
 
 namespace TimesheetProgramLogic
 {
+    using System.IO;
     using System.Security;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// TODO: Update summary.
@@ -196,7 +198,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void Read()
         {
-            Settings settings = Serialization.DeserializeSettings(SETTINGS_FILENAME);
+            Settings settings = deserialize(SETTINGS_FILENAME);
             this.EmailAddress = settings.EmailAddress;
             this.EmailUsername = settings.EmailUsername;
             this.EnableSSL = settings.EnableSSL;
@@ -236,6 +238,29 @@ namespace TimesheetProgramLogic
             this.Password = newSettings.Password;
             this.EnableSSL = newSettings.EnableSSL;
             Write();
+        }
+
+        /// <summary>
+        /// Deserializes the settings.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>The settings contained in the file</returns>
+        private Settings deserialize(string filename)
+        {
+            XmlSerializer deserializer = new XmlSerializer(typeof(Settings));
+            try
+            {
+                using (TextReader reader = new StreamReader(filename))
+                {
+                    Settings settings = (Settings)deserializer.Deserialize(reader);
+                    return settings;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Serialization.Serialize<Settings>(Settings.DefaultSettings(), filename);
+                return Settings.DefaultSettings();
+            }
         }
 
         /// <summary>

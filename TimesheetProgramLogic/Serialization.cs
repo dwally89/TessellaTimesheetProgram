@@ -44,28 +44,5 @@ namespace TimesheetProgramLogic
                 return entries;
             }                      
         }
-
-        /// <summary>
-        /// Deserializes the settings.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>The settings contained in the file</returns>
-        public static Settings DeserializeSettings(string filename)
-        {
-            XmlSerializer deserializer = new XmlSerializer(typeof(Settings));
-            try
-            {
-                using (TextReader reader = new StreamReader(filename))
-                {
-                    Settings settings = (Settings)deserializer.Deserialize(reader);
-                    return settings;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                Serialize<Settings>(Settings.DefaultSettings(), filename);
-                return Settings.DefaultSettings();
-            }
-        }
     }
 }

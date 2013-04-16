@@ -176,6 +176,7 @@ namespace TimesheetProgramLogic
             else
             {
                 _phaseCode = string.Empty;
+
                 // throw new InvalidPhaseCodeException();
             }
 
