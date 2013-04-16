@@ -46,21 +46,6 @@
             Build
         }
 
-        /*
-        entries.Add(new Entry(new DateTime(2012, 10, 20), 0, new TimeSpan(14, 0, 0), new TimeSpan(15, 0, 0), "ADMIN", "DEVELOP", false, "NO", "Develop timesheet program"));            
-        entries.Add(new Entry(new DateTime(2012, 10, 21), 1234, new TimeSpan(14, 0, 0), new TimeSpan(16, 30, 0), "BANKHOL", "TEST", true, "ACCOUNTABLE", "Develop timesheet program more"));
-        entries.Add(new Entry(new DateTime(2012, 10, 22), 5765, new TimeSpan(15, 0, 0), new TimeSpan(17, 30, 0), "HOLIDAY", "TESSELLA", false, "YES", "Develop timesheet program and more"));
-        
-        private void Test_Click(object sender, RoutedEventArgs e)
-        {
-            string message = "";
-            foreach (Entry entry in entries){
-                message += entry.ToString() + "\n";
-            }
-            MessageBox.Show(message);
-        }
-         */
-
         /// <summary>
         /// Handles the Click event of the mnuBuildTimesheet control.
         /// </summary>

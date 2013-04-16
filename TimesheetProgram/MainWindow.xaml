@@ -4,7 +4,6 @@
         Title="Timesheet Program" WindowStartupLocation="CenterScreen" SizeToContent="Width" ResizeMode="NoResize" Height="500" Closing="Window_Closing">
     <Grid>
         <Menu Height="23" Name="menu1" VerticalAlignment="Top">
-            <!--<MenuItem Header="File">-->
             <MenuItem Header="Timesheet">
                 <MenuItem Header="New..." Name="mnuNewTimesheet" Click="mnuNewTimesheet_Click" />
                 <MenuItem Header="Open..." Name="mnuOpen" Click="mnuOpen_Click" />
@@ -23,8 +22,6 @@
                 <MenuItem Header="Submit" Name="mnuSubmitTCheck" Click="mnuSubmitTCheck_Click" />
             </MenuItem>
             <MenuItem Header="Settings" Name="mnuSettings" Click="mnuSettings_Click" />
-            <!--</MenuItem>     -->
-            <!--<MenuItem Header="Test Binding" Name="Test" Click="Test_Click" />-->
         </Menu>
 
         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}"
