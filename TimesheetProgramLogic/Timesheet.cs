@@ -276,15 +276,15 @@ namespace TimesheetProgramLogic
                     }
 
                     sEntry += entry.TaskCode;
-                    sEntry += AddSpaces(entry.TaskCode, Entry.MAX_TASKCODE_LENGTH);
+                    sEntry += Util.AddSpaces(entry.TaskCode, Entry.MAX_TASKCODE_LENGTH);
                     sEntry += entry.PhaseCode;
-                    sEntry += AddSpaces(entry.PhaseCode, Entry.MAX_PHASECODE_LENGTH);
+                    sEntry += Util.AddSpaces(entry.PhaseCode, Entry.MAX_PHASECODE_LENGTH);
                     sEntry += entry.Date.ToString("dd-MMM-yyyy");
-                    sEntry += AddSpaces(entry.Date.ToString("dd-MMM-yyyy"), Entry.MAX_DATE_LENGTH);
+                    sEntry += Util.AddSpaces(entry.Date.ToString("dd-MMM-yyyy"), Entry.MAX_DATE_LENGTH);
                     sEntry += staffNumber;
-                    sEntry += AddSpaces(staffNumber.ToString(), Entry.MAX_STAFF_NUMBER_LENGTH);
+                    sEntry += Util.AddSpaces(staffNumber.ToString(), Entry.MAX_STAFF_NUMBER_LENGTH);
                     sEntry += entry.Time.ToString("0.0");
-                    sEntry += AddSpaces(entry.Time.ToString("0.0"), Entry.MAX_TIME_LENGTH);
+                    sEntry += Util.AddSpaces(entry.Time.ToString("0.0"), Entry.MAX_TIME_LENGTH);
                     if (entry.Overhead == true)
                     {
                         sEntry += "*";
@@ -389,23 +389,6 @@ namespace TimesheetProgramLogic
             Entry entry = new Entry(date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description);
             entry.IsReadFromBuild = true;
             return entry;
-        }
-
-        /// <summary>
-        /// Adds the spaces.
-        /// </summary>
-        /// <param name="section">The section.</param>
-        /// <param name="maxLength">Length of the max.</param>
-        /// <returns>A string of the appropriate number of spaces</returns>
-        private static string AddSpaces(string section, int maxLength)
-        {
-            string spaces = string.Empty;
-            for (int i = 0; i <= (maxLength - section.Length); i++)
-            {
-                spaces += " ";
-            }
-
-            return spaces;
         }
 
         /// <summary>
