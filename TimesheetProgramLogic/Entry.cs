@@ -269,7 +269,7 @@ namespace TimesheetProgramLogic
 
             set
             {
-                StartTime = value;
+                _startTime = value;
                 OnPropertyChanged("StartTime");
             }
         }
@@ -310,7 +310,7 @@ namespace TimesheetProgramLogic
 
             set
             {
-                FinishTime = value;
+                _finishTime = value;
                 OnPropertyChanged("FinishTime");
             }
         }
