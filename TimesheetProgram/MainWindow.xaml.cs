@@ -128,7 +128,7 @@
             SettingsWindow settingsWindow = new SettingsWindow(controller.Settings);
             if (settingsWindow.ShowDialog() == true)
             {
-                controller.Settings.Update(settingsWindow.NewSettings);
+                controller.Settings.UpdateAndWrite(settingsWindow.NewSettings);
                 Title = "Timesheet Program - " + controller.StaffNumber + ": " + controller.StaffID;
             }
         }

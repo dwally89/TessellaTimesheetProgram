@@ -199,17 +199,7 @@ namespace TimesheetProgramLogic
         public void Read()
         {
             Settings settings = deserialize(SETTINGS_FILENAME);
-            this.EmailAddress = settings.EmailAddress;
-            this.EmailUsername = settings.EmailUsername;
-            this.EnableSSL = settings.EnableSSL;
-            this.Password = settings.Password;
-            this.Port = settings.Port;
-            this.SmtpServer = settings.SmtpServer;
-            this.StaffID = settings.StaffID;
-            this.StaffNumber = settings.StaffNumber;
-            this.SubmitViaNotes = settings.SubmitViaNotes;
-            this.TCheckPath = settings.TCheckPath;
-            this.TimesheetPath = settings.TimesheetPath;
+            update(settings);
         }
 
         /// <summary>
@@ -224,20 +214,29 @@ namespace TimesheetProgramLogic
         /// Updates the settings.
         /// </summary>
         /// <param name="newSettings">The new settings.</param>
-        public void Update(Settings newSettings)
+        public void UpdateAndWrite(Settings newSettings)
         {
+            update(newSettings);
+            Write();
+        }
+
+        /// <summary>
+        /// Updates the specified new settings.
+        /// </summary>
+        /// <param name="newSettings">The new settings.</param>
+        private void update(Settings newSettings)
+        {
+            this.EmailAddress = newSettings.EmailAddress;
+            this.EmailUsername = newSettings.EmailUsername;
+            this.EnableSSL = newSettings.EnableSSL;
+            this.Password = newSettings.Password;
+            this.Port = newSettings.Port;
+            this.SmtpServer = newSettings.SmtpServer;
             this.StaffID = newSettings.StaffID;
             this.StaffNumber = newSettings.StaffNumber;
+            this.SubmitViaNotes = newSettings.SubmitViaNotes;
             this.TCheckPath = newSettings.TCheckPath;
             this.TimesheetPath = newSettings.TimesheetPath;
-            this.SubmitViaNotes = newSettings.SubmitViaNotes;
-            this.SmtpServer = newSettings.SmtpServer;
-            this.Port = newSettings.Port;
-            this.EmailUsername = newSettings.EmailUsername;
-            this.EmailAddress = newSettings.EmailAddress;
-            this.Password = newSettings.Password;
-            this.EnableSSL = newSettings.EnableSSL;
-            Write();
         }
 
         /// <summary>
