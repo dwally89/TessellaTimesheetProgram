@@ -462,6 +462,85 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Parses the entry.
+        /// </summary>
+        /// <param name="projectNumber">The project number.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>The parsed entry</returns>
+        public static Entry Parse(int projectNumber, string line)
+        {
+            string[] splitLine = line.Split(' ');
+            string taskCode = string.Empty;
+            string phaseCode = string.Empty;
+            DateTime date = DateTime.MinValue;
+            int staffID = -1;
+            double time = -1;
+            int hours = -1;
+            int minutes = -1;
+            string description = string.Empty;
+            string billable = "Yes";
+            bool overhead = false;
+
+            foreach (string part in splitLine)
+            {
+                if (!(part.Equals(" ") || part.Equals(string.Empty)))
+                {
+                    if (taskCode == string.Empty)
+                    {
+                        if (part.StartsWith("-"))
+                        {
+                            billable = "No";
+                        }
+
+                        taskCode = part.Replace("-", string.Empty);
+                    }
+                    else if (phaseCode == string.Empty)
+                    {
+                        phaseCode = part;
+                    }
+                    else if (date == DateTime.MinValue)
+                    {
+                        date = DateTime.Parse(part);
+                    }
+                    else if (staffID == -1)
+                    {
+                        staffID = int.Parse(part);
+                    }
+                    else if (time == -1)
+                    {
+                        time = double.Parse(part);
+                        hours = (int)time;
+                        minutes = (int)((time - hours) * 60);
+                    }
+                    else
+                    {
+                        if (description == string.Empty)
+                        {
+                            if (part.StartsWith("#"))
+                            {
+                                billable = "Accountable";
+                            }
+                            else if (part.StartsWith("*"))
+                            {
+                                overhead = true;
+                            }
+
+                            description += part.Replace("#", string.Empty).Replace("*", string.Empty);
+                        }
+                        else
+                        {
+                            description += " " + part;
+                        }
+                    }
+                }
+            }
+
+            Entry entry = new Entry(date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description);
+            entry.IsReadFromBuild = true;
+            return entry;
+        }
+
+        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>
