@@ -51,6 +51,52 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Determines whether [is project billable] [the specified project number].
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>
+        ///   <c>true</c> if [is project billable] [the specified project number]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsBillable(Controller controller, int projectNumber)
+        {
+            bool billable = false;
+            foreach (Entry entry in controller.Entries)
+            {
+                if (entry.Billable == "Yes" && entry.ProjectNumber == projectNumber)
+                {
+                    billable = true;
+                    break;
+                }
+            }
+
+            return billable;
+        }
+
+        /// <summary>
+        /// Determines whether [is project accountable] [the specified project number].
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>
+        ///   <c>true</c> if [is project accountable] [the specified project number]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsAccountable(Controller controller, int projectNumber)
+        {
+            bool accountable = false;
+            foreach (Entry entry in controller.Entries)
+            {
+                if (entry.Billable == "Accountable" && entry.ProjectNumber == projectNumber)
+                {
+                    accountable = true;
+                    break;
+                }
+            }
+
+            return accountable;
+        }
+
+        /// <summary>
         /// Builds the project list.
         /// </summary>
         /// <param name="entries">The entries.</param>
