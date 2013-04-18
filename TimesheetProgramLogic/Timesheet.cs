@@ -125,26 +125,11 @@ namespace TimesheetProgramLogic
                 controller.Year = newEntry.Date.Year;
             }
 
-            if (controller.Month != newEntry.Date.Month)
+            if (VerifyEntry(controller, newEntry, true))
             {
-                throw new EntriesNotInSameMonthException();
-            }
-            else
-            {
-                if (isProjectBillable(controller, newEntry.ProjectNumber) && newEntry.Billable.Equals("Accountable"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else if (isProjectAccountable(controller, newEntry.ProjectNumber) && newEntry.Billable.Equals("Yes"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else
-                {
-                    controller.Entries.Add(newEntry);
-                    controller.UnsavedChanges = true;
-                }
-            }
+                controller.Entries.Add(newEntry);
+                controller.UnsavedChanges = true;
+            }            
         }
 
         /// <summary>
@@ -155,8 +140,19 @@ namespace TimesheetProgramLogic
         /// <param name="editedEntry">The edited entry.</param>
         public static void EditEntry(Controller controller, Entry entryToEdit, Entry editedEntry)
         {
-            controller.Entries[controller.Entries.IndexOf(entryToEdit)] = editedEntry;
-            controller.UnsavedChanges = true;
+            bool checkMonth = true;
+            if (controller.Entries.Count == 1)
+            {
+                checkMonth = false;
+            }
+
+            if (VerifyEntry(controller, editedEntry, checkMonth))
+            {
+                controller.Month = editedEntry.Date.Month;
+                controller.Year = editedEntry.Date.Year;
+                controller.Entries[controller.Entries.IndexOf(entryToEdit)] = editedEntry;
+                controller.UnsavedChanges = true;
+            }
         }
 
         /// <summary>
@@ -284,6 +280,38 @@ namespace TimesheetProgramLogic
             }
 
             file.Close();
+        }
+
+        /// <summary>
+        /// Verifies the entry.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="entry">The entry.</param>
+        /// <param name="check_month">if set to <c>true</c> [check_month].</param>
+        /// <returns>If the entry passed verification</returns>
+        /// <exception cref="EntriesNotInSameMonthException">If the new entry isn't in the same month as current entries</exception>
+        /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
+        private static bool VerifyEntry(Controller controller, Entry entry, bool check_month)
+        {
+            if (controller.Month != entry.Date.Month && check_month)
+            {
+                throw new EntriesNotInSameMonthException();
+            }
+            else
+            {
+                if (isProjectBillable(controller, entry.ProjectNumber) && entry.Billable.Equals("Accountable"))
+                {
+                    throw new ProjectCantBeBillableAndAccountableException();
+                }
+                else if (isProjectAccountable(controller, entry.ProjectNumber) && entry.Billable.Equals("Yes"))
+                {
+                    throw new ProjectCantBeBillableAndAccountableException();
+                }
+                else
+                {
+                    return true;
+                }
+            }
         }
 
         /// <summary>
