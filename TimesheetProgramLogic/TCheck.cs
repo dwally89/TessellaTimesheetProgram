@@ -13,12 +13,28 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class TCheck : ISubmittable
+    public class TCheck : ASubmittable
     {
         /// <summary>
         /// The TCHEC k_ EMAI l_ ADDRESS
         /// </summary>
         private const string TCHECK_EMAIL_ADDRESS = "tcheck@tessella.com";
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TCheck" /> class.
+        /// </summary>
+        /// <param name="submit_via_notes">if set to <c>true</c> [submit_via_notes].</param>
+        public TCheck(bool submit_via_notes)
+        {
+            if (submit_via_notes)
+            {
+                this.Submitter = new SubmitViaNotes(TCHECK_EMAIL_ADDRESS);
+            }
+            else
+            {
+                this.Submitter = new SubmitViaOtherEmail(TCHECK_EMAIL_ADDRESS);
+            }
+        }
 
         /// <summary>
         /// Runs the specified month.
@@ -38,41 +54,6 @@ namespace TimesheetProgramLogic
             startInfo.Arguments += " -l " + "\"" + mstrLogFile + "\"";
 
             Process.Start(startInfo);
-        }
-
-        /// <summary>
-        /// Sends to T check.
-        /// </summary>
-        /// <param name="staffID">The staff ID.</param>
-        /// <param name="month">The month.</param>
-        /// <param name="year">The year.</param>
-        /// <param name="fullFilename">The full filename.</param>
-        public void SendViaNotes(string staffID, string month, string year, string fullFilename)
-        {
-            SubmitToNotes.Send(staffID, month, year, fullFilename, TCHECK_EMAIL_ADDRESS);
-        }
-
-        /// <summary>
-        /// Sends the via other email.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        /// <param name="sMonth">The s month.</param>
-        /// <param name="year">The year.</param>
-        /// <param name="filename">The filename.</param>
-        /// <param name="password">The password.</param>
-        public void SendViaOtherEmail(Settings settings, string sMonth, string year, string filename, SecureString password = null)
-        {
-            Email email;
-            if (password == null)
-            {
-                email = new Email(settings);
-            }
-            else
-            {
-                email = new Email(settings, password);
-            }
-
-            email.SendEmail(TCHECK_EMAIL_ADDRESS, sMonth, year, filename);
         }
     }
 }

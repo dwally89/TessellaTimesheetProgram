@@ -158,24 +158,17 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Submits the T check.
         /// </summary>
-        /// <param name="submitter">The submitter.</param>
+        /// <param name="submitable">The submitable.</param>
         /// <param name="password">The password.</param>
-        /// <exception cref="TimesheetProgramLogic.UnableToSubmitEmailException">Throws an exception if unable to submit</exception>
-        public void Submit(ISubmittable submitter, SecureString password = null)
+        /// <exception cref="UnableToSubmitEmailException">Occurs if unable to submit an email</exception>        
+        public void Submit(ASubmittable submitable, SecureString password = null)
         {
             string sMonth = Month.ToString("00");
 
             // Don't want to submit XML file, want to submit build
             if (isXmlFilename(filename))
             {
-                if (Settings.SubmitViaNotes)
-                {
-                    submitter.SendViaNotes(StaffID, sMonth, Year.ToString(), filename);                    
-                }
-                else
-                {
-                    submitter.SendViaOtherEmail(Settings, sMonth, Year.ToString(), filename, password);                    
-                }
+                submitable.Submitter.Send(Settings, StaffID, sMonth, Year.ToString(), filename, password);                
             }
             else
             {

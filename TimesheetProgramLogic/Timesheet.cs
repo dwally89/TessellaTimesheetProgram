@@ -15,7 +15,7 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class Timesheet : ISubmittable
+    public class Timesheet : ASubmittable
     {
         /// <summary>
         /// The TIMESHEE t_ EMAI l_ ADDRESS
@@ -60,8 +60,17 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="Timesheet" /> class.
         /// </summary>
-        public Timesheet()
+        /// <param name="submit_via_notes">if set to <c>true</c> [submit_via_notes].</param>
+        public Timesheet(bool submit_via_notes)
         {
+            if (submit_via_notes)
+            {
+                this.Submitter = new SubmitViaNotes(TIMESHEET_EMAIL_ADDRESS);
+            }
+            else
+            {
+                this.Submitter = new SubmitViaOtherEmail(TIMESHEET_EMAIL_ADDRESS);
+            }
         }
 
         /// <summary>
@@ -200,41 +209,6 @@ namespace TimesheetProgramLogic
         {
             controller.Entries.Remove(entryToDelete);
             controller.UnsavedChanges = true;
-        }
-
-        /// <summary>
-        /// Sends the timesheet.
-        /// </summary>
-        /// <param name="staffID">The staff ID.</param>
-        /// <param name="month">The month.</param>
-        /// <param name="year">The year.</param>
-        /// <param name="fullFilename">The full filename.</param>
-        public void SendViaNotes(string staffID, string month, string year, string fullFilename)
-        {
-            SubmitToNotes.Send(staffID, month, year, fullFilename, TIMESHEET_EMAIL_ADDRESS);
-        }
-
-        /// <summary>
-        /// Sends the via other email.
-        /// </summary>
-        /// <param name="settings">The settings.</param>
-        /// <param name="sMonth">The s month.</param>
-        /// <param name="year">The year.</param>
-        /// <param name="filename">The filename.</param>
-        /// <param name="password">The password.</param>
-        public void SendViaOtherEmail(Settings settings, string sMonth, string year, string filename, SecureString password = null)
-        {
-            Email email;
-            if (password == null)
-            {
-                email = new Email(settings);
-            }
-            else
-            {
-                email = new Email(settings, password);
-            }
-            
-            email.SendEmail(TIMESHEET_EMAIL_ADDRESS, sMonth, year, filename);
         }
 
         /// <summary>

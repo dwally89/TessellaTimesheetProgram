@@ -34,7 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ISubmittable.cs" />
+    <Compile Include="ASubmittable.cs" />
+    <Compile Include="SubmitViaOtherEmail.cs" />
+    <Compile Include="ISubmitter.cs" />
+    <Compile Include="SubmitViaNotes.cs" />
     <Compile Include="Timesheet.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="Email.cs" />

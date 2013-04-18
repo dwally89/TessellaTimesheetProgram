@@ -4,6 +4,7 @@
     using System.ComponentModel;
     using System.Globalization;
     using System.Net.Mail;
+    using System.Security;
     using System.Windows;
     using Microsoft.Win32;
     using TimesheetProgramLogic;
@@ -273,32 +274,66 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void mnuSubmitTCheck_Click(object sender, RoutedEventArgs e)
         {
-            if (controller.Settings.SubmitViaNotes)
+            submit(new TCheck(controller.Settings.SubmitViaNotes));
+        }
+
+        /// <summary>
+        /// Gets the password if required.
+        /// </summary>
+        /// <param name="password">The password.</param>
+        /// <returns>Whether or not the email should be submitted</returns>
+        private bool GetPasswordIfRequired(out SecureString password)
+        {
+            password = null;
+            if (!controller.Settings.SubmitViaNotes)
             {
-                controller.Submit(new TCheck());
+                return true;
             }
-            else if (controller.Settings.Password == null)
+            else if (controller.Settings.Password != null)
+            {
+                password = controller.Settings.Password;
+                return true;
+            }
+            else            
             {
                 PasswordDialog passwordDialog = new PasswordDialog();
                 if (passwordDialog.ShowDialog() == true)
                 {
-                    try
-                    {
-                        controller.Submit(new TCheck(), passwordDialog.Password);
-                    }
-                    catch (SmtpException ex)
-                    {
-                        string message = string.Empty;
-                        Exception lEx = ex;
-                        
-                        while (lEx.InnerException != null)
-                        {
-                            message += lEx.InnerException.Message + "\n";
-                            lEx = lEx.InnerException;
-                        }
+                    password = passwordDialog.Password;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }            
+        }
 
-                        MessageBox.Show(message, "Error Submitting TCheck", MessageBoxButton.OK, MessageBoxImage.Error);
+        /// <summary>
+        /// Submits the specified submittable.
+        /// </summary>
+        /// <param name="submittable">The submittable.</param>
+        private void submit(ASubmittable submittable)
+        {            
+            SecureString password = null;            
+            if (GetPasswordIfRequired(out password))
+            {
+                try
+                {
+                    controller.Submit(submittable, password);
+                }
+                catch (SmtpException ex)
+                {
+                    string message = string.Empty;
+                    Exception lEx = ex;
+
+                    while (lEx.InnerException != null)
+                    {
+                        message += lEx.InnerException.Message + "\n";
+                        lEx = lEx.InnerException;
                     }
+
+                    MessageBox.Show(message, "Error Submitting Timesheet", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -310,34 +345,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void mnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
         {
-            if (controller.Settings.Password == null && !controller.Settings.SubmitViaNotes)
-            {
-                PasswordDialog passwordDialog = new PasswordDialog();
-                if (passwordDialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        controller.Submit(new Timesheet(), passwordDialog.Password);
-                    }
-                    catch (SmtpException ex)
-                    {
-                        string message = string.Empty;
-                        Exception lEx = ex;
-
-                        while (lEx.InnerException != null)
-                        {
-                            message += lEx.InnerException.Message + "\n";
-                            lEx = lEx.InnerException;
-                        }
-
-                        MessageBox.Show(message, "Error Submitting Timesheet", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-            }
-            else
-            {
-                controller.Submit(new Timesheet());
-            }
+            submit(new Timesheet(controller.Settings.SubmitViaNotes));
         }
     }
 }
