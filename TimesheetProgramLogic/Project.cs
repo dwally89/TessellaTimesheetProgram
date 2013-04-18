@@ -53,10 +53,26 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Adds the entry.
         /// </summary>
-        /// <param name="entry">The entry.</param>
-        public void AddEntry(Entry entry)
+        /// <param name="new_entry">The entry.</param>
+        public void AddEntry(Entry new_entry)
         {
-            Entries.Add(entry);
+            bool conflicts_with_existing_entry = true;
+            while (conflicts_with_existing_entry)
+            {
+                conflicts_with_existing_entry = false;
+                foreach (Entry entry in Entries)
+                {
+                    if (new_entry.Date == entry.Date && new_entry.StartTime == entry.StartTime)
+                    {
+                        TimeSpan existing_entry_length = entry.FinishTime - entry.StartTime;
+                        new_entry.StartTime = new_entry.StartTime + existing_entry_length;
+                        new_entry.FinishTime = new_entry.FinishTime + existing_entry_length;
+                        conflicts_with_existing_entry = true;
+                    }
+                }
+            }
+
+            Entries.Add(new_entry);
         }
     }
 }
