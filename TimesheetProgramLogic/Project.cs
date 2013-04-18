@@ -51,6 +51,41 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Builds the project list.
+        /// </summary>
+        /// <param name="entries">The entries.</param>
+        /// <returns>
+        /// A list of projects
+        /// </returns>
+        public static List<Project> BuildProjectList(List<Entry> entries)
+        {
+            entries.Sort(new SortEntriesViaProjectNumber());
+            List<Project> projects = new List<Project>();
+            bool projectExists;
+            foreach (Entry entry in entries)
+            {
+                projectExists = false;
+                foreach (Project project in projects)
+                {
+                    if (entry.ProjectNumber == project.Number)
+                    {
+                        project.AddEntry(entry);
+                        projectExists = true;
+                    }
+                }
+
+                if (!projectExists)
+                {
+                    Project project = new Project(entry.ProjectNumber);
+                    project.AddEntry(entry);
+                    projects.Add(project);
+                }
+            }
+
+            return projects;
+        }
+
+        /// <summary>
         /// Adds the entry.
         /// </summary>
         /// <param name="new_entry">The entry.</param>

@@ -242,7 +242,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void Build()
         {
-            List<Project> projects = buildProjectList();
+            List<Project> projects = Project.BuildProjectList(this.entries);
 
             List<string> lines = new List<string>();
             string sEntry = string.Empty;
@@ -376,38 +376,6 @@ namespace TimesheetProgramLogic
             }
 
             return fileContents;
-        }
-
-        /// <summary>
-        /// Builds the project list.
-        /// </summary>
-        /// <returns>A list of projects</returns>
-        private List<Project> buildProjectList()
-        {
-            entries.Sort(new SortEntriesViaProjectNumber());
-            List<Project> projects = new List<Project>();
-            bool projectExists;
-            foreach (Entry entry in entries)
-            {
-                projectExists = false;
-                foreach (Project project in projects)
-                {
-                    if (entry.ProjectNumber == project.Number)
-                    {
-                        project.AddEntry(entry);
-                        projectExists = true;
-                    }
-                }
-
-                if (!projectExists)
-                {
-                    Project project = new Project(entry.ProjectNumber);
-                    project.AddEntry(entry);
-                    projects.Add(project);
-                }
-            }
-
-            return projects;
         }
     }
 }
