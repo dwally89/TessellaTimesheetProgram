@@ -462,6 +462,38 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Verifies the entry.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="entry">The entry.</param>
+        /// <param name="check_month">if set to <c>true</c> [check_month].</param>
+        /// <returns>If the entry passed verification</returns>
+        /// <exception cref="EntriesNotInSameMonthException">If the new entry isn't in the same month as current entries</exception>
+        /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
+        public static bool Verify(Controller controller, Entry entry, bool check_month)
+        {
+            if (controller.Month != entry.Date.Month && check_month)
+            {
+                throw new EntriesNotInSameMonthException();
+            }
+            else
+            {
+                if (Project.IsBillable(controller, entry.ProjectNumber) && entry.Billable.Equals("Accountable"))
+                {
+                    throw new ProjectCantBeBillableAndAccountableException();
+                }
+                else if (Project.IsAccountable(controller, entry.ProjectNumber) && entry.Billable.Equals("Yes"))
+                {
+                    throw new ProjectCantBeBillableAndAccountableException();
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>
         /// Parses the entry.
         /// </summary>
         /// <param name="projectNumber">The project number.</param>

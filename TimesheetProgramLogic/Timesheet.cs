@@ -125,7 +125,7 @@ namespace TimesheetProgramLogic
                 controller.Year = newEntry.Date.Year;
             }
 
-            if (VerifyEntry(controller, newEntry, true))
+            if (Entry.Verify(controller, newEntry, true))
             {
                 controller.Entries.Add(newEntry);
                 controller.UnsavedChanges = true;
@@ -146,7 +146,7 @@ namespace TimesheetProgramLogic
                 checkMonth = false;
             }
 
-            if (VerifyEntry(controller, editedEntry, checkMonth))
+            if (Entry.Verify(controller, editedEntry, checkMonth))
             {
                 controller.Month = editedEntry.Date.Month;
                 controller.Year = editedEntry.Date.Year;
@@ -283,36 +283,6 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Verifies the entry.
-        /// </summary>
-        /// <param name="controller">The controller.</param>
-        /// <param name="entry">The entry.</param>
-        /// <param name="check_month">if set to <c>true</c> [check_month].</param>
-        /// <returns>If the entry passed verification</returns>
-        /// <exception cref="EntriesNotInSameMonthException">If the new entry isn't in the same month as current entries</exception>
-        /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
-        private static bool VerifyEntry(Controller controller, Entry entry, bool check_month)
-        {
-            if (controller.Month != entry.Date.Month && check_month)
-            {
-                throw new EntriesNotInSameMonthException();
-            }
-            else
-            {
-                if (isProjectBillable(controller, entry.ProjectNumber) && entry.Billable.Equals("Accountable"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else if (isProjectAccountable(controller, entry.ProjectNumber) && entry.Billable.Equals("Yes"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
 
         /// <summary>
         /// Determines whether [is project billable] [the specified project number].
