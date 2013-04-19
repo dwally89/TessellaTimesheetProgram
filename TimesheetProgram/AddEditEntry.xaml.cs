@@ -12,12 +12,23 @@
     public partial class AddEditEntry : Window
     {
         /// <summary>
+        /// The timesheet
+        /// </summary>
+        private Timesheet timesheet;
+
+        /// <summary>
+        /// The entry ID
+        /// </summary>
+        private int entryID = -1;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="AddEditEntry" /> class.
         /// </summary>
-        public AddEditEntry()
+        /// <param name="timesheet">The timesheet.</param>
+        public AddEditEntry(Timesheet timesheet)
         {
             InitializeComponent();
-            commonConstructor();
+            CommonConstructor(timesheet);
             cboStartTime.SelectedIndex = 0;
             cboFinishTime.SelectedIndex = 0;
             cboPhaseCode.SelectedIndex = 0;
@@ -28,10 +39,11 @@
         /// Initializes a new instance of the <see cref="AddEditEntry" /> class.
         /// </summary>
         /// <param name="entryToEdit">The entry to edit.</param>
-        public AddEditEntry(Entry entryToEdit)
+        /// <param name="timesheet">The timesheet.</param>
+        public AddEditEntry(Entry entryToEdit, Timesheet timesheet)
         {
             InitializeComponent();
-            commonConstructor();
+            CommonConstructor(timesheet);
             datePicker.SelectedDate = entryToEdit.Date;
             txtProjectNumber.Text = entryToEdit.ProjectNumber.ToString();
             cboStartTime.Text = entryToEdit.StartTime.ToString("hh\\:mm");
@@ -49,6 +61,7 @@
 
             cboBillable.Text = entryToEdit.Billable;
             txtDescription.Text = entryToEdit.Description;
+            entryID = entryToEdit.ID;
         }
 
         /// <summary>
@@ -66,7 +79,8 @@
         /// <summary>
         /// Commons the constructor.
         /// </summary>
-        private void commonConstructor()
+        /// <param name="timesheet">The timesheet.</param>
+        private void CommonConstructor(Timesheet timesheet)
         {
             for (int hour = 8; hour <= 18; hour++)
             {
@@ -87,13 +101,14 @@
                 cboPhaseCode.Items.Add(phaseCode);
             }
 
-            this.Entry = null; 
+            this.Entry = null;
+            this.timesheet = timesheet;
         }
 
         /// <summary>
         /// Calculates the total time.
         /// </summary>
-        private void calculateTotalTime()
+        private void CalculateTotalTime()
         {
             bool validTime = true;            
             Match startMatch = Regex.Match(cboStartTime.Text, "^([0-1]\\d|2[0-3]|\\d):(00|15|30|45)$");
@@ -143,9 +158,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="TextChangedEventArgs" /> instance containing the event data.</param>
-        private void cboStartTime_TextChanged(object sender, TextChangedEventArgs e)
+        private void CboStartTime_TextChanged(object sender, TextChangedEventArgs e)
         {
-            calculateTotalTime();
+            CalculateTotalTime();
         }
 
         /// <summary>
@@ -153,9 +168,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="TextChangedEventArgs" /> instance containing the event data.</param>
-        private void cboFinishTime_TextChanged(object sender, TextChangedEventArgs e)
+        private void CboFinishTime_TextChanged(object sender, TextChangedEventArgs e)
         {
-            calculateTotalTime();
+            CalculateTotalTime();
         }
 
         /// <summary>
@@ -163,7 +178,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             int projectNumber;
             if (lblTotalTime.Content.Equals("Invalid time"))
@@ -206,7 +221,23 @@
                     }
                     else
                     {
-                        Entry = new Entry((DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text);
+                        if (entryID == -1)
+                        {                            
+                            foreach (Project project in timesheet.Projects)
+                            {
+                                foreach (Entry entry in project.Entries)
+                                {
+                                    if (entry.ID > entryID)
+                                    {
+                                        entryID = entry.ID;
+                                    }
+                                }
+                            }
+
+                            entryID++;
+                        }
+
+                        Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text);
                         DialogResult = true;
                     }
                 }
@@ -222,7 +253,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void txtProjectNumber_LostFocus(object sender, RoutedEventArgs e)
+        private void TxtProjectNumber_LostFocus(object sender, RoutedEventArgs e)
         {
             if (txtProjectNumber.Text.Equals("0") || txtProjectNumber.Text.Equals("00") || txtProjectNumber.Text.Equals("000"))
             {

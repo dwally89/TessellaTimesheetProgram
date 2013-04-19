@@ -5,23 +5,23 @@
     <Grid>
         <Menu Height="23" Name="menu1" VerticalAlignment="Top">
             <MenuItem Header="Timesheet">
-                <MenuItem Header="New..." Name="mnuNewTimesheet" Click="mnuNewTimesheet_Click" />
-                <MenuItem Header="Open..." Name="mnuOpen" Click="mnuOpen_Click" />
-                <MenuItem Header="Save" Name="mnuSave" Click="mnuSave_Click" />
-                <MenuItem Header="Save As..." Name="mnuSaveAs" Click="mnuSaveAs_Click" />
-                <MenuItem Header="Build" Name="mnuBuildTimesheet" Click="mnuBuildTimesheet_Click" />
-                <MenuItem Header="Submit" Name="mnuSubmitTimesheet" Click="mnuSubmitTimesheet_Click" />            
+                <MenuItem Header="New..." Name="mnuNewTimesheet" Click="MnuNewTimesheet_Click" />
+                <MenuItem Header="Open..." Name="mnuOpen" Click="MnuOpen_Click" />
+                <MenuItem Header="Save" Name="mnuSave" Click="MnuSave_Click" />
+                <MenuItem Header="Save As..." Name="mnuSaveAs" Click="MnuSaveAs_Click" />
+                <MenuItem Header="Build" Name="mnuBuildTimesheet" Click="MnuBuildTimesheet_Click" />
+                <MenuItem Header="Submit" Name="mnuSubmitTimesheet" Click="MnuSubmitTimesheet_Click" />
             </MenuItem>
                 <MenuItem Header="Entry">
-                    <MenuItem Header="Add..." Name="mnuAddEntry" Click="mnuAddEntry_Click" />
-                    <MenuItem Header="Edit..." Name="mnuEditEntry" Click="mnuEditEntry_Click" IsEnabled="False" />
-                    <MenuItem Header="Delete..." Name="mnuDeleteEntry" IsEnabled="False" Click="mnuDeleteEntry_Click" />
+                    <MenuItem Header="Add..." Name="mnuAddEntry" Click="MnuAddEntry_Click" />
+                    <MenuItem Header="Edit..." Name="mnuEditEntry" Click="MnuEditEntry_Click" IsEnabled="False" />
+                    <MenuItem Header="Delete..." Name="mnuDeleteEntry" IsEnabled="False" Click="MnuDeleteEntry_Click" />
                 </MenuItem>
             <MenuItem Header="TCheck" Name="mnuTCheck">
-                <MenuItem Header="Run" Name="mnuRunTCheck" Click="mnuRunTCheck_Click" />
-                <MenuItem Header="Submit" Name="mnuSubmitTCheck" Click="mnuSubmitTCheck_Click" />
+                <MenuItem Header="Run" Name="mnuRunTCheck" Click="MnuRunTCheck_Click" />
+                <MenuItem Header="Submit" Name="mnuSubmitTCheck" Click="MnuSubmitTCheck_Click" />
             </MenuItem>
-            <MenuItem Header="Settings" Name="mnuSettings" Click="mnuSettings_Click" />
+            <MenuItem Header="Settings" Name="mnuSettings" Click="MnuSettings_Click" />
         </Menu>
 
         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}"

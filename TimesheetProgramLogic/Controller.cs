@@ -25,19 +25,18 @@ namespace TimesheetProgramLogic
         /// </summary>
         public Controller()
         {
-            Entries = new ObservableCollection<Entry>();
+            Timesheet = new Timesheet();
             Settings = new Settings();
-            Settings.Read();
-            UnsavedChanges = false;
+            Settings.Read();            
         }
 
         /// <summary>
-        /// Gets the entries.
+        /// Gets the timesheet.
         /// </summary>
         /// <value>
-        /// The entries.
+        /// The timesheet.
         /// </value>
-        public ObservableCollection<Entry> Entries
+        public Timesheet Timesheet
         {
             get;
             private set;
@@ -53,42 +52,6 @@ namespace TimesheetProgramLogic
         {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// Gets or sets the month.
-        /// </summary>
-        /// <value>
-        /// The month.
-        /// </value>
-        public int Month
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the year.
-        /// </summary>
-        /// <value>
-        /// The year.
-        /// </value>
-        public int Year
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [unsaved changes].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [unsaved changes]; otherwise, <c>false</c>.
-        /// </value>
-        public bool UnsavedChanges
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -124,7 +87,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void RunTCheck()
         {
-            TCheck.Run(Settings, Month.ToString("00"), (Year - 2000).ToString());
+            TCheck.Run(Settings, Timesheet.Month.ToString("00"), (Timesheet.Year - 2000).ToString());
         }
 
         /// <summary>
@@ -133,17 +96,16 @@ namespace TimesheetProgramLogic
         /// <param name="newEntry">The new entry.</param>
         public void AddEntry(Entry newEntry)
         {
-            Timesheet.AddEntry(this, newEntry);
+            Timesheet.AddEntry(newEntry);
         }
 
         /// <summary>
         /// Edits the entry.
         /// </summary>
-        /// <param name="entryToEdit">The entry to edit.</param>
         /// <param name="editedEntry">The edited entry.</param>
-        public void EditEntry(Entry entryToEdit, Entry editedEntry)
+        public void EditEntry(Entry editedEntry)
         {
-            Timesheet.EditEntry(this, entryToEdit, editedEntry);
+            Timesheet.EditEntry(this, editedEntry);
         }
 
         /// <summary>
@@ -161,14 +123,14 @@ namespace TimesheetProgramLogic
         /// <param name="submitable">The submitable.</param>
         /// <param name="password">The password.</param>
         /// <exception cref="UnableToSubmitEmailException">Occurs if unable to submit an email</exception>        
-        public void Submit(ASubmittable submitable, SecureString password = null)
+        public void Submit(ISubmittable submitable, SecureString password = null)
         {
-            string sMonth = Month.ToString("00");
+            string sMonth = Timesheet.Month.ToString("00");
 
             // Don't want to submit XML file, want to submit build
-            if (isXmlFilename(filename))
+            if (IsXmlFilename(filename))
             {
-                submitable.Submitter.Send(Settings, StaffID, sMonth, Year.ToString(), filename, password);                
+                submitable.Submitter.Send(Settings, StaffID, sMonth, Timesheet.Year.ToString(), filename, password);                
             }
             else
             {
@@ -192,7 +154,7 @@ namespace TimesheetProgramLogic
         /// <param name="buildFilename">The build filename.</param>
         public void BuildTimesheet(string buildFilename)
         {
-            new Timesheet(Entries, buildFilename, StaffID, StaffNumber).Build();
+            Timesheet.Build();            
         }
 
         /// <summary>
@@ -207,12 +169,12 @@ namespace TimesheetProgramLogic
             }
             else
             {                
-                if (!isXmlFilename(filename))
+                if (!IsXmlFilename(filename))
                 {
                     filename = filename + "X";
                 }
 
-                Serialization.Serialize(Entries, filename);
+                Serialization.Serialize(Timesheet, filename);
             }
         }
 
@@ -230,20 +192,17 @@ namespace TimesheetProgramLogic
         /// <param name="filename">The filename.</param>
         public void Open(string filename)
         {
-            this.filename = filename;
-            Entries.Clear();  
-            if (isXmlFilename(filename))
+            this.filename = filename;            
+            if (IsXmlFilename(filename))
             {
-                Timesheet.ReadXML(this, filename);
+                Timesheet.ReadXML(filename);
             }
             else
             {
-                Timesheet.ReadBuild(this, filename);
-            }
+                Timesheet.ReadBuild(filename);
+            }            
 
-            UnsavedChanges = false;
-            Month = Entries[0].Date.Month;
-            Year = Entries[0].Date.Year;
+            Timesheet.UnsavedChanges = false;
         }
 
         /// <summary>
@@ -253,7 +212,7 @@ namespace TimesheetProgramLogic
         /// <returns>
         ///   <c>true</c> if [is XML filename] [the specified filename]; otherwise, <c>false</c>.
         /// </returns>
-        private bool isXmlFilename(string filename)
+        private bool IsXmlFilename(string filename)
         {
             if (filename.EndsWith("X"))
             {

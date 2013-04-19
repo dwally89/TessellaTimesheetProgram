@@ -34,7 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ASubmittable.cs" />
+    <Compile Include="ISubmittable.cs" />
+    <Compile Include="DataIO.cs" />
     <Compile Include="SubmitViaOtherEmail.cs" />
     <Compile Include="ISubmitter.cs" />
     <Compile Include="SubmitViaNotes.cs" />
@@ -51,7 +52,7 @@
     <Content Include="Rules.txt" />
     <Compile Include="Serialization.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SortEntriesViaProjectNumber.cs" />
+    <Compile Include="SortEntriesViaDateTime.cs" />
     <Compile Include="SubmitToNotes.cs" />
     <Compile Include="TCheck.cs" />
     <Compile Include="Exceptions\UnableToSubmitTCheckException.cs" />

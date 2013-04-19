@@ -17,6 +17,11 @@ namespace TimesheetProgramLogic
     public class Project
     {
         /// <summary>
+        /// The _billable
+        /// </summary>
+        private string _billable;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Project" /> class.
         /// </summary>
         /// <param name="number">The number.</param>
@@ -53,82 +58,23 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Determines whether [is project billable] [the specified project number].
         /// </summary>
-        /// <param name="controller">The controller.</param>
-        /// <param name="projectNumber">The project number.</param>
         /// <returns>
         ///   <c>true</c> if [is project billable] [the specified project number]; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsBillable(Controller controller, int projectNumber)
+        public bool IsBillable()
         {
-            bool billable = false;
-            foreach (Entry entry in controller.Entries)
-            {
-                if (entry.Billable == "Yes" && entry.ProjectNumber == projectNumber)
-                {
-                    billable = true;
-                    break;
-                }
-            }
-
-            return billable;
+            return _billable == "Yes";            
         }
 
         /// <summary>
         /// Determines whether [is project accountable] [the specified project number].
         /// </summary>
-        /// <param name="controller">The controller.</param>
-        /// <param name="projectNumber">The project number.</param>
         /// <returns>
         ///   <c>true</c> if [is project accountable] [the specified project number]; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsAccountable(Controller controller, int projectNumber)
+        public bool IsAccountable()
         {
-            bool accountable = false;
-            foreach (Entry entry in controller.Entries)
-            {
-                if (entry.Billable == "Accountable" && entry.ProjectNumber == projectNumber)
-                {
-                    accountable = true;
-                    break;
-                }
-            }
-
-            return accountable;
-        }
-
-        /// <summary>
-        /// Builds the project list.
-        /// </summary>
-        /// <param name="entries">The entries.</param>
-        /// <returns>
-        /// A list of projects
-        /// </returns>
-        public static List<Project> BuildProjectList(List<Entry> entries)
-        {
-            entries.Sort(new SortEntriesViaProjectNumber());
-            List<Project> projects = new List<Project>();
-            bool projectExists;
-            foreach (Entry entry in entries)
-            {
-                projectExists = false;
-                foreach (Project project in projects)
-                {
-                    if (entry.ProjectNumber == project.Number)
-                    {
-                        project.AddEntry(entry);
-                        projectExists = true;
-                    }
-                }
-
-                if (!projectExists)
-                {
-                    Project project = new Project(entry.ProjectNumber);
-                    project.AddEntry(entry);
-                    projects.Add(project);
-                }
-            }
-
-            return projects;
+            return _billable == "Accountable";
         }
 
         /// <summary>
@@ -137,6 +83,20 @@ namespace TimesheetProgramLogic
         /// <param name="new_entry">The entry.</param>
         public void AddEntry(Entry new_entry)
         {
+            if (Entries.Count == 0)
+            {
+                _billable = new_entry.Billable;                
+            }
+
+            if (IsBillable() && new_entry.Billable.Equals("Accountable"))
+            {
+                throw new ProjectCantBeBillableAndAccountableException();
+            }
+            else if (IsAccountable() && new_entry.Billable.Equals("Yes"))
+            {
+                throw new ProjectCantBeBillableAndAccountableException();
+            }
+
             bool conflicts_with_existing_entry = true;
             while (conflicts_with_existing_entry)
             {

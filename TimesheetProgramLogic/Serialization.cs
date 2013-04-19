@@ -6,6 +6,7 @@
 
 namespace TimesheetProgramLogic
 {
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Xml.Serialization;
@@ -35,13 +36,12 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>An observable collection containing the entries</returns>
-        public static ObservableCollection<Entry> DeserializeEntries(string filename)
+        public static List<Project> DeserializeProjects(string filename)
         {            
             XmlSerializer deserializer = new XmlSerializer(typeof(ObservableCollection<Entry>));
             using (TextReader reader = new StreamReader(filename))
             {
-                ObservableCollection<Entry> entries = (ObservableCollection<Entry>)deserializer.Deserialize(reader);
-                return entries;
+                return (List<Project>)deserializer.Deserialize(reader);                
             }                      
         }
     }

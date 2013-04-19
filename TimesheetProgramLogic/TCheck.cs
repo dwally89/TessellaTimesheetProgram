@@ -13,7 +13,7 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class TCheck : ASubmittable
+    public class TCheck : ISubmittable
     {
         /// <summary>
         /// The TCHEC k_ EMAI l_ ADDRESS
@@ -34,6 +34,18 @@ namespace TimesheetProgramLogic
             {
                 this.Submitter = new SubmitViaOtherEmail(TCHECK_EMAIL_ADDRESS);
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the submitter.
+        /// </summary>
+        /// <value>
+        /// The submitter.
+        /// </value>
+        public ISubmitter Submitter
+        {
+            get;
+            set;
         }
 
         /// <summary>

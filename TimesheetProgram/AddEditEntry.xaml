@@ -4,7 +4,7 @@
         Title="AddEditEntry" Height="441" Width="300" WindowStartupLocation="CenterScreen">
     <Grid>
         <DatePicker Height="25" HorizontalAlignment="Left" Margin="151,12,0,0" Name="datePicker" VerticalAlignment="Top" Width="115" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="146,45,0,0" Name="txtProjectNumber" VerticalAlignment="Top" Width="120" LostFocus="txtProjectNumber_LostFocus" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="146,45,0,0" Name="txtProjectNumber" VerticalAlignment="Top" Width="120" LostFocus="TxtProjectNumber_LostFocus" />
         <Label Content="Project Number:" Height="28" HorizontalAlignment="Left" Margin="12,43,0,0" Name="label1" VerticalAlignment="Top" />
         <Label Content="Date:" Height="28" HorizontalAlignment="Left" Margin="12,9,0,0" Name="label2" VerticalAlignment="Top" />
         <Label Content="Start Time:" Height="28" HorizontalAlignment="Left" Margin="12,77,0,0" Name="label3" VerticalAlignment="Top" />
@@ -16,8 +16,8 @@
         <Label Content="Billable" Height="28" HorizontalAlignment="Left" Margin="12,281,0,0" Name="label9" VerticalAlignment="Top" />
         <Label Content="Description" Height="28" HorizontalAlignment="Left" Margin="12,316,0,0" Name="label10" VerticalAlignment="Top" />
         <Label Content="" Height="28" HorizontalAlignment="Left" Margin="146,145,0,0" Name="lblTotalTime" VerticalAlignment="Top" Width="100" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,82,0,0" Name="cboStartTime" VerticalAlignment="Top" Width="84" IsEditable="True" TextBoxBase.TextChanged="cboStartTime_TextChanged" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,111,0,0" Name="cboFinishTime" VerticalAlignment="Top" Width="84" IsEditable="True" TextBoxBase.TextChanged="cboFinishTime_TextChanged" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,82,0,0" Name="cboStartTime" VerticalAlignment="Top" Width="84" IsEditable="True" TextBoxBase.TextChanged="CboStartTime_TextChanged" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,111,0,0" Name="cboFinishTime" VerticalAlignment="Top" Width="84" IsEditable="True" TextBoxBase.TextChanged="CboFinishTime_TextChanged" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,179,0,0" Name="cboTaskCode" VerticalAlignment="Top" Width="120" IsEditable="True" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,218,0,0" Name="cboPhaseCode" VerticalAlignment="Top" Width="120" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="146,252,0,0" Name="cboOverhead" VerticalAlignment="Top" Width="120" >
@@ -30,7 +30,7 @@
             <ComboBoxItem Content="Accountable" />
         </ComboBox>
         <TextBox Height="23" HorizontalAlignment="Left" Margin="146,321,0,0" Name="txtDescription" VerticalAlignment="Top" Width="120" />
-        <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="109,371,0,0" Name="btnSave" VerticalAlignment="Top" Width="75" IsDefault="True" Click="btnSave_Click" />
+        <Button Content="Save" Height="23" HorizontalAlignment="Left" Margin="109,371,0,0" Name="btnSave" VerticalAlignment="Top" Width="75" IsDefault="True" Click="BtnSave_Click" />
         <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="191,371,0,0" Name="btnCancel" VerticalAlignment="Top" Width="75" IsCancel="True" />        
     </Grid>
 </Window>

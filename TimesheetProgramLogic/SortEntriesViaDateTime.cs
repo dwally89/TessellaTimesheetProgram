@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SortEntriesViaProjectNumber.cs" company="Microsoft">
+// <copyright file="SortEntriesViaDateTime.cs" company="Microsoft">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -14,7 +14,7 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class SortEntriesViaProjectNumber : IComparer<Entry>
+    public class SortEntriesViaDateTime : IComparer<Entry>
     {
         /// <summary>
         /// Compares the specified e1.
@@ -24,11 +24,11 @@ namespace TimesheetProgramLogic
         /// <returns>The result of the comparison</returns>
         public int Compare(Entry e1, Entry e2)
         {
-            if (e1.ProjectNumber == e2.ProjectNumber)
+            if (e1.DateTime == e2.DateTime)
             {
                 return 0;
             }
-            else if (e1.ProjectNumber > e2.ProjectNumber)
+            else if (e1.DateTime > e2.DateTime)
             {
                 return 1;
             }

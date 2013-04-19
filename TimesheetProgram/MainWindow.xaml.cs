@@ -1,6 +1,7 @@
 ﻿namespace TimesheetProgramWPF
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Globalization;
     using System.Net.Mail;
@@ -25,10 +26,9 @@
         public MainWindow()
         {            
             InitializeComponent();
-            controller = new Controller();
-            dataGrid.ItemsSource = controller.Entries;                                     
-            Title = Title + " - " + controller.StaffNumber + ": " + controller.StaffID;            
-            enableControls();
+            controller = new Controller();            
+            Title = Title + " - " + controller.StaffNumber + ": " + controller.StaffID;
+            UpdateGUI();
         }
 
         /// <summary>
@@ -52,9 +52,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuBuildTimesheet_Click(object sender, RoutedEventArgs e)
+        private void MnuBuildTimesheet_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog dialog = saveAsType(FileType.Build);
+            SaveFileDialog dialog = SaveAsType(FileType.Build);
             if (dialog.ShowDialog() == true)
             {
                 controller.BuildTimesheet(dialog.FileName);
@@ -66,14 +66,36 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuAddEntry_Click(object sender, RoutedEventArgs e)
+        private void MnuAddEntry_Click(object sender, RoutedEventArgs e)
         {
-            AddEditEntry newEntry = new AddEditEntry();
+            AddEditEntry newEntry = new AddEditEntry(controller.Timesheet);
             
             if (newEntry.ShowDialog() == true)
             {
                 controller.AddEntry(newEntry.Entry);
-                enableControls();
+                UpdateGUI();
+            }
+        }
+
+        /// <summary>
+        /// Update_datagrids this instance.
+        /// </summary>
+        private void UpdateDatagrid()
+        {
+            dataGrid.Items.Clear();
+            List<Entry> entries = new List<Entry>();
+            foreach (Project project in controller.Timesheet.Projects)
+            {
+                foreach (Entry entry in project.Entries)
+                {
+                    entries.Add(entry);                    
+                }
+            }
+
+            entries.Sort(new SortEntriesViaDateTime());
+            foreach (Entry entry in entries)
+            {
+                dataGrid.Items.Add(entry);
             }
         }
 
@@ -82,7 +104,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuOpen_Click(object sender, RoutedEventArgs e)
+        private void MnuOpen_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFile = new OpenFileDialog();
             if (openFile.ShowDialog() == true)
@@ -96,27 +118,37 @@
                     MessageBox.Show("Unable to open file", "Invalid File", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-                enableControls();            
+                UpdateGUI();
             }                       
+        }
+
+        /// <summary>
+        /// Updates the GUI.
+        /// </summary>
+        private void UpdateGUI()
+        {
+            UpdateDatagrid();
+            EnableControls();
         }
 
         /// <summary>
         /// Enables the controls.
         /// </summary>
-        private void enableControls()
-        {           
-            mnuDeleteEntry.IsEnabled = controller.Entries.Count != 0;
-            mnuEditEntry.IsEnabled = controller.Entries.Count != 0;
-            mnuSave.IsEnabled = controller.Entries.Count != 0;
-            mnuSaveAs.IsEnabled = controller.Entries.Count != 0;
-            mnuBuildTimesheet.IsEnabled = controller.Entries.Count != 0;
-            mnuTCheck.IsEnabled = controller.Entries.Count != 0;
-            if (controller.Entries.Count != 0)
+        private void EnableControls()
+        {            
+            bool timesheetContainsEntries = controller.Timesheet.NumberOfEntries() != 0;
+            mnuDeleteEntry.IsEnabled = timesheetContainsEntries;
+            mnuEditEntry.IsEnabled = timesheetContainsEntries;
+            mnuSave.IsEnabled = timesheetContainsEntries;
+            mnuSaveAs.IsEnabled = timesheetContainsEntries;
+            mnuBuildTimesheet.IsEnabled = timesheetContainsEntries;
+            mnuTCheck.IsEnabled = timesheetContainsEntries;
+            if (timesheetContainsEntries)
             {
                 dataGrid.SelectedIndex = 0;
             }
 
-            mnuSubmitTimesheet.IsEnabled = controller.Entries.Count != 0;
+            mnuSubmitTimesheet.IsEnabled = timesheetContainsEntries;
         }
 
         /// <summary>
@@ -124,7 +156,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuSettings_Click(object sender, RoutedEventArgs e)
+        private void MnuSettings_Click(object sender, RoutedEventArgs e)
         {
             SettingsWindow settingsWindow = new SettingsWindow(controller.Settings);
             if (settingsWindow.ShowDialog() == true)
@@ -139,13 +171,23 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuEditEntry_Click(object sender, RoutedEventArgs e)
+        private void MnuEditEntry_Click(object sender, RoutedEventArgs e)
         {
-             AddEditEntry newEntry = new AddEditEntry((Entry)dataGrid.SelectedItem);
+            AddEditEntry editEntry = new AddEditEntry((Entry)dataGrid.SelectedItem, controller.Timesheet);
 
-             if (newEntry.ShowDialog() == true)
+             if (editEntry.ShowDialog() == true)
              {
-                 controller.EditEntry((Entry)dataGrid.SelectedItem, newEntry.Entry);
+                 try
+                 {
+                     controller.EditEntry(editEntry.Entry);
+                 }
+                 catch (EntriesNotInSameMonthException)
+                 {
+                     MessageBox.Show("All entries must be in the same month", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                     return;
+                 }
+
+                 UpdateGUI();
              }
         }
 
@@ -154,12 +196,12 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuDeleteEntry_Click(object sender, RoutedEventArgs e)
+        private void MnuDeleteEntry_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Are you sure that you want to delete the selected entry?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                controller.DeleteEntry((Entry)dataGrid.SelectedItem);                
-                enableControls();
+                controller.DeleteEntry((Entry)dataGrid.SelectedItem);
+                UpdateGUI();
             }
         }
 
@@ -168,10 +210,10 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuNewTimesheet_Click(object sender, RoutedEventArgs e)
+        private void MnuNewTimesheet_Click(object sender, RoutedEventArgs e)
         {
             bool createTimesheet = true;
-            if (controller.UnsavedChanges)
+            if (controller.Timesheet.UnsavedChanges)
             {
                 MessageBoxResult result = MessageBox.Show("Do you want to save the current timesheet?", "Do you want to save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
@@ -187,7 +229,7 @@
             if (createTimesheet)            
             {
                 controller.NewTimesheet();
-                enableControls();
+                UpdateGUI();
             }
         }
 
@@ -196,7 +238,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuSave_Click(object sender, RoutedEventArgs e)
+        private void MnuSave_Click(object sender, RoutedEventArgs e)
         {
             controller.Save();
         }
@@ -206,9 +248,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuSaveAs_Click(object sender, RoutedEventArgs e)
+        private void MnuSaveAs_Click(object sender, RoutedEventArgs e)
         {            
-            SaveFileDialog saveAs = saveAsType(FileType.XML);
+            SaveFileDialog saveAs = SaveAsType(FileType.XML);
             if (saveAs.ShowDialog() == true)
             {
                 controller.SaveAs(saveAs.FileName);                
@@ -220,10 +262,10 @@
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>A save file dialog</returns>
-        private SaveFileDialog saveAsType(FileType type)
+        private SaveFileDialog SaveAsType(FileType type)
         {
             SaveFileDialog saveAs = new SaveFileDialog();
-            string fileExtension = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(controller.Month).ToUpper();
+            string fileExtension = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(controller.Timesheet.Month).ToUpper();
             if (type == FileType.XML)
             {
                 fileExtension += "X";
@@ -247,7 +289,7 @@
         /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (controller.UnsavedChanges)
+            if (controller.Timesheet.UnsavedChanges)
             {
                 MessageBoxResult result = MessageBox.Show("Do you want to save the current timesheet?", "Do you want to save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
@@ -262,7 +304,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuRunTCheck_Click(object sender, RoutedEventArgs e)
+        private void MnuRunTCheck_Click(object sender, RoutedEventArgs e)
         {
             controller.RunTCheck();
         }
@@ -272,9 +314,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuSubmitTCheck_Click(object sender, RoutedEventArgs e)
+        private void MnuSubmitTCheck_Click(object sender, RoutedEventArgs e)
         {
-            submit(new TCheck(controller.Settings.SubmitViaNotes));
+            Submit(new TCheck(controller.Settings.SubmitViaNotes));
         }
 
         /// <summary>
@@ -313,7 +355,7 @@
         /// Submits the specified submittable.
         /// </summary>
         /// <param name="submittable">The submittable.</param>
-        private void submit(ASubmittable submittable)
+        private void Submit(ISubmittable submittable)
         {            
             SecureString password = null;            
             if (GetPasswordIfRequired(out password))
@@ -343,9 +385,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void mnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
+        private void MnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
         {
-            submit(new Timesheet(controller.Settings.SubmitViaNotes));
+            Submit(new Timesheet(controller.Settings.SubmitViaNotes));
         }
     }
 }

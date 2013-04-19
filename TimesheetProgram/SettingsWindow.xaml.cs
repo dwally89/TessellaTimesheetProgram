@@ -36,7 +36,7 @@
 
             chkSubmitViaNotes.IsChecked = settings.SubmitViaNotes;
 
-            chkSubmitViaNotesChanged();
+            ChkSubmitViaNotesChanged();
         }
 
         /// <summary>
@@ -72,7 +72,7 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void btnOK_Click(object sender, RoutedEventArgs e)
+        private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
             int staffNumber;
             string staffID = txtStaffID.Text;
@@ -151,7 +151,7 @@
         /// Folders the chooser.
         /// </summary>
         /// <param name="type">The type.</param>
-        private void folderChooser(FolderType type)
+        private void FolderChooser(FolderType type)
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -172,9 +172,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void btnBrowseTCheckPath_Click(object sender, RoutedEventArgs e)
+        private void BtnBrowseTCheckPath_Click(object sender, RoutedEventArgs e)
         {
-            folderChooser(FolderType.TCheck);
+            FolderChooser(FolderType.TCheck);
         }
 
         /// <summary>
@@ -182,9 +182,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void btnBrowseTimesheetPath_Click(object sender, RoutedEventArgs e)
+        private void BtnBrowseTimesheetPath_Click(object sender, RoutedEventArgs e)
         {
-            folderChooser(FolderType.Timesheet);
+            FolderChooser(FolderType.Timesheet);
         }
 
         /// <summary>
@@ -192,9 +192,9 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void chkSubmitViaNotes_Checked(object sender, RoutedEventArgs e)
+        private void ChkSubmitViaNotes_Checked(object sender, RoutedEventArgs e)
         {
-            chkSubmitViaNotesChanged();
+            ChkSubmitViaNotesChanged();
         }
 
         /// <summary>
@@ -202,15 +202,15 @@
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void chkSubmitViaNotes_Unchecked(object sender, RoutedEventArgs e)
+        private void ChkSubmitViaNotes_Unchecked(object sender, RoutedEventArgs e)
         {
-            chkSubmitViaNotesChanged();
+            ChkSubmitViaNotesChanged();
         }
 
         /// <summary>
         /// CHKs the submit via notes changed.
         /// </summary>
-        private void chkSubmitViaNotesChanged()
+        private void ChkSubmitViaNotesChanged()
         {
             txtEmailAddress.IsEnabled = !(bool)chkSubmitViaNotes.IsChecked;
             txtEmailUsername.IsEnabled = !(bool)chkSubmitViaNotes.IsChecked;

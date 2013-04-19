@@ -34,7 +34,7 @@
         /// <param name="settings">The settings.</param>
         public Email(Settings settings)
         {
-            commonConstructor(settings);
+            CommonConstructor(settings);
             this.password = settings.Password;
         }
 
@@ -45,7 +45,7 @@
         /// <param name="password">The password.</param>
         public Email(Settings settings, SecureString password)
         {
-            commonConstructor(settings);
+            CommonConstructor(settings);
             this.password = password;
         }
 
@@ -80,7 +80,7 @@
         /// Commons the constructor.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        private void commonConstructor(Settings settings)
+        private void CommonConstructor(Settings settings)
         {
             this.smtpServer = settings.SmtpServer;
             this.staffID = settings.StaffID;

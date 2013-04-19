@@ -9,13 +9,11 @@ namespace TimesheetProgramLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Security;
 
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class Timesheet : ASubmittable
+    public class Timesheet : ISubmittable
     {
         /// <summary>
         /// The TIMESHEE t_ EMAI l_ ADDRESS
@@ -43,6 +41,11 @@ namespace TimesheetProgramLogic
         private string staffNumber;
 
         /// <summary>
+        /// The _projects
+        /// </summary>
+        private List<Project> _projects;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Timesheet" /> class.
         /// </summary>
         /// <param name="entries">The entries.</param>
@@ -55,6 +58,15 @@ namespace TimesheetProgramLogic
             this.filename = filename;
             this.staffID = staffID;
             this.staffNumber = staffNumber;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Timesheet" /> class.
+        /// </summary>
+        public Timesheet()
+        {
+            _projects = new List<Project>();
+            UnsavedChanges = false;
         }
 
         /// <summary>
@@ -74,16 +86,83 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Gets or sets the submitter.
+        /// </summary>
+        /// <value>
+        /// The submitter.
+        /// </value>
+        public ISubmitter Submitter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [unsaved changes].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [unsaved changes]; otherwise, <c>false</c>.
+        /// </value>
+        public bool UnsavedChanges
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets the projects.
+        /// </summary>
+        /// <value>
+        /// The projects.
+        /// </value>
+        public List<Project> Projects
+        {
+            get
+            {
+                return _projects;
+            }
+
+            private set
+            {
+                _projects = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the month.
+        /// </summary>
+        /// <value>
+        /// The month.
+        /// </value>
+        public int Month
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the year.
+        /// </summary>
+        /// <value>
+        /// The year.
+        /// </value>
+        public int Year
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Parses the timesheet.
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>A list of projects</returns>
-        public static List<Project> ParseTimesheet(string filename)
+        public List<Project> ParseTimesheet(string filename)
         {
             List<Project> timesheet = new List<Project>();
-            List<string> fileContents = readFromFile(filename);
+            List<string> fileContents = DataIO.ReadTextFile(filename);
             Project currentProject = null;
-
+            int entryID = 0;
             foreach (string line in fileContents)
             {
                 if (!line.StartsWith("*"))
@@ -99,7 +178,8 @@ namespace TimesheetProgramLogic
                     }
                     else if (line != "END")
                     {
-                        currentProject.AddEntry(Entry.Parse(currentProject.Number, line));
+                        currentProject.AddEntry(new Entry(entryID, currentProject.Number, line));
+                        entryID++;
                     }
                 }
             }
@@ -111,47 +191,120 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Adds the entry.
         /// </summary>
-        /// <param name="controller">The controller.</param>
         /// <param name="newEntry">The new entry.</param>
         /// <exception cref="TimesheetProgramLogic.EntriesNotInSameMonthException">blah blah blah</exception>
         /// <exception cref="TimesheetProgramLogic.ProjectCantBeBillableAndAccountableException">blha blha blha</exception>
         /// <exception cref="EntriesNotInSameMonthException">Occurs when all entries aren't in the same month</exception>
         /// <exception cref="ProjectCantBeBillableAndAccountableException">Occurs when the project is both billable and accountable</exception>
-        public static void AddEntry(Controller controller, Entry newEntry)
+        public void AddEntry(Entry newEntry)
         {
-            if (controller.Entries.Count == 0)
+            if (NumberOfEntries() == 0)
             {
-                controller.Month = newEntry.Date.Month;
-                controller.Year = newEntry.Date.Year;
+                Month = newEntry.Date.Month;
+                Year = newEntry.Date.Year;
+            }
+                       
+            if (VerifyEntryMonth(newEntry, true))
+            {
+                bool projectFound = false;
+                foreach (Project project in Projects)
+                {
+                    if (project.Number == newEntry.ProjectNumber)
+                    {
+                        project.AddEntry(newEntry);
+                        projectFound = true;
+                        break;
+                    }
+                }
+
+                if (!projectFound)
+                {
+                    Project project = new Project(newEntry.ProjectNumber);
+                    project.AddEntry(newEntry);
+                    Projects.Add(project);
+                }
+
+                UnsavedChanges = true;
+            }            
+        }
+
+        /// <summary>
+        /// Numbers the of entries.
+        /// </summary>
+        /// <returns>The number of entries in the timesheet</returns>
+        public int NumberOfEntries()
+        {
+            int numberOfEntries = 0;
+            foreach (Project project in Projects)
+            {
+                numberOfEntries += project.Entries.Count;
             }
 
-            if (Entry.Verify(controller, newEntry, true))
-            {
-                controller.Entries.Add(newEntry);
-                controller.UnsavedChanges = true;
-            }            
+            return numberOfEntries;
         }
 
         /// <summary>
         /// Edits the entry.
         /// </summary>
         /// <param name="controller">The controller.</param>
-        /// <param name="entryToEdit">The entry to edit.</param>
         /// <param name="editedEntry">The edited entry.</param>
-        public static void EditEntry(Controller controller, Entry entryToEdit, Entry editedEntry)
+        public void EditEntry(Controller controller, Entry editedEntry)
         {
             bool checkMonth = true;
-            if (controller.Entries.Count == 1)
+            if (controller.Timesheet.NumberOfEntries() == 1)
             {
                 checkMonth = false;
             }
 
-            if (Entry.Verify(controller, editedEntry, checkMonth))
+            if (VerifyEntryMonth(editedEntry, checkMonth))
             {
-                controller.Month = editedEntry.Date.Month;
-                controller.Year = editedEntry.Date.Year;
-                controller.Entries[controller.Entries.IndexOf(entryToEdit)] = editedEntry;
-                controller.UnsavedChanges = true;
+                Month = editedEntry.Date.Month;
+                Year = editedEntry.Date.Year;
+                bool edited = false;
+                foreach (Project project in Projects)
+                {
+                    if (edited)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        foreach (Entry entry in project.Entries)
+                        {
+                            if (entry.ID == editedEntry.ID)
+                            {
+                                if (entry.ProjectNumber != editedEntry.ProjectNumber)
+                                {
+                                    project.Entries.Remove(entry);
+                                    foreach (Project newProject in Projects)
+                                    {
+                                        if (newProject.Number == editedEntry.ProjectNumber)
+                                        {
+                                            newProject.AddEntry(editedEntry);
+                                            edited = true;
+                                            break;
+                                        }
+                                    }
+
+                                    break;
+                                }
+                                else
+                                {
+                                    entry.Update(editedEntry);
+                                    edited = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!edited)
+                {
+                    throw new Exception("Entry could not be edited");
+                }
+
+                UnsavedChanges = true;
             }
         }
 
@@ -159,41 +312,34 @@ namespace TimesheetProgramLogic
         /// News the timesheet.
         /// </summary>
         /// <param name="controller">The controller.</param>
-        public static void New(Controller controller)
+        public void New(Controller controller)
         {
-            controller.Entries.Clear();
-            controller.UnsavedChanges = false;
+            Projects.Clear();            
+            UnsavedChanges = false;
         }
 
         /// <summary>
         /// Reads the build.
         /// </summary>
-        /// <param name="controller">The controller.</param>
         /// <param name="filename">The filename.</param>
-        public static void ReadBuild(Controller controller, string filename)
+        public void ReadBuild(string filename)
         {
-            List<Project> timesheet = Timesheet.ParseTimesheet(filename);
-            foreach (Project project in timesheet)
-            {
-                foreach (Entry entry in project.Entries)
-                {
-                    controller.Entries.Add(entry);
-                }
-            }
+            Projects = ParseTimesheet(filename);            
+
+            Month = Projects[0].Entries[0].Date.Month;
+            Year = Projects[0].Entries[0].Date.Year;
         }
 
         /// <summary>
         /// Reads the XML.
         /// </summary>
-        /// <param name="controller">The controller.</param>
         /// <param name="filename">The filename.</param>
-        public static void ReadXML(Controller controller, string filename)
+        public void ReadXML(string filename)
         {
-            ObservableCollection<Entry> file = Serialization.DeserializeEntries(filename);
-            foreach (Entry entry in file)
-            {
-                controller.Entries.Add(entry);
-            }
+            Projects = Serialization.DeserializeProjects(filename);
+
+            Month = Projects[0].Entries[0].Date.Month;
+            Year = Projects[0].Entries[0].Date.Year;
         }
 
         /// <summary>
@@ -201,10 +347,28 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="controller">The controller.</param>
         /// <param name="entryToDelete">The entry to delete.</param>
-        public static void DeleteEntry(Controller controller, Entry entryToDelete)
+        public void DeleteEntry(Controller controller, Entry entryToDelete)
         {
-            controller.Entries.Remove(entryToDelete);
-            controller.UnsavedChanges = true;
+            bool continueLoop = true;
+            foreach (Project project in Projects)
+            {
+                foreach (Entry entry in project.Entries)
+                {
+                    if (entry == entryToDelete)
+                    {
+                        project.Entries.Remove(entryToDelete);
+                        continueLoop = false;
+                        break;
+                    }
+                }
+
+                if (!continueLoop)
+                {
+                    break;
+                }
+            }            
+
+            UnsavedChanges = true;
         }
 
         /// <summary>
@@ -212,14 +376,12 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void Build()
         {
-            List<Project> projects = Project.BuildProjectList(this.entries);
-
             List<string> lines = new List<string>();
             string sEntry = string.Empty;
             string month = filename.Split('.')[1];
             int year = entries[0].Date.Year;
 
-            foreach (Project project in projects)
+            foreach (Project project in Projects)
             {
                 lines.Add("************************************************************************");
                 lines.Add("*                                                                      *");
@@ -283,23 +445,25 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Reads from file.
+        /// Verifies the entry.
         /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>The contents of the file as a list of strings</returns>
-        private static List<string> readFromFile(string filename)
+        /// <param name="entry">The entry.</param>
+        /// <param name="check_month">if set to <c>true</c> [check_month].</param>
+        /// <returns>
+        /// If the entry passed verification
+        /// </returns>
+        /// <exception cref="EntriesNotInSameMonthException">If the new entry isn't in the same month as current entries</exception>
+        /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
+        private bool VerifyEntryMonth(Entry entry, bool check_month)
         {
-            List<string> fileContents = new List<string>();
-            string line;
-            using (StreamReader sr = new StreamReader(filename))
+            if (Month != entry.Date.Month && check_month)
             {
-                while ((line = sr.ReadLine()) != null)
-                {
-                    fileContents.Add(line);
-                }
+                throw new EntriesNotInSameMonthException();
             }
-
-            return fileContents;
+            else
+            {
+                return true;
+            }
         }
     }
 }

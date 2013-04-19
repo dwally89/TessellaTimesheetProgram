@@ -151,6 +151,85 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="Entry" /> class.
         /// </summary>
+        /// <param name="iD">The i D.</param>
+        /// <param name="projectNumber">The project number.</param>
+        /// <param name="line">The line.</param>
+        public Entry(int iD, int projectNumber, string line)
+        {
+            string[] splitLine = line.Split(' ');
+            string taskCode = string.Empty;
+            string phaseCode = string.Empty;
+            DateTime date = DateTime.MinValue;
+            int staffID = -1;
+            double time = -1;
+            int hours = -1;
+            int minutes = -1;
+            string description = string.Empty;
+            string billable = "Yes";
+            bool overhead = false;
+
+            foreach (string part in splitLine)
+            {
+                if (!(part.Equals(" ") || part.Equals(string.Empty)))
+                {
+                    if (taskCode == string.Empty)
+                    {
+                        if (part.StartsWith("-"))
+                        {
+                            billable = "No";
+                        }
+
+                        taskCode = part.Replace("-", string.Empty);
+                    }
+                    else if (phaseCode == string.Empty)
+                    {
+                        phaseCode = part;
+                    }
+                    else if (date == DateTime.MinValue)
+                    {
+                        date = DateTime.Parse(part);
+                    }
+                    else if (staffID == -1)
+                    {
+                        staffID = int.Parse(part);
+                    }
+                    else if (time == -1)
+                    {
+                        time = double.Parse(part);
+                        hours = (int)time;
+                        minutes = (int)((time - hours) * 60);
+                    }
+                    else
+                    {
+                        if (description == string.Empty)
+                        {
+                            if (part.StartsWith("#"))
+                            {
+                                billable = "Accountable";
+                            }
+                            else if (part.StartsWith("*"))
+                            {
+                                overhead = true;
+                            }
+
+                            description += part.Replace("#", string.Empty).Replace("*", string.Empty);
+                        }
+                        else
+                        {
+                            description += " " + part;
+                        }
+                    }
+                }
+            }
+
+            FullConstructor(iD, date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description);
+            this.IsReadFromBuild = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entry" /> class.
+        /// </summary>
+        /// <param name="iD">The i D.</param>
         /// <param name="date">The date.</param>
         /// <param name="projectNumber">The project number.</param>
         /// <param name="startTime">The start time.</param>
@@ -160,43 +239,32 @@ namespace TimesheetProgramLogic
         /// <param name="overhead">if set to <c>true</c> [overhead].</param>
         /// <param name="billable">The billable.</param>
         /// <param name="description">The description.</param>
-        public Entry(DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description)
+        public Entry(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description)
         {
-            // _date = new DateTime();
-            // _date.SelectedDate = date;
-            _date = date;
-            _projectNumber = projectNumber;
-            _startTime = startTime;
-            _finishTime = finishTime;
-            _taskCode = taskCode;
-            if (PhaseCodes.Contains(phaseCode))
-            {
-                _phaseCode = phaseCode;
-            }
-            else
-            {
-                _phaseCode = string.Empty;
-
-                // throw new InvalidPhaseCodeException();
-            }
-
-            _overhead = overhead;
-            _billable = billable;
-            _description = description;
-            IsReadFromBuild = false;
+            FullConstructor(iD, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entry" /> class.
         /// </summary>
-        public Entry()
+        /// <param name="iD">The i D.</param>
+        public Entry(int iD)
         {
+            this.ID = iD;
         }
 
         /// <summary>
         /// Occurs when [property changed].
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Gets the ID.
+        /// </summary>
+        /// <value>
+        /// The ID.
+        /// </value>
+        public int ID { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is read from build.
@@ -350,6 +418,20 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Gets the date time.
+        /// </summary>
+        /// <value>
+        /// The date time.
+        /// </value>
+        public DateTime DateTime
+        {
+            get
+            {
+                return new DateTime(Date.Year, Date.Month, Date.Day, StartTime.Hours, StartTime.Minutes, 0);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the task code.
         /// </summary>
         /// <value>
@@ -462,117 +544,6 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Verifies the entry.
-        /// </summary>
-        /// <param name="controller">The controller.</param>
-        /// <param name="entry">The entry.</param>
-        /// <param name="check_month">if set to <c>true</c> [check_month].</param>
-        /// <returns>If the entry passed verification</returns>
-        /// <exception cref="EntriesNotInSameMonthException">If the new entry isn't in the same month as current entries</exception>
-        /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
-        public static bool Verify(Controller controller, Entry entry, bool check_month)
-        {
-            if (controller.Month != entry.Date.Month && check_month)
-            {
-                throw new EntriesNotInSameMonthException();
-            }
-            else
-            {
-                if (Project.IsBillable(controller, entry.ProjectNumber) && entry.Billable.Equals("Accountable"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else if (Project.IsAccountable(controller, entry.ProjectNumber) && entry.Billable.Equals("Yes"))
-                {
-                    throw new ProjectCantBeBillableAndAccountableException();
-                }
-                else
-                {
-                    return true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Parses the entry.
-        /// </summary>
-        /// <param name="projectNumber">The project number.</param>
-        /// <param name="line">The line.</param>
-        /// <returns>The parsed entry</returns>
-        public static Entry Parse(int projectNumber, string line)
-        {
-            string[] splitLine = line.Split(' ');
-            string taskCode = string.Empty;
-            string phaseCode = string.Empty;
-            DateTime date = DateTime.MinValue;
-            int staffID = -1;
-            double time = -1;
-            int hours = -1;
-            int minutes = -1;
-            string description = string.Empty;
-            string billable = "Yes";
-            bool overhead = false;
-
-            foreach (string part in splitLine)
-            {
-                if (!(part.Equals(" ") || part.Equals(string.Empty)))
-                {
-                    if (taskCode == string.Empty)
-                    {
-                        if (part.StartsWith("-"))
-                        {
-                            billable = "No";
-                        }
-
-                        taskCode = part.Replace("-", string.Empty);
-                    }
-                    else if (phaseCode == string.Empty)
-                    {
-                        phaseCode = part;
-                    }
-                    else if (date == DateTime.MinValue)
-                    {
-                        date = DateTime.Parse(part);
-                    }
-                    else if (staffID == -1)
-                    {
-                        staffID = int.Parse(part);
-                    }
-                    else if (time == -1)
-                    {
-                        time = double.Parse(part);
-                        hours = (int)time;
-                        minutes = (int)((time - hours) * 60);
-                    }
-                    else
-                    {
-                        if (description == string.Empty)
-                        {
-                            if (part.StartsWith("#"))
-                            {
-                                billable = "Accountable";
-                            }
-                            else if (part.StartsWith("*"))
-                            {
-                                overhead = true;
-                            }
-
-                            description += part.Replace("#", string.Empty).Replace("*", string.Empty);
-                        }
-                        else
-                        {
-                            description += " " + part;
-                        }
-                    }
-                }
-            }
-
-            Entry entry = new Entry(date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description);
-            entry.IsReadFromBuild = true;
-            return entry;
-        }
-
-        /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>
@@ -601,6 +572,64 @@ namespace TimesheetProgramLogic
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        /// <summary>
+        /// Updates the specified entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        public void Update(Entry entry)
+        {
+            this.Billable = entry.Billable;
+            this.Date = entry.Date;
+            this.Description = entry.Description;
+            this.FinishTime = entry.FinishTime;
+            this.IsReadFromBuild = entry.IsReadFromBuild;
+            this.Overhead = entry.Overhead;
+            this.PhaseCode = entry.PhaseCode;
+            this.ProjectNumber = entry.ProjectNumber;
+            this.StartTime = entry.StartTime;
+            this.TaskCode = entry.TaskCode;            
+        }
+
+        /// <summary>
+        /// Full_constructors the specified date.
+        /// </summary>
+        /// <param name="iD">The i D.</param>
+        /// <param name="date">The date.</param>
+        /// <param name="projectNumber">The project number.</param>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="finishTime">The finish time.</param>
+        /// <param name="taskCode">The task code.</param>
+        /// <param name="phaseCode">The phase code.</param>
+        /// <param name="overhead">if set to <c>true</c> [overhead].</param>
+        /// <param name="billable">The billable.</param>
+        /// <param name="description">The description.</param>
+        private void FullConstructor(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description)
+        {            
+            // _date = new DateTime();
+            // _date.SelectedDate = date;
+            this.ID = iD;
+            _date = date;
+            _projectNumber = projectNumber;
+            _startTime = startTime;
+            _finishTime = finishTime;
+            _taskCode = taskCode;
+            if (PhaseCodes.Contains(phaseCode))
+            {
+                _phaseCode = phaseCode;
+            }
+            else
+            {
+                _phaseCode = string.Empty;
+
+                // throw new InvalidPhaseCodeException();
+            }
+
+            _overhead = overhead;
+            _billable = billable;
+            _description = description;
+            IsReadFromBuild = false;
         }
     }
 }
