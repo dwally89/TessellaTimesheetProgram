@@ -24,7 +24,7 @@
         {
             InitializeComponent();
             txtStaffID.Text = settings.StaffID;
-            txtStaffNumber.Text = settings.StaffNumber;
+            txtStaffNumber.Text = settings.StaffNumber.ToString();
             txtTCheckPath.Text = settings.TCheckPath;
             txtTimesheetPath.Text = settings.TimesheetPath;
 
@@ -134,7 +134,7 @@
             {
                 NewSettings = new Settings();
                 NewSettings.StaffID = txtStaffID.Text;
-                NewSettings.StaffNumber = txtStaffNumber.Text;
+                NewSettings.StaffNumber = staffNumber;
                 NewSettings.TCheckPath = txtTCheckPath.Text;
                 NewSettings.TimesheetPath = txtTimesheetPath.Text;
                 NewSettings.SubmitViaNotes = (bool)chkSubmitViaNotes.IsChecked;

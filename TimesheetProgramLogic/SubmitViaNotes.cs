@@ -30,14 +30,13 @@ namespace TimesheetProgramLogic
         /// Sends the via notes.
         /// </summary>
         /// <param name="settings">Any settings needed</param>
-        /// <param name="staffID">The staff ID.</param>
         /// <param name="month">The month.</param>
         /// <param name="year">The year.</param>
         /// <param name="fullFilename">The full filename.</param>
         /// <param name="password">The password required to submit</param>
-        public void Send(Settings settings, string staffID, string month, string year, string fullFilename, SecureString password = null)
+        public void Send(Settings settings, string month, string year, string fullFilename, SecureString password = null)
         {
-            SubmitToNotes.Send(staffID, month, year, fullFilename, email_address);
+            SubmitToNotes.Send(settings.StaffID, month, year, fullFilename, email_address);
         }
     }
 }

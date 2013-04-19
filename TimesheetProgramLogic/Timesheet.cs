@@ -21,26 +21,6 @@ namespace TimesheetProgramLogic
         public const string TIMESHEET_EMAIL_ADDRESS = "timesheet@tessella.com";
 
         /// <summary>
-        /// The entries
-        /// </summary>
-        private List<Entry> entries;
-
-        /// <summary>
-        /// The filename
-        /// </summary>
-        private string filename;
-        
-        /// <summary>
-        /// The staff ID
-        /// </summary>
-        private string staffID;
-        
-        /// <summary>
-        /// The staff number
-        /// </summary>
-        private string staffNumber;
-
-        /// <summary>
         /// The _projects
         /// </summary>
         private List<Project> _projects;
@@ -48,40 +28,51 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="Timesheet" /> class.
         /// </summary>
-        /// <param name="entries">The entries.</param>
-        /// <param name="filename">The filename.</param>
-        /// <param name="staffID">The staff ID.</param>
-        /// <param name="staffNumber">The staff number.</param>
-        public Timesheet(ObservableCollection<Entry> entries, string filename, string staffID, string staffNumber)
-        {
-            this.entries = new List<Entry>(entries);
-            this.filename = filename;
-            this.staffID = staffID;
-            this.staffNumber = staffNumber;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Timesheet" /> class.
-        /// </summary>
-        public Timesheet()
+        /// <param name="submitViaNotes">if set to <c>true</c> [submit via notes].</param>
+        public Timesheet(bool submitViaNotes)
         {
             _projects = new List<Project>();
             UnsavedChanges = false;
+            SubmitViaNotes = submitViaNotes;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Timesheet" /> class.
+        /// Gets or sets a value indicating whether [submit via notes].
         /// </summary>
-        /// <param name="submit_via_notes">if set to <c>true</c> [submit_via_notes].</param>
-        public Timesheet(bool submit_via_notes)
-        {
-            if (submit_via_notes)
+        /// <value>
+        ///   <c>true</c> if [submit via notes]; otherwise, <c>false</c>.
+        /// </value>
+        /// <exception cref="System.Exception">Type of SubmitViaNotes not recognised</exception>
+        public bool SubmitViaNotes
+        {            
+            get
             {
-                this.Submitter = new SubmitViaNotes(TIMESHEET_EMAIL_ADDRESS);
+                Type notes = typeof(SubmitViaNotes);
+                Type otherEmail = typeof(SubmitViaOtherEmail);
+                if (notes.IsInstanceOfType(this.Submitter))
+                {
+                    return true;
+                }
+                else if (otherEmail.IsInstanceOfType(this.Submitter))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw new Exception("Type of SubmitViaNotes not recognised");
+                }
             }
-            else
+
+            set
             {
-                this.Submitter = new SubmitViaOtherEmail(TIMESHEET_EMAIL_ADDRESS);
+                if (value)
+                {
+                    this.Submitter = new SubmitViaNotes(TIMESHEET_EMAIL_ADDRESS);
+                }
+                else
+                {
+                    this.Submitter = new SubmitViaOtherEmail(TIMESHEET_EMAIL_ADDRESS);
+                }
             }
         }
 
@@ -246,12 +237,12 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Edits the entry.
         /// </summary>
-        /// <param name="controller">The controller.</param>
         /// <param name="editedEntry">The edited entry.</param>
-        public void EditEntry(Controller controller, Entry editedEntry)
+        /// <exception cref="System.Exception">Entry could not be edited</exception>
+        public void EditEntry(Entry editedEntry)
         {
             bool checkMonth = true;
-            if (controller.Timesheet.NumberOfEntries() == 1)
+            if (NumberOfEntries() == 1)
             {
                 checkMonth = false;
             }
@@ -311,8 +302,7 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// News the timesheet.
         /// </summary>
-        /// <param name="controller">The controller.</param>
-        public void New(Controller controller)
+        public void New()
         {
             Projects.Clear();            
             UnsavedChanges = false;
@@ -345,9 +335,8 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Deletes the entry.
         /// </summary>
-        /// <param name="controller">The controller.</param>
         /// <param name="entryToDelete">The entry to delete.</param>
-        public void DeleteEntry(Controller controller, Entry entryToDelete)
+        public void DeleteEntry(Entry entryToDelete)
         {
             bool continueLoop = true;
             foreach (Project project in Projects)
@@ -374,12 +363,15 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Builds this instance.
         /// </summary>
-        public void Build()
-        {
+        /// <param name="filename">The filename.</param>
+        /// <param name="staffID">The staff ID.</param>
+        /// <param name="staffNumber">The staff number.</param>
+        public void Build(string filename, string staffID, int staffNumber)
+        {            
             List<string> lines = new List<string>();
             string sEntry = string.Empty;
             string month = filename.Split('.')[1];
-            int year = entries[0].Date.Year;
+            int year = Year;
 
             foreach (Project project in Projects)
             {

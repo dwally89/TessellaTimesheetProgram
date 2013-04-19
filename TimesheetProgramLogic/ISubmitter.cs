@@ -17,11 +17,10 @@ namespace TimesheetProgramLogic
         /// Sends the via notes.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        /// <param name="staffID">The staff ID.</param>
         /// <param name="month">The month.</param>
         /// <param name="year">The year.</param>
         /// <param name="fullFilename">The full filename.</param>
         /// <param name="password">The password.</param>
-        void Send(Settings settings, string staffID, string month, string year, string fullFilename, SecureString password = null);
+        void Send(Settings settings, string month, string year, string fullFilename, SecureString password = null);
     }
 }

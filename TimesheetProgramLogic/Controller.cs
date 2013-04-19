@@ -24,10 +24,10 @@ namespace TimesheetProgramLogic
         /// Initializes a new instance of the <see cref="Controller" /> class.
         /// </summary>
         public Controller()
-        {
-            Timesheet = new Timesheet();
+        {            
             Settings = new Settings();
-            Settings.Read();            
+            Settings.Read();
+            Timesheet = new Timesheet(Settings.SubmitViaNotes);
         }
 
         /// <summary>
@@ -55,66 +55,11 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Gets the staff number.
-        /// </summary>
-        /// <value>
-        /// The staff number.
-        /// </value>
-        public string StaffNumber
-        {
-            get
-            {
-                return Settings.StaffNumber;
-            }
-        }
-
-        /// <summary>
-        /// Gets the staff ID.
-        /// </summary>
-        /// <value>
-        /// The staff ID.
-        /// </value>
-        public string StaffID
-        {
-            get
-            {
-                return Settings.StaffID;
-            }
-        }
-
-        /// <summary>
         /// Runs the T check.
         /// </summary>
         public void RunTCheck()
         {
             TCheck.Run(Settings, Timesheet.Month.ToString("00"), (Timesheet.Year - 2000).ToString());
-        }
-
-        /// <summary>
-        /// Adds the entry.
-        /// </summary>
-        /// <param name="newEntry">The new entry.</param>
-        public void AddEntry(Entry newEntry)
-        {
-            Timesheet.AddEntry(newEntry);
-        }
-
-        /// <summary>
-        /// Edits the entry.
-        /// </summary>
-        /// <param name="editedEntry">The edited entry.</param>
-        public void EditEntry(Entry editedEntry)
-        {
-            Timesheet.EditEntry(this, editedEntry);
-        }
-
-        /// <summary>
-        /// Deletes the entry.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        public void DeleteEntry(Entry entry)
-        {
-            Timesheet.DeleteEntry(this, entry);
         }
 
         /// <summary>
@@ -128,9 +73,9 @@ namespace TimesheetProgramLogic
             string sMonth = Timesheet.Month.ToString("00");
 
             // Don't want to submit XML file, want to submit build
-            if (IsXmlFilename(filename))
+            if (!IsXmlFilename(filename))
             {
-                submitable.Submitter.Send(Settings, StaffID, sMonth, Timesheet.Year.ToString(), filename, password);                
+                submitable.Submitter.Send(Settings, sMonth, Timesheet.Year.ToString(), filename, password);                
             }
             else
             {
@@ -146,15 +91,6 @@ namespace TimesheetProgramLogic
         {
             this.filename = filename;
             Save();
-        }
-
-        /// <summary>
-        /// Builds the timesheet.
-        /// </summary>
-        /// <param name="buildFilename">The build filename.</param>
-        public void BuildTimesheet(string buildFilename)
-        {
-            Timesheet.Build();            
         }
 
         /// <summary>
@@ -183,7 +119,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void NewTimesheet()
         {
-            Timesheet.New(this);
+            Timesheet.New();
         }
 
         /// <summary>

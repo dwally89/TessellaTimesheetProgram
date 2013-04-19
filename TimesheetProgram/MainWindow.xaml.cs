@@ -27,7 +27,7 @@
         {            
             InitializeComponent();
             controller = new Controller();            
-            Title = Title + " - " + controller.StaffNumber + ": " + controller.StaffID;
+            Title = Title + " - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID;
             UpdateGUI();
         }
 
@@ -56,8 +56,8 @@
         {
             SaveFileDialog dialog = SaveAsType(FileType.Build);
             if (dialog.ShowDialog() == true)
-            {
-                controller.BuildTimesheet(dialog.FileName);
+            {                
+                controller.Timesheet.Build(dialog.FileName, controller.Settings.StaffID, controller.Settings.StaffNumber);
             }
         }
 
@@ -72,7 +72,7 @@
             
             if (newEntry.ShowDialog() == true)
             {
-                controller.AddEntry(newEntry.Entry);
+                controller.Timesheet.AddEntry(newEntry.Entry);
                 UpdateGUI();
             }
         }
@@ -162,7 +162,7 @@
             if (settingsWindow.ShowDialog() == true)
             {
                 controller.Settings.UpdateAndWrite(settingsWindow.NewSettings);
-                Title = "Timesheet Program - " + controller.StaffNumber + ": " + controller.StaffID;
+                Title = "Timesheet Program - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID;
             }
         }
 
@@ -179,7 +179,7 @@
              {
                  try
                  {
-                     controller.EditEntry(editEntry.Entry);
+                     controller.Timesheet.EditEntry(editEntry.Entry);
                  }
                  catch (EntriesNotInSameMonthException)
                  {
@@ -200,7 +200,7 @@
         {
             if (MessageBox.Show("Are you sure that you want to delete the selected entry?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                controller.DeleteEntry((Entry)dataGrid.SelectedItem);
+                controller.Timesheet.DeleteEntry((Entry)dataGrid.SelectedItem);
                 UpdateGUI();
             }
         }
@@ -277,7 +277,7 @@
             }
 
             saveAs.DefaultExt = fileExtension;
-            saveAs.FileName = controller.StaffID;
+            saveAs.FileName = controller.Settings.StaffID;
 
             return saveAs;
         }
@@ -387,7 +387,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
         {
-            Submit(new Timesheet(controller.Settings.SubmitViaNotes));
+            Submit(controller.Timesheet);
         }
     }
 }
