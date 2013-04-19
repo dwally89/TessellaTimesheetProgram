@@ -83,16 +83,8 @@
         private void UpdateDatagrid()
         {
             dataGrid.Items.Clear();
-            List<Entry> entries = new List<Entry>();
-            foreach (Project project in controller.Timesheet.Projects)
-            {
-                foreach (Entry entry in project.Entries)
-                {
-                    entries.Add(entry);                    
-                }
-            }
-
-            entries.Sort(new SortEntriesViaDateTime());
+            List<Entry> entries = controller.Timesheet.Entries;
+            
             foreach (Entry entry in entries)
             {
                 dataGrid.Items.Add(entry);
@@ -173,22 +165,37 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuEditEntry_Click(object sender, RoutedEventArgs e)
         {
-            AddEditEntry editEntry = new AddEditEntry((Entry)dataGrid.SelectedItem, controller.Timesheet);
+            AddEditEntry editEntry = new AddEditEntry((Entry)dataGrid.SelectedItem, controller.Timesheet);                   
 
-             if (editEntry.ShowDialog() == true)
-             {
-                 try
-                 {
-                     controller.Timesheet.EditEntry(editEntry.Entry);
-                 }
-                 catch (EntriesNotInSameMonthException)
-                 {
-                     MessageBox.Show("All entries must be in the same month", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                     return;
-                 }
+            try
+            {
+                editEntry.ShowDialog();
+            }
+            catch (InvalidPhaseCodeException)
+            {
+                MessageBox.Show("Invalid phase code entered", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MnuEditEntry_Click(sender, e);
+                return;
+            }
+             
+            try
+            {
+                controller.Timesheet.EditEntry(editEntry.Entry);
+            }
+            catch (EntriesNotInSameMonthException)
+            {
+                MessageBox.Show("All entries must be in the same month", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MnuEditEntry_Click(sender, e);
+                return;
+            }
+            catch (InvalidStartTimeException)
+            {
+                MessageBox.Show("There is already an entry with that start time", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MnuEditEntry_Click(sender, e);
+                return;
+            }
 
-                 UpdateGUI();
-             }
+            UpdateGUI();             
         }
 
         /// <summary>

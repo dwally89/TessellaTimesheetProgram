@@ -222,8 +222,7 @@ namespace TimesheetProgramLogic
                 }
             }
 
-            FullConstructor(iD, date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description);
-            this.IsReadFromBuild = true;
+            FullConstructor(iD, date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description, true);            
         }
 
         /// <summary>
@@ -239,18 +238,10 @@ namespace TimesheetProgramLogic
         /// <param name="overhead">if set to <c>true</c> [overhead].</param>
         /// <param name="billable">The billable.</param>
         /// <param name="description">The description.</param>
-        public Entry(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description)
+        /// <param name="isReadFromBuild">if set to <c>true</c> [is read from build].</param>
+        public Entry(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool isReadFromBuild)
         {
-            FullConstructor(iD, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entry" /> class.
-        /// </summary>
-        /// <param name="iD">The i D.</param>
-        public Entry(int iD)
-        {
-            this.ID = iD;
+            FullConstructor(iD, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description, isReadFromBuild);
         }
 
         /// <summary>
@@ -605,13 +596,24 @@ namespace TimesheetProgramLogic
         /// <param name="overhead">if set to <c>true</c> [overhead].</param>
         /// <param name="billable">The billable.</param>
         /// <param name="description">The description.</param>
-        private void FullConstructor(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description)
+        /// <param name="readFromBuild">if set to <c>true</c> [read from build].</param>
+        /// <exception cref="TimesheetProgramLogic.InvalidProjectNumberException">blah blah blah</exception>
+        /// <exception cref="TimesheetProgramLogic.InvalidBillableException">blah blah blah</exception>
+        private void FullConstructor(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool readFromBuild)
         {            
             // _date = new DateTime();
             // _date.SelectedDate = date;
             this.ID = iD;
             _date = date;
-            _projectNumber = projectNumber;
+            if (projectNumber < 0 || projectNumber > 9999)
+            {
+                throw new InvalidProjectNumberException();
+            }
+            else
+            {
+                _projectNumber = projectNumber;
+            }
+
             _startTime = startTime;
             _finishTime = finishTime;
             _taskCode = taskCode;
@@ -621,13 +623,27 @@ namespace TimesheetProgramLogic
             }
             else
             {
-                _phaseCode = string.Empty;
-
-                // throw new InvalidPhaseCodeException();
+                if (readFromBuild)
+                {
+                    _phaseCode = string.Empty;
+                }
+                else
+                {
+                    throw new InvalidPhaseCodeException();
+                }               
             }
 
             _overhead = overhead;
-            _billable = billable;
+
+            if (Billables.Contains(billable.ToUpper()))
+            {
+                _billable = billable;
+            }
+            else
+            {
+                throw new InvalidBillableException();
+            }
+
             _description = description;
             IsReadFromBuild = false;
         }

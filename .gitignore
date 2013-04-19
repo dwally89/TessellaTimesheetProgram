@@ -162,3 +162,9 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+TimesheetProgram.sln
+Local.testsettings
+TimesheetProgram.vsmdi
+TimesheetProgramLogic/TimesheetProgramLogic.csproj
+TimesheetProgramTests/TimesheetProgramTests.csproj
+TraceAndTestImpact.testsettings

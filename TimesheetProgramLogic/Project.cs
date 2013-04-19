@@ -80,19 +80,21 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Adds the entry.
         /// </summary>
-        /// <param name="new_entry">The entry.</param>
-        public void AddEntry(Entry new_entry)
+        /// <param name="newEntry">The entry.</param>
+        /// <param name="allEntries">All entries.</param>
+        /// <exception cref="TimesheetProgramLogic.ProjectCantBeBillableAndAccountableException">blahy blah</exception>
+        public void AddEntry(Entry newEntry, List<Entry> allEntries)
         {
             if (Entries.Count == 0)
             {
-                _billable = new_entry.Billable;                
+                _billable = newEntry.Billable;                
             }
 
-            if (IsBillable() && new_entry.Billable.Equals("Accountable"))
+            if (IsBillable() && newEntry.Billable.Equals("Accountable"))
             {
                 throw new ProjectCantBeBillableAndAccountableException();
             }
-            else if (IsAccountable() && new_entry.Billable.Equals("Yes"))
+            else if (IsAccountable() && newEntry.Billable.Equals("Yes"))
             {
                 throw new ProjectCantBeBillableAndAccountableException();
             }
@@ -101,19 +103,19 @@ namespace TimesheetProgramLogic
             while (conflicts_with_existing_entry)
             {
                 conflicts_with_existing_entry = false;
-                foreach (Entry entry in Entries)
+                foreach (Entry entry in allEntries)
                 {
-                    if (new_entry.Date == entry.Date && new_entry.StartTime == entry.StartTime)
+                    if (newEntry.Date == entry.Date && newEntry.StartTime == entry.StartTime)
                     {
                         TimeSpan existing_entry_length = entry.FinishTime - entry.StartTime;
-                        new_entry.StartTime = new_entry.StartTime + existing_entry_length;
-                        new_entry.FinishTime = new_entry.FinishTime + existing_entry_length;
+                        newEntry.StartTime = newEntry.StartTime + existing_entry_length;
+                        newEntry.FinishTime = newEntry.FinishTime + existing_entry_length;
                         conflicts_with_existing_entry = true;
                     }
                 }
             }
 
-            Entries.Add(new_entry);
+            Entries.Add(newEntry);
         }
     }
 }

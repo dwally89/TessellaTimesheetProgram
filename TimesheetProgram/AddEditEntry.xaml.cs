@@ -237,7 +237,7 @@
                             entryID++;
                         }
 
-                        Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text);
+                        Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text, false);
                         DialogResult = true;
                     }
                 }

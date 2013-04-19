@@ -144,13 +144,36 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Gets the entries.
+        /// </summary>
+        /// <value>
+        /// The entries.
+        /// </value>
+        public List<Entry> Entries
+        {
+            get
+            {
+                List<Entry> entries = new List<Entry>();
+                foreach (Project project in Projects)
+                {
+                    foreach (Entry entry in project.Entries)
+                    {
+                        entries.Add(entry);
+                    }
+                }
+
+                entries.Sort(new SortEntriesViaDateTime());
+                return entries;
+            }
+        }
+
+        /// <summary>
         /// Parses the timesheet.
         /// </summary>
         /// <param name="filename">The filename.</param>
-        /// <returns>A list of projects</returns>
-        public List<Project> ParseTimesheet(string filename)
+        public void ParseTimesheet(string filename)
         {
-            List<Project> timesheet = new List<Project>();
+            Projects.Clear();            
             List<string> fileContents = DataIO.ReadTextFile(filename);
             Project currentProject = null;
             int entryID = 0;
@@ -160,23 +183,17 @@ namespace TimesheetProgramLogic
                 {
                     if (line.StartsWith("P"))
                     {
-                        if (currentProject != null)
-                        {
-                            timesheet.Add(currentProject);
-                        }
-
                         currentProject = new Project(int.Parse(line.Replace("P", string.Empty)));
+                        Projects.Add(currentProject);
+                        currentProject = Projects[Projects.Count - 1];
                     }
                     else if (line != "END")
                     {
-                        currentProject.AddEntry(new Entry(entryID, currentProject.Number, line));
+                        currentProject.AddEntry(new Entry(entryID, currentProject.Number, line), Entries);
                         entryID++;
                     }
                 }
-            }
-
-            timesheet.Add(currentProject);
-            return timesheet;
+            }            
         }
 
         /// <summary>
@@ -201,8 +218,8 @@ namespace TimesheetProgramLogic
                 foreach (Project project in Projects)
                 {
                     if (project.Number == newEntry.ProjectNumber)
-                    {
-                        project.AddEntry(newEntry);
+                    {                        
+                        project.AddEntry(newEntry, Entries);
                         projectFound = true;
                         break;
                     }
@@ -211,7 +228,7 @@ namespace TimesheetProgramLogic
                 if (!projectFound)
                 {
                     Project project = new Project(newEntry.ProjectNumber);
-                    project.AddEntry(newEntry);
+                    project.AddEntry(newEntry, Entries);
                     Projects.Add(project);
                 }
 
@@ -251,10 +268,10 @@ namespace TimesheetProgramLogic
             {
                 Month = editedEntry.Date.Month;
                 Year = editedEntry.Date.Year;
-                bool edited = false;
+                bool entryFound = false;
                 foreach (Project project in Projects)
                 {
-                    if (edited)
+                    if (entryFound)
                     {
                         break;
                     }
@@ -264,6 +281,12 @@ namespace TimesheetProgramLogic
                         {
                             if (entry.ID == editedEntry.ID)
                             {
+                                entryFound = true;
+                                if (ContainsEntryWithStartTime(editedEntry.StartTime))
+                                {
+                                    throw new InvalidStartTimeException();
+                                }
+
                                 if (entry.ProjectNumber != editedEntry.ProjectNumber)
                                 {
                                     project.Entries.Remove(entry);
@@ -271,8 +294,7 @@ namespace TimesheetProgramLogic
                                     {
                                         if (newProject.Number == editedEntry.ProjectNumber)
                                         {
-                                            newProject.AddEntry(editedEntry);
-                                            edited = true;
+                                            newProject.AddEntry(editedEntry, Entries);                                            
                                             break;
                                         }
                                     }
@@ -281,8 +303,7 @@ namespace TimesheetProgramLogic
                                 }
                                 else
                                 {
-                                    entry.Update(editedEntry);
-                                    edited = true;
+                                    entry.Update(editedEntry);                                    
                                     break;
                                 }
                             }
@@ -290,7 +311,7 @@ namespace TimesheetProgramLogic
                     }
                 }
 
-                if (!edited)
+                if (!entryFound)
                 {
                     throw new Exception("Entry could not be edited");
                 }
@@ -314,7 +335,7 @@ namespace TimesheetProgramLogic
         /// <param name="filename">The filename.</param>
         public void ReadBuild(string filename)
         {
-            Projects = ParseTimesheet(filename);            
+            ParseTimesheet(filename);            
 
             Month = Projects[0].Entries[0].Date.Month;
             Year = Projects[0].Entries[0].Date.Year;
@@ -456,6 +477,26 @@ namespace TimesheetProgramLogic
             {
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Determines whether [contains entry with start time] [the specified start time].
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <returns>
+        ///   <c>true</c> if [contains entry with start time] [the specified start time]; otherwise, <c>false</c>.
+        /// </returns>
+        private bool ContainsEntryWithStartTime(TimeSpan startTime)
+        {
+            foreach (Entry entry in Entries)
+            {
+                if (entry.StartTime == startTime)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
