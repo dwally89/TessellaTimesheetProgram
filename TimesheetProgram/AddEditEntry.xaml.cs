@@ -33,6 +33,7 @@
             cboFinishTime.SelectedIndex = 0;
             cboPhaseCode.SelectedIndex = 0;
             datePicker.SelectedDate = DateTime.Today;
+            this.Title = "Add Entry";
         }
 
         /// <summary>
@@ -62,6 +63,7 @@
             cboBillable.Text = entryToEdit.Billable;
             txtDescription.Text = entryToEdit.Description;
             entryID = entryToEdit.ID;
+            this.Title = "Edit Entry";
         }
 
         /// <summary>
@@ -220,21 +222,10 @@
                         MessageBox.Show("Only billable tasks can have overheads", "Can't Have Overheads", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     }
                     else
-                    {
+                    {                        
                         if (entryID == -1)
-                        {                            
-                            foreach (Project project in timesheet.Projects)
-                            {
-                                foreach (Entry entry in project.Entries)
-                                {
-                                    if (entry.ID > entryID)
-                                    {
-                                        entryID = entry.ID;
-                                    }
-                                }
-                            }
-
-                            entryID++;
+                        {
+                            entryID = timesheet.GetNextUnusedID("Entry");
                         }
 
                         Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text, false);

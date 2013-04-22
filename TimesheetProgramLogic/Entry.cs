@@ -150,11 +150,19 @@ namespace TimesheetProgramLogic
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entry" /> class.
+        /// DO NOT USE. ONLY HERE FOR SERIALIZATION.
         /// </summary>
-        /// <param name="iD">The i D.</param>
+        public Entry()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entry" /> class.
+        /// </summary>
         /// <param name="projectNumber">The project number.</param>
         /// <param name="line">The line.</param>
-        public Entry(int iD, int projectNumber, string line)
+        /// <param name="id">The id.</param>
+        public Entry(int projectNumber, string line, int id)
         {
             string[] splitLine = line.Split(' ');
             string taskCode = string.Empty;
@@ -222,13 +230,13 @@ namespace TimesheetProgramLogic
                 }
             }
 
-            FullConstructor(iD, date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description, true);            
+            FullConstructor(id, date, projectNumber, new TimeSpan(9, 0, 0), new TimeSpan(9 + hours, minutes, 0), taskCode, phaseCode, overhead, billable, description, true);            
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entry" /> class.
         /// </summary>
-        /// <param name="iD">The i D.</param>
+        /// <param name="id">The id.</param>
         /// <param name="date">The date.</param>
         /// <param name="projectNumber">The project number.</param>
         /// <param name="startTime">The start time.</param>
@@ -239,23 +247,15 @@ namespace TimesheetProgramLogic
         /// <param name="billable">The billable.</param>
         /// <param name="description">The description.</param>
         /// <param name="isReadFromBuild">if set to <c>true</c> [is read from build].</param>
-        public Entry(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool isReadFromBuild)
+        public Entry(int id, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool isReadFromBuild)
         {
-            FullConstructor(iD, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description, isReadFromBuild);
+            FullConstructor(id, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description, isReadFromBuild);
         }
 
         /// <summary>
         /// Occurs when [property changed].
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Gets the ID.
-        /// </summary>
-        /// <value>
-        /// The ID.
-        /// </value>
-        public int ID { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is read from build.
@@ -309,6 +309,18 @@ namespace TimesheetProgramLogic
                 _projectNumber = value;
                 OnPropertyChanged("ProjectNumber");
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the ID.
+        /// </summary>
+        /// <value>
+        /// The ID.
+        /// </value>
+        public int ID
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -586,7 +598,7 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Full_constructors the specified date.
         /// </summary>
-        /// <param name="iD">The i D.</param>
+        /// <param name="id">The id.</param>
         /// <param name="date">The date.</param>
         /// <param name="projectNumber">The project number.</param>
         /// <param name="startTime">The start time.</param>
@@ -597,13 +609,14 @@ namespace TimesheetProgramLogic
         /// <param name="billable">The billable.</param>
         /// <param name="description">The description.</param>
         /// <param name="readFromBuild">if set to <c>true</c> [read from build].</param>
+        /// <exception cref="InvalidProjectNumberException">FDG FDGDF</exception>
+        /// <exception cref="InvalidPhaseCodeException">DFGD FGFD</exception>
+        /// <exception cref="InvalidBillableException">DFGDF GFD</exception>
         /// <exception cref="TimesheetProgramLogic.InvalidProjectNumberException">blah blah blah</exception>
         /// <exception cref="TimesheetProgramLogic.InvalidBillableException">blah blah blah</exception>
-        private void FullConstructor(int iD, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool readFromBuild)
-        {            
-            // _date = new DateTime();
-            // _date.SelectedDate = date;
-            this.ID = iD;
+        private void FullConstructor(int id, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool readFromBuild)
+        {
+            this.ID = id;
             _date = date;
             if (projectNumber < 0 || projectNumber > 9999)
             {

@@ -13,7 +13,7 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class TCheck : ISubmittable
+    public class TCheck : ASubmittable
     {
         /// <summary>
         /// The TCHEC k_ EMAI l_ ADDRESS
@@ -23,29 +23,22 @@ namespace TimesheetProgramLogic
         /// <summary>
         /// Initializes a new instance of the <see cref="TCheck" /> class.
         /// </summary>
-        /// <param name="submit_via_notes">if set to <c>true</c> [submit_via_notes].</param>
-        public TCheck(bool submit_via_notes)
+        public TCheck()
         {
-            if (submit_via_notes)
-            {
-                this.Submitter = new SubmitViaNotes(TCHECK_EMAIL_ADDRESS);
-            }
-            else
-            {
-                this.Submitter = new SubmitViaOtherEmail(TCHECK_EMAIL_ADDRESS);
-            }
         }
 
         /// <summary>
-        /// Gets or sets the submitter.
+        /// Gets the email address.
         /// </summary>
         /// <value>
-        /// The submitter.
+        /// The email address.
         /// </value>
-        public ISubmitter Submitter
+        public override string EmailAddress
         {
-            get;
-            set;
+            get
+            {
+                return TCHECK_EMAIL_ADDRESS;
+            }
         }
 
         /// <summary>

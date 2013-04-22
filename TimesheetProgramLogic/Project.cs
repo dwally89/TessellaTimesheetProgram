@@ -22,16 +22,6 @@ namespace TimesheetProgramLogic
         private string _billable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Project" /> class.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        public Project(int number)
-        {
-            this.Number = number;
-            this.Entries = new List<Entry>();
-        }
-
-        /// <summary>
         /// Gets the entries.
         /// </summary>
         /// <value>

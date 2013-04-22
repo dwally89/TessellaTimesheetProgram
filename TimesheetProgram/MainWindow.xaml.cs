@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Data.SqlClient;
     using System.Globalization;
     using System.Net.Mail;
     using System.Security;
@@ -68,11 +69,51 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuAddEntry_Click(object sender, RoutedEventArgs e)
         {
-            AddEditEntry newEntry = new AddEditEntry(controller.Timesheet);
-            
+            AddEntry();
+        }
+
+        /// <summary>
+        /// Adds the entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        private void AddEntry(Entry entry = null)
+        {
+            AddEditEntry newEntry;
+
+            if (entry == null)
+            {
+                newEntry = new AddEditEntry(controller.Timesheet);
+            }
+            else
+            {
+                newEntry = new AddEditEntry(entry, controller.Timesheet);
+            }
+
             if (newEntry.ShowDialog() == true)
             {
-                controller.Timesheet.AddEntry(newEntry.Entry);
+                try
+                {
+                    controller.Timesheet.AddEntry(newEntry.Entry);
+                }
+                catch (InvalidStartTimeException)
+                {
+                    MessageBox.Show("There is already an entry with that start time", "Invalid Start Time", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AddEntry(newEntry.Entry);
+                    return;
+                }
+                catch (EntriesNotInSameMonthException)
+                {
+                    MessageBox.Show("All entries must be in the same month", "Invalid month", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AddEntry(newEntry.Entry);
+                    return;
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show(ex.Message, "Invalid Start Time", MessageBoxButton.OK, MessageBoxImage.Error);
+                    AddEntry(newEntry.Entry);
+                    return;
+                }
+
                 UpdateGUI();
             }
         }
@@ -247,7 +288,14 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuSave_Click(object sender, RoutedEventArgs e)
         {
-            controller.Save();
+            try
+            {
+                controller.Save();
+            }
+            catch (FilenameUnsetException)
+            {
+                MnuSaveAs_Click(sender, e);
+            }
         }
 
         /// <summary>
@@ -272,7 +320,13 @@
         private SaveFileDialog SaveAsType(FileType type)
         {
             SaveFileDialog saveAs = new SaveFileDialog();
-            string fileExtension = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(controller.Timesheet.Month).ToUpper();
+            int month = controller.Timesheet.Month;
+            if (month == 0)
+            {
+                month = DateTime.Today.Month;
+            }            
+
+            string fileExtension = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(month).ToUpper();
             if (type == FileType.XML)
             {
                 fileExtension += "X";
@@ -304,6 +358,8 @@
                     controller.Save();                    
                 }   
             }
+
+            controller.DeleteAllUnsavedTimesheets();            
         }
 
         /// <summary>
@@ -323,7 +379,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuSubmitTCheck_Click(object sender, RoutedEventArgs e)
         {
-            Submit(new TCheck(controller.Settings.SubmitViaNotes));
+            Submit(new TCheck());
         }
 
         /// <summary>
@@ -362,7 +418,7 @@
         /// Submits the specified submittable.
         /// </summary>
         /// <param name="submittable">The submittable.</param>
-        private void Submit(ISubmittable submittable)
+        private void Submit(ASubmittable submittable)
         {            
             SecureString password = null;            
             if (GetPasswordIfRequired(out password))
@@ -395,6 +451,42 @@
         private void MnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
         {
             Submit(controller.Timesheet);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MnuLoadFromDatabase control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void MnuLoadFromDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDeleteFromDatabase load = new LoadDeleteFromDatabase(LoadDeleteFromDatabase.FormType.Load);
+            if (load.ShowDialog() == true)
+            {
+                controller.Timesheet.ID = load.TimesheetID;
+                controller.Timesheet.Month = controller.Timesheet.Entries[0].Date.Month;
+                controller.Timesheet.Year = controller.Timesheet.Entries[0].Date.Year;
+                UpdateGUI();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MnuDeleteFromDatabase control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void MnuDeleteFromDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            LoadDeleteFromDatabase delete = new LoadDeleteFromDatabase(LoadDeleteFromDatabase.FormType.Delete);
+            if (delete.ShowDialog() == true)
+            {
+                if (MessageBox.Show("Are you sure you want to delete the timesheet?", "Are you sure?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {                    
+                    controller.DeleteTimesheet(delete.TimesheetID);
+                }
+
+                UpdateGUI();
+            }
         }
     }
 }

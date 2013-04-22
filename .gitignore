@@ -168,3 +168,6 @@ TimesheetProgram.vsmdi
 TimesheetProgramLogic/TimesheetProgramLogic.csproj
 TimesheetProgramTests/TimesheetProgramTests.csproj
 TraceAndTestImpact.testsettings
+TimesheetProgram/TimesheetProgramWPF.csproj
+TimesheetProgramLogic/ClearDatabase.sql
+TimesheetProgramLogic/ClearTables.sql

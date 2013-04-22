@@ -14,17 +14,10 @@ namespace TimesheetProgramLogic
     public class SubmitViaOtherEmail : ISubmitter
     {
         /// <summary>
-        /// The email_address
-        /// </summary>
-        private string email_address;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SubmitViaOtherEmail" /> class.
         /// </summary>
-        /// <param name="email_address">The email_address.</param>
-        public SubmitViaOtherEmail(string email_address)
-        {
-            this.email_address = email_address;
+        public SubmitViaOtherEmail()
+        {            
         }
 
         /// <summary>
@@ -34,8 +27,9 @@ namespace TimesheetProgramLogic
         /// <param name="month">The month.</param>
         /// <param name="year">The year.</param>
         /// <param name="fullFilename">The full filename.</param>
+        /// <param name="emailAddress">fdgd fgdf</param>
         /// <param name="password">The password required to submit</param>
-        public void Send(Settings settings, string month, string year, string fullFilename, SecureString password = null)
+        public void Send(Settings settings, string month, string year, string fullFilename, string emailAddress, SecureString password = null)
         {
             Email email;
             if (password == null)
@@ -47,7 +41,7 @@ namespace TimesheetProgramLogic
                 email = new Email(settings, password);
             }
 
-            email.SendEmail(this.email_address, month, year, fullFilename);
+            email.SendEmail(emailAddress, month, year, fullFilename);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ISubmittable.cs" company="Microsoft">
+// <copyright file="ASubmittable.cs" company="Microsoft">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -9,14 +9,17 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public interface ISubmittable
+    public abstract class ASubmittable
     {
         /// <summary>
-        /// Gets or sets the submitter.
+        /// Gets the email address.
         /// </summary>
         /// <value>
-        /// The submitter.
+        /// The email address.
         /// </value>
-        ISubmitter Submitter { get; set; }
+        public abstract string EmailAddress
+        {
+            get;            
+        }
     }
 }

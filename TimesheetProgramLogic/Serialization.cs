@@ -36,12 +36,12 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="filename">The filename.</param>
         /// <returns>An observable collection containing the entries</returns>
-        public static List<Project> DeserializeProjects(string filename)
+        public static Timesheet DeserializeTimesheet(string filename)
         {            
-            XmlSerializer deserializer = new XmlSerializer(typeof(ObservableCollection<Entry>));
+            XmlSerializer deserializer = new XmlSerializer(typeof(Timesheet));
             using (TextReader reader = new StreamReader(filename))
             {
-                return (List<Project>)deserializer.Deserialize(reader);                
+                return (Timesheet)deserializer.Deserialize(reader);                
             }                      
         }
     }

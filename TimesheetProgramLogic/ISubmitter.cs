@@ -20,7 +20,8 @@ namespace TimesheetProgramLogic
         /// <param name="month">The month.</param>
         /// <param name="year">The year.</param>
         /// <param name="fullFilename">The full filename.</param>
+        /// <param name="emailAddress">The email address.</param>
         /// <param name="password">The password.</param>
-        void Send(Settings settings, string month, string year, string fullFilename, SecureString password = null);
+        void Send(Settings settings, string month, string year, string fullFilename, string emailAddress, SecureString password = null);
     }
 }

@@ -9,11 +9,12 @@ namespace TimesheetProgramLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Data.SqlClient;
 
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class Timesheet : ISubmittable
+    public class Timesheet : ASubmittable
     {
         /// <summary>
         /// The TIMESHEE t_ EMAI l_ ADDRESS
@@ -21,71 +22,37 @@ namespace TimesheetProgramLogic
         public const string TIMESHEET_EMAIL_ADDRESS = "timesheet@tessella.com";
 
         /// <summary>
-        /// The _projects
+        /// The _settings
         /// </summary>
-        private List<Project> _projects;
+        private Settings _settings;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Timesheet" /> class.
         /// </summary>
-        /// <param name="submitViaNotes">if set to <c>true</c> [submit via notes].</param>
-        public Timesheet(bool submitViaNotes)
+        /// <param name="settings">The settings.</param>
+        public Timesheet(Settings settings)
         {
-            _projects = new List<Project>();
-            UnsavedChanges = false;
-            SubmitViaNotes = submitViaNotes;
+            UnsavedChanges = false;            
+            _settings = settings;            
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [submit via notes].
+        /// Initializes a new instance of the <see cref="Timesheet" /> class.
+        /// DO NOT USE. ONLY PRESENT FOR SERIALIZATION.
         /// </summary>
-        /// <value>
-        ///   <c>true</c> if [submit via notes]; otherwise, <c>false</c>.
-        /// </value>
-        /// <exception cref="System.Exception">Type of SubmitViaNotes not recognised</exception>
-        public bool SubmitViaNotes
+        public Timesheet()
         {            
-            get
-            {
-                Type notes = typeof(SubmitViaNotes);
-                Type otherEmail = typeof(SubmitViaOtherEmail);
-                if (notes.IsInstanceOfType(this.Submitter))
-                {
-                    return true;
-                }
-                else if (otherEmail.IsInstanceOfType(this.Submitter))
-                {
-                    return false;
-                }
-                else
-                {
-                    throw new Exception("Type of SubmitViaNotes not recognised");
-                }
-            }
-
-            set
-            {
-                if (value)
-                {
-                    this.Submitter = new SubmitViaNotes(TIMESHEET_EMAIL_ADDRESS);
-                }
-                else
-                {
-                    this.Submitter = new SubmitViaOtherEmail(TIMESHEET_EMAIL_ADDRESS);
-                }
-            }
         }
 
         /// <summary>
-        /// Gets or sets the submitter.
+        /// Gets the email address.
         /// </summary>
         /// <value>
-        /// The submitter.
+        /// The email address.
         /// </value>
-        public ISubmitter Submitter
+        public override string EmailAddress
         {
-            get;
-            set;
+            get { return TIMESHEET_EMAIL_ADDRESS; }
         }
 
         /// <summary>
@@ -98,25 +65,6 @@ namespace TimesheetProgramLogic
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Gets the projects.
-        /// </summary>
-        /// <value>
-        /// The projects.
-        /// </value>
-        public List<Project> Projects
-        {
-            get
-            {
-                return _projects;
-            }
-
-            private set
-            {
-                _projects = value;
-            }
         }
 
         /// <summary>
@@ -144,6 +92,14 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Gets or sets the ID.
+        /// </summary>
+        /// <value>
+        /// The ID.
+        /// </value>
+        public int ID { get; set; }
+
+        /// <summary>
         /// Gets the entries.
         /// </summary>
         /// <value>
@@ -153,18 +109,77 @@ namespace TimesheetProgramLogic
         {
             get
             {
-                List<Entry> entries = new List<Entry>();
-                foreach (Project project in Projects)
+                return ReadTimesheetViaID(ID);
+            }
+        }
+
+        /// <summary>
+        /// Gets all timesheet data.
+        /// </summary>
+        /// <returns>DFGDFG DFGFD</returns>
+        public static List<TimesheetData> GetAllTimesheetData()
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getAllTimesheetIDs = new SqlCommand("SELECT * FROM Timesheet", con))
                 {
-                    foreach (Entry entry in project.Entries)
+                    List<TimesheetData> timesheetData = new List<TimesheetData>();
+                    using (SqlDataReader reader = getAllTimesheetIDs.ExecuteReader())
                     {
-                        entries.Add(entry);
+                        while (reader.Read())
+                        {
+                            timesheetData.Add(new TimesheetData(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4)));
+                        }
+                    }
+
+                    return timesheetData;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads the timesheet via ID.
+        /// </summary>
+        /// <param name="timesheetID">The timesheet ID.</param>
+        /// <returns>DFGD FGDFGFD</returns>
+        public List<Entry> ReadTimesheetViaID(int timesheetID)
+        {
+            List<Entry> entries = new List<Entry>();
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getAllEntries = new SqlCommand("SELECT * FROM Entry WHERE TimesheetID=@ID", con))
+                {
+                    getAllEntries.Parameters.Add(new SqlParameter("ID", timesheetID));
+                    using (SqlDataReader reader = getAllEntries.ExecuteReader())
+                    {
+                        int id, projectNumber;
+                        DateTime date;
+                        TimeSpan startTime, finishTime;
+                        string taskCode, phaseCode, billable, description;
+                        bool overhead;
+
+                        while (reader.Read())
+                        {
+                            id = reader.GetInt32(0);
+                            date = reader.GetDateTime(1);
+                            projectNumber = reader.GetInt32(2);
+                            startTime = reader.GetTimeSpan(3);
+                            finishTime = reader.GetTimeSpan(4);
+                            taskCode = reader.GetString(5);
+                            phaseCode = reader.GetString(6);
+                            overhead = reader.GetBoolean(7);
+                            billable = reader.GetString(8);
+                            description = reader.GetString(9);
+                            entries.Add(new Entry(id, date, projectNumber, startTime, finishTime, taskCode, phaseCode, overhead, billable, description, true));
+                        }
                     }
                 }
-
-                entries.Sort(new SortEntriesViaDateTime());
-                return entries;
             }
+
+            entries.Sort(new SortEntriesViaDateTime());
+            return entries;
         }
 
         /// <summary>
@@ -172,28 +187,60 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="filename">The filename.</param>
         public void ParseTimesheet(string filename)
-        {
-            Projects.Clear();            
+        {                   
             List<string> fileContents = DataIO.ReadTextFile(filename);
-            Project currentProject = null;
-            int entryID = 0;
+            int projectNumber = -1;            
+            int entryID = GetNextUnusedID("Entry");
+            bool isFirstEntry = true;
             foreach (string line in fileContents)
             {
                 if (!line.StartsWith("*"))
                 {
                     if (line.StartsWith("P"))
                     {
-                        currentProject = new Project(int.Parse(line.Replace("P", string.Empty)));
-                        Projects.Add(currentProject);
-                        currentProject = Projects[Projects.Count - 1];
+                        projectNumber = int.Parse(line.Replace("P", string.Empty));                        
                     }
                     else if (line != "END")
-                    {
-                        currentProject.AddEntry(new Entry(entryID, currentProject.Number, line), Entries);
+                    {                        
+                        Entry entry = new Entry(projectNumber, line, entryID);
+                        if (isFirstEntry)
+                        {
+                            Month = entry.Date.Month;
+                            Year = entry.Date.Year;
+                            New();
+                            isFirstEntry = false;
+                        }
+
+                        InsertEntry(entry, this.ID);
                         entryID++;
                     }
                 }
             }            
+        }
+
+        /// <summary>
+        /// Gets the next unused ID.
+        /// </summary>
+        /// <param name="table">The table.</param>
+        /// <returns>DFGD FGDF</returns>
+        public int GetNextUnusedID(string table)
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getMaxID = new SqlCommand("SELECT MAX(ID) FROM " + table, con))
+                {
+                    var maxID = getMaxID.ExecuteScalar();
+                    if (maxID.GetType() == typeof(System.DBNull))
+                    {
+                        return 0;
+                    }
+                    else
+                    {
+                        return (int)maxID + 1;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -209,31 +256,30 @@ namespace TimesheetProgramLogic
             if (NumberOfEntries() == 0)
             {
                 Month = newEntry.Date.Month;
-                Year = newEntry.Date.Year;
+                Year = newEntry.Date.Year;                
+                UpdateTimesheetMonthAndYear(newEntry.Date.Month, newEntry.Date.Year);                
+            }
+
+            if (ContainsEntryWithStartTime(newEntry.StartTime, newEntry.Date))
+            {
+                throw new InvalidStartTimeException();
             }
                        
             if (VerifyEntryMonth(newEntry, true))
-            {
-                bool projectFound = false;
-                foreach (Project project in Projects)
-                {
-                    if (project.Number == newEntry.ProjectNumber)
-                    {                        
-                        project.AddEntry(newEntry, Entries);
-                        projectFound = true;
-                        break;
-                    }
-                }
-
-                if (!projectFound)
-                {
-                    Project project = new Project(newEntry.ProjectNumber);
-                    project.AddEntry(newEntry, Entries);
-                    Projects.Add(project);
-                }
-
+            {                   
+                InsertEntry(newEntry, ID);                
                 UnsavedChanges = true;
             }            
+        }
+
+        /// <summary>
+        /// Loads the timesheet via ID.
+        /// </summary>
+        /// <param name="timesheetID">The timesheet ID.</param>
+        public void LoadTimesheetViaID(int timesheetID)
+        {
+            ID = timesheetID;
+            UnsavedChanges = false;
         }
 
         /// <summary>
@@ -242,13 +288,15 @@ namespace TimesheetProgramLogic
         /// <returns>The number of entries in the timesheet</returns>
         public int NumberOfEntries()
         {
-            int numberOfEntries = 0;
-            foreach (Project project in Projects)
+            using (SqlConnection con = Database.GetConnection())
             {
-                numberOfEntries += project.Entries.Count;
+                con.Open();
+                using (SqlCommand getNumberOfEntries = new SqlCommand("SELECT COUNT(*) FROM Entry WHERE TimesheetID=@ID", con))
+                {
+                    getNumberOfEntries.Parameters.Add(new SqlParameter("ID", ID));
+                    return (int)getNumberOfEntries.ExecuteScalar();
+                }
             }
-
-            return numberOfEntries;
         }
 
         /// <summary>
@@ -257,7 +305,7 @@ namespace TimesheetProgramLogic
         /// <param name="editedEntry">The edited entry.</param>
         /// <exception cref="System.Exception">Entry could not be edited</exception>
         public void EditEntry(Entry editedEntry)
-        {
+        {            
             bool checkMonth = true;
             if (NumberOfEntries() == 1)
             {
@@ -265,56 +313,31 @@ namespace TimesheetProgramLogic
             }
 
             if (VerifyEntryMonth(editedEntry, checkMonth))
-            {
-                Month = editedEntry.Date.Month;
-                Year = editedEntry.Date.Year;
-                bool entryFound = false;
-                foreach (Project project in Projects)
+            {                  
+                if (ContainsEntryWithStartTime(editedEntry.StartTime, editedEntry.Date))
                 {
-                    if (entryFound)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        foreach (Entry entry in project.Entries)
-                        {
-                            if (entry.ID == editedEntry.ID)
-                            {
-                                entryFound = true;
-                                if (ContainsEntryWithStartTime(editedEntry.StartTime))
-                                {
-                                    throw new InvalidStartTimeException();
-                                }
-
-                                if (entry.ProjectNumber != editedEntry.ProjectNumber)
-                                {
-                                    project.Entries.Remove(entry);
-                                    foreach (Project newProject in Projects)
-                                    {
-                                        if (newProject.Number == editedEntry.ProjectNumber)
-                                        {
-                                            newProject.AddEntry(editedEntry, Entries);                                            
-                                            break;
-                                        }
-                                    }
-
-                                    break;
-                                }
-                                else
-                                {
-                                    entry.Update(editedEntry);                                    
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    throw new InvalidStartTimeException();
                 }
 
-                if (!entryFound)
+                using (SqlConnection con = Database.GetConnection())
                 {
-                    throw new Exception("Entry could not be edited");
-                }
+                    con.Open();
+                    using (SqlCommand updateTimesheet = new SqlCommand("UPDATE Entry SET Date=@Date, ProjectNumber=@ProjectNumber, StartTime=@StartTime, FinishTime=@FinishTime, TaskCode=@TaskCode, PhaseCode=@PhaseCode, Overhead=@Overhead, Billable=@Billable, Description=@Description WHERE ID=@ID AND TimesheetID=@TimesheetID", con))
+                    {
+                        updateTimesheet.Parameters.Add(new SqlParameter("Date", editedEntry.Date));
+                        updateTimesheet.Parameters.Add(new SqlParameter("ProjectNumber", editedEntry.ProjectNumber));
+                        updateTimesheet.Parameters.Add(new SqlParameter("StartTime", editedEntry.StartTime));
+                        updateTimesheet.Parameters.Add(new SqlParameter("FinishTime", editedEntry.FinishTime));
+                        updateTimesheet.Parameters.Add(new SqlParameter("TaskCode", editedEntry.TaskCode));
+                        updateTimesheet.Parameters.Add(new SqlParameter("PhaseCode", editedEntry.PhaseCode));
+                        updateTimesheet.Parameters.Add(new SqlParameter("Overhead", editedEntry.Overhead));
+                        updateTimesheet.Parameters.Add(new SqlParameter("Billable", editedEntry.Billable));
+                        updateTimesheet.Parameters.Add(new SqlParameter("Description", editedEntry.Description));
+                        updateTimesheet.Parameters.Add(new SqlParameter("ID", editedEntry.ID));
+                        updateTimesheet.Parameters.Add(new SqlParameter("TimesheetID", this.ID));                                
+                        updateTimesheet.ExecuteNonQuery();
+                    }
+                }                          
 
                 UnsavedChanges = true;
             }
@@ -324,9 +347,22 @@ namespace TimesheetProgramLogic
         /// News the timesheet.
         /// </summary>
         public void New()
-        {
-            Projects.Clear();            
+        {                   
             UnsavedChanges = false;
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand newTimesheet = new SqlCommand("INSERT INTO Timesheet VALUES(@StaffID, @StaffNumber, @Month, @Year)", con))
+                {
+                    newTimesheet.Parameters.Add(new SqlParameter("StaffID", _settings.StaffID));
+                    newTimesheet.Parameters.Add(new SqlParameter("StaffNumber", _settings.StaffNumber));
+                    newTimesheet.Parameters.Add(new SqlParameter("Month", Month));
+                    newTimesheet.Parameters.Add(new SqlParameter("Year", Year));                    
+                    newTimesheet.ExecuteNonQuery();
+                }
+            }
+
+            ID = GetNextUnusedID("Timesheet") - 1;
         }
 
         /// <summary>
@@ -335,10 +371,8 @@ namespace TimesheetProgramLogic
         /// <param name="filename">The filename.</param>
         public void ReadBuild(string filename)
         {
-            ParseTimesheet(filename);            
-
-            Month = Projects[0].Entries[0].Date.Month;
-            Year = Projects[0].Entries[0].Date.Year;
+            ParseTimesheet(filename);
+            UpdateTimesheetMonthAndYear(Month, Year);
         }
 
         /// <summary>
@@ -346,11 +380,27 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="filename">The filename.</param>
         public void ReadXML(string filename)
-        {
-            Projects = Serialization.DeserializeProjects(filename);
+        {            
+            Timesheet timesheet = Serialization.DeserializeTimesheet(filename);                       
+                        
+            ID = GetNextUnusedID("Timesheet");
+            bool isFirstEntry = true;
+            foreach (Entry entry in timesheet.Entries)
+            {
+                if (isFirstEntry)
+                {
+                    Month = entry.Date.Month;
+                    Year = entry.Date.Year;
+                    New();
+                    isFirstEntry = false;
+                }
 
-            Month = Projects[0].Entries[0].Date.Month;
-            Year = Projects[0].Entries[0].Date.Year;
+                InsertEntry(entry, this.ID);            
+            }                             
+
+            DateTime aDate = GetADate();
+            Month = aDate.Month;
+            Year = aDate.Year;
         }
 
         /// <summary>
@@ -359,24 +409,19 @@ namespace TimesheetProgramLogic
         /// <param name="entryToDelete">The entry to delete.</param>
         public void DeleteEntry(Entry entryToDelete)
         {
-            bool continueLoop = true;
-            foreach (Project project in Projects)
+            using (SqlConnection con = Database.GetConnection())
             {
-                foreach (Entry entry in project.Entries)
+                con.Open();
+                using (SqlCommand deleteEntry = new SqlCommand("DELETE FROM Entry WHERE TimesheetID=@ID AND ProjectNumber=@ProjectNumber AND Date=@Date AND StartTime=@StartTime", con))
                 {
-                    if (entry == entryToDelete)
-                    {
-                        project.Entries.Remove(entryToDelete);
-                        continueLoop = false;
-                        break;
-                    }
-                }
+                    deleteEntry.Parameters.Add(new SqlParameter("ID", ID));
+                    deleteEntry.Parameters.Add(new SqlParameter("ProjectNumber", entryToDelete.ProjectNumber));
+                    deleteEntry.Parameters.Add(new SqlParameter("Date", entryToDelete.Date));
+                    deleteEntry.Parameters.Add(new SqlParameter("StartTime", entryToDelete.StartTime));                   
 
-                if (!continueLoop)
-                {
-                    break;
+                    deleteEntry.ExecuteNonQuery();                    
                 }
-            }            
+            }      
 
             UnsavedChanges = true;
         }
@@ -394,11 +439,11 @@ namespace TimesheetProgramLogic
             string month = filename.Split('.')[1];
             int year = Year;
 
-            foreach (Project project in Projects)
+            foreach (int projectNumber in GetAllProjectNumbers())
             {
                 lines.Add("************************************************************************");
                 lines.Add("*                                                                      *");
-                lines.Add("* P" + project.Number.ToString("0000") + " - " + month + "                                                          *");
+                lines.Add("* P" + projectNumber.ToString("0000") + " - " + month + "                                                          *");
                 lines.Add("* Timesheet for " + staffID + ", " + month + " " + year + "                                           *");
                 lines.Add("* Generated by WALDMs Timesheet Program                                *");
                 lines.Add("*                                                                      *");
@@ -406,9 +451,9 @@ namespace TimesheetProgramLogic
                 lines.Add("************************************************************************");
                 lines.Add("*TASK     PHASE    DATE     PER HRS              DESCRIPTION            ");
                 lines.Add("*-------- -------- -------- --- ---- -----------------------------------");
-                lines.Add("P" + project.Number.ToString("0000"));
+                lines.Add("P" + projectNumber.ToString("0000"));
 
-                foreach (Entry entry in project.Entries)
+                foreach (Entry entry in GetAllEntriesFromProject(projectNumber))
                 {
                     sEntry = string.Empty;
                     if (entry.Billable == "YES")
@@ -469,7 +514,7 @@ namespace TimesheetProgramLogic
         /// <exception cref="ProjectCantBeBillableAndAccountableException">blah blah blah</exception>
         private bool VerifyEntryMonth(Entry entry, bool check_month)
         {
-            if (Month != entry.Date.Month && check_month)
+            if (Month != entry.Date.Month && Year != entry.Date.Year && check_month)
             {
                 throw new EntriesNotInSameMonthException();
             }
@@ -480,23 +525,157 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Updates the timesheet month and year.
+        /// </summary>
+        /// <param name="month">The month.</param>
+        /// <param name="year">The year.</param>
+        private void UpdateTimesheetMonthAndYear(int month, int year)
+        {
+            Month = month;
+            Year = year;
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand updateTimesheet = new SqlCommand("UPDATE Timesheet SET Month=@Month, Year=@Year WHERE ID=@ID", con))
+                {
+                    updateTimesheet.Parameters.Add(new SqlParameter("ID", ID));
+                    updateTimesheet.Parameters.Add(new SqlParameter("Month", month));
+                    updateTimesheet.Parameters.Add(new SqlParameter("Year", year));                                 
+
+                    updateTimesheet.ExecuteNonQuery();
+                }
+            }      
+        }
+
+        /// <summary>
         /// Determines whether [contains entry with start time] [the specified start time].
         /// </summary>
         /// <param name="startTime">The start time.</param>
+        /// <param name="date">The date.</param>
         /// <returns>
         ///   <c>true</c> if [contains entry with start time] [the specified start time]; otherwise, <c>false</c>.
         /// </returns>
-        private bool ContainsEntryWithStartTime(TimeSpan startTime)
+        private bool ContainsEntryWithStartTime(TimeSpan startTime, DateTime date)
         {
-            foreach (Entry entry in Entries)
+            using (SqlConnection con = Database.GetConnection())
             {
-                if (entry.StartTime == startTime)
+                con.Open();
+                using (SqlCommand getEntryWithStartTime = new SqlCommand("SELECT ID FROM Entry WHERE StartTime=@StartTime AND Date=@Date", con))
                 {
-                    return true;
+                    getEntryWithStartTime.Parameters.Add(new SqlParameter("StartTime", startTime));
+                    getEntryWithStartTime.Parameters.Add(new SqlParameter("Date", date));                    
+                    var x = getEntryWithStartTime.ExecuteScalar();
+                    if (x == null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }           
+        }
+
+        /// <summary>
+        /// Gets the A date.
+        /// </summary>
+        /// <returns>FDGDF GFDGFD</returns>
+        private DateTime GetADate()
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getADate = new SqlCommand("SELECT Date FROM Entry WHERE TimesheetID=@ID", con))
+                {
+                    getADate.Parameters.Add(new SqlParameter("ID", ID));
+
+                    using (SqlDataReader reader = getADate.ExecuteReader())
+                    {
+                        reader.Read();
+                        return reader.GetDateTime(0);
+                    }
                 }
             }
+        }
 
-            return false;
+        /// <summary>
+        /// Inserts the entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <param name="timesheetID">The timesheet ID.</param>
+        private void InsertEntry(Entry entry, int timesheetID)
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand insertEntry = new SqlCommand("INSERT INTO Entry VALUES(@Date, @ProjectNumber, @StartTime, @FinishTime, @TaskCode, @PhaseCode, @Overhead, @Billable, @Description, @TimesheetID)", con))
+                {
+                    insertEntry.Parameters.Add(new SqlParameter("Date", entry.Date));
+                    insertEntry.Parameters.Add(new SqlParameter("ProjectNumber", entry.ProjectNumber));
+                    insertEntry.Parameters.Add(new SqlParameter("StartTime", entry.StartTime));
+                    insertEntry.Parameters.Add(new SqlParameter("FinishTime", entry.FinishTime));
+                    insertEntry.Parameters.Add(new SqlParameter("TaskCode", entry.TaskCode));
+                    insertEntry.Parameters.Add(new SqlParameter("PhaseCode", entry.PhaseCode));
+                    insertEntry.Parameters.Add(new SqlParameter("Overhead", entry.Overhead));
+                    insertEntry.Parameters.Add(new SqlParameter("Billable", entry.Billable));
+                    insertEntry.Parameters.Add(new SqlParameter("Description", entry.Description));
+                    insertEntry.Parameters.Add(new SqlParameter("TimesheetID", timesheetID));
+                    insertEntry.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets all entries from project.
+        /// </summary>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>DFFD GDFGFD</returns>
+        private List<Entry> GetAllEntriesFromProject(int projectNumber)
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getAllEntriesFromProject = new SqlCommand("SELECT * FROM Entry WHERE TimesheetID=@ID AND ProjectNumber=@ProjectNumber", con))
+                {
+                    getAllEntriesFromProject.Parameters.Add(new SqlParameter("ID", ID));
+                    getAllEntriesFromProject.Parameters.Add(new SqlParameter("ProjectNumber", projectNumber));
+                    List<Entry> entries = new List<Entry>();
+                    using (SqlDataReader reader = getAllEntriesFromProject.ExecuteReader())
+                    {
+                        reader.Read();
+                        entries.Sort(new SortEntriesViaDateTime());
+                        return entries;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets all project numbers.
+        /// </summary>
+        /// <returns>A list of all project numbers</returns>
+        private List<int> GetAllProjectNumbers()
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getAllProjectNumbers = new SqlCommand("SELECT DISTINCT ProjectNumber FROM Entry WHERE TimesheetID=@ID", con))
+                {
+                    getAllProjectNumbers.Parameters.Add(new SqlParameter("ID", ID));
+                    List<int> projectNumbers = new List<int>();
+                    using (SqlDataReader reader = getAllProjectNumbers.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            projectNumbers.Add(reader.GetInt32(0));
+                        }
+
+                        projectNumbers.Sort();
+                        return projectNumbers;
+                    }
+                }
+            }
         }
     }
 }

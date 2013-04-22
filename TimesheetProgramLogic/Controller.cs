@@ -6,8 +6,7 @@
 
 namespace TimesheetProgramLogic
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+    using System.Data.SqlClient;
     using System.Security;
 
     /// <summary>
@@ -27,7 +26,16 @@ namespace TimesheetProgramLogic
         {            
             Settings = new Settings();
             Settings.Read();
-            Timesheet = new Timesheet(Settings.SubmitViaNotes);
+            Timesheet = new Timesheet(Settings);            
+            try
+            {
+                Timesheet.New();
+            }
+            catch (SqlException)
+            {
+                DeleteAllUnsavedTimesheets();
+                Timesheet.New();
+            }
         }
 
         /// <summary>
@@ -55,6 +63,27 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
+        /// Gets the submitter.
+        /// </summary>
+        /// <value>
+        /// The submitter.
+        /// </value>
+        public ISubmitter Submitter
+        {
+            get
+            {
+                if (Settings.SubmitViaNotes)
+                {
+                    return new SubmitViaNotes();
+                }
+                else
+                {
+                    return new SubmitViaOtherEmail();
+                }
+            }
+        }
+
+        /// <summary>
         /// Runs the T check.
         /// </summary>
         public void RunTCheck()
@@ -68,14 +97,14 @@ namespace TimesheetProgramLogic
         /// <param name="submitable">The submitable.</param>
         /// <param name="password">The password.</param>
         /// <exception cref="UnableToSubmitEmailException">Occurs if unable to submit an email</exception>        
-        public void Submit(ISubmittable submitable, SecureString password = null)
+        public void Submit(ASubmittable submitable, SecureString password = null)
         {
             string sMonth = Timesheet.Month.ToString("00");
 
             // Don't want to submit XML file, want to submit build
-            if (!IsXmlFilename(filename))
+            if (!Util.IsXmlFilename(filename))
             {
-                submitable.Submitter.Send(Settings, sMonth, Timesheet.Year.ToString(), filename, password);                
+                Submitter.Send(Settings, sMonth, Timesheet.Year.ToString(), filename, submitable.EmailAddress, password);                
             }
             else
             {
@@ -105,7 +134,7 @@ namespace TimesheetProgramLogic
             }
             else
             {                
-                if (!IsXmlFilename(filename))
+                if (!Util.IsXmlFilename(filename))
                 {
                     filename = filename + "X";
                 }
@@ -129,7 +158,7 @@ namespace TimesheetProgramLogic
         public void Open(string filename)
         {
             this.filename = filename;            
-            if (IsXmlFilename(filename))
+            if (Util.IsXmlFilename(filename))
             {
                 Timesheet.ReadXML(filename);
             }
@@ -142,22 +171,49 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Determines whether [is XML filename] [the specified filename].
+        /// Clears the database.
         /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <returns>
-        ///   <c>true</c> if [is XML filename] [the specified filename]; otherwise, <c>false</c>.
-        /// </returns>
-        private bool IsXmlFilename(string filename)
+        public void ClearDatabase()
         {
-            if (filename.EndsWith("X"))
+            Database.Clear();
+        }
+
+        /// <summary>
+        /// Deletes all unsaved timesheets.
+        /// </summary>
+        public void DeleteAllUnsavedTimesheets()
+        {
+            using (SqlConnection con = Database.GetConnection())
             {
-                return true;
+                con.Open();
+                using (SqlCommand findUnsavedTimesheetID = new SqlCommand("SELECT ID FROM Timesheet WHERE Month=0 AND Year=0", con))
+                {
+                    DeleteTimesheet((int)findUnsavedTimesheetID.ExecuteScalar());
+                }
             }
-            else
+        }
+
+        /// <summary>
+        /// Deletes the timesheet.
+        /// </summary>
+        /// <param name="timesheetID">The timesheet ID.</param>
+        public void DeleteTimesheet(int timesheetID)
+        {
+            using (SqlConnection con = Database.GetConnection())
             {
-                return false;
-            }
+                con.Open();
+                using (SqlCommand deleteTimesheet = new SqlCommand("DELETE FROM Entry WHERE TimesheetID=@ID", con))
+                {
+                    deleteTimesheet.Parameters.Add(new SqlParameter("ID", timesheetID));
+                    deleteTimesheet.ExecuteNonQuery();
+                }
+
+                using (SqlCommand deleteTimesheet = new SqlCommand("DELETE FROM Timesheet WHERE ID=@ID", con))
+                {
+                    deleteTimesheet.Parameters.Add(new SqlParameter("ID", timesheetID));
+                    deleteTimesheet.ExecuteNonQuery();
+                }
+            }            
         }
     }
 }

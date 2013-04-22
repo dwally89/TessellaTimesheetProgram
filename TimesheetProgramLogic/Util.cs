@@ -32,5 +32,24 @@ namespace TimesheetProgramLogic
 
             return spaces;
         }
+
+        /// <summary>
+        /// Determines whether [is XML filename] [the specified filename].
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <returns>
+        ///   <c>true</c> if [is XML filename] [the specified filename]; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsXmlFilename(string filename)
+        {
+            if (filename.EndsWith("X"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
