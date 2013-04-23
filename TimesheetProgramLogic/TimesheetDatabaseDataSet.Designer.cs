@@ -20,21 +20,25 @@ namespace TimesheetProgramLogic {
     [global::System.ComponentModel.DesignerCategoryAttribute("code")]
     [global::System.ComponentModel.ToolboxItem(true)]
     [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedDataSetSchema")]
-    [global::System.Xml.Serialization.XmlRootAttribute("TimesheetProgramDatabase")]
+    [global::System.Xml.Serialization.XmlRootAttribute("TimesheetDatabaseDataSet")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.DataSet")]
-    public partial class TimesheetProgramDatabase : global::System.Data.DataSet {
+    public partial class TimesheetDatabaseDataSet : global::System.Data.DataSet {
         
         private EntryDataTable tableEntry;
         
-        private ProjectDataTable tableProject;
+        private StaffDataTable tableStaff;
         
         private TimesheetDataTable tableTimesheet;
+        
+        private global::System.Data.DataRelation relationFK_Entry_Timesheet;
+        
+        private global::System.Data.DataRelation relationFK_Timesheet_Staff;
         
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public TimesheetProgramDatabase() {
+        public TimesheetDatabaseDataSet() {
             this.BeginInit();
             this.InitClass();
             global::System.ComponentModel.CollectionChangeEventHandler schemaChangedHandler = new global::System.ComponentModel.CollectionChangeEventHandler(this.SchemaChanged);
@@ -45,7 +49,7 @@ namespace TimesheetProgramLogic {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        protected TimesheetProgramDatabase(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+        protected TimesheetDatabaseDataSet(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                 base(info, context, false) {
             if ((this.IsBinarySerialized(info, context) == true)) {
                 this.InitVars(false);
@@ -61,8 +65,8 @@ namespace TimesheetProgramLogic {
                 if ((ds.Tables["Entry"] != null)) {
                     base.Tables.Add(new EntryDataTable(ds.Tables["Entry"]));
                 }
-                if ((ds.Tables["Project"] != null)) {
-                    base.Tables.Add(new ProjectDataTable(ds.Tables["Project"]));
+                if ((ds.Tables["Staff"] != null)) {
+                    base.Tables.Add(new StaffDataTable(ds.Tables["Staff"]));
                 }
                 if ((ds.Tables["Timesheet"] != null)) {
                     base.Tables.Add(new TimesheetDataTable(ds.Tables["Timesheet"]));
@@ -99,9 +103,9 @@ namespace TimesheetProgramLogic {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Browsable(false)]
         [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
-        public ProjectDataTable Project {
+        public StaffDataTable Staff {
             get {
-                return this.tableProject;
+                return this.tableStaff;
             }
         }
         
@@ -157,7 +161,7 @@ namespace TimesheetProgramLogic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public override global::System.Data.DataSet Clone() {
-            TimesheetProgramDatabase cln = ((TimesheetProgramDatabase)(base.Clone()));
+            TimesheetDatabaseDataSet cln = ((TimesheetDatabaseDataSet)(base.Clone()));
             cln.InitVars();
             cln.SchemaSerializationMode = this.SchemaSerializationMode;
             return cln;
@@ -185,8 +189,8 @@ namespace TimesheetProgramLogic {
                 if ((ds.Tables["Entry"] != null)) {
                     base.Tables.Add(new EntryDataTable(ds.Tables["Entry"]));
                 }
-                if ((ds.Tables["Project"] != null)) {
-                    base.Tables.Add(new ProjectDataTable(ds.Tables["Project"]));
+                if ((ds.Tables["Staff"] != null)) {
+                    base.Tables.Add(new StaffDataTable(ds.Tables["Staff"]));
                 }
                 if ((ds.Tables["Timesheet"] != null)) {
                     base.Tables.Add(new TimesheetDataTable(ds.Tables["Timesheet"]));
@@ -230,10 +234,10 @@ namespace TimesheetProgramLogic {
                     this.tableEntry.InitVars();
                 }
             }
-            this.tableProject = ((ProjectDataTable)(base.Tables["Project"]));
+            this.tableStaff = ((StaffDataTable)(base.Tables["Staff"]));
             if ((initTable == true)) {
-                if ((this.tableProject != null)) {
-                    this.tableProject.InitVars();
+                if ((this.tableStaff != null)) {
+                    this.tableStaff.InitVars();
                 }
             }
             this.tableTimesheet = ((TimesheetDataTable)(base.Tables["Timesheet"]));
@@ -242,22 +246,32 @@ namespace TimesheetProgramLogic {
                     this.tableTimesheet.InitVars();
                 }
             }
+            this.relationFK_Entry_Timesheet = this.Relations["FK_Entry_Timesheet"];
+            this.relationFK_Timesheet_Staff = this.Relations["FK_Timesheet_Staff"];
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitClass() {
-            this.DataSetName = "TimesheetProgramDatabase";
+            this.DataSetName = "TimesheetDatabaseDataSet";
             this.Prefix = "";
-            this.Namespace = "http://tempuri.org/TimesheetProgramDatabase.xsd";
+            this.Namespace = "http://tempuri.org/TimesheetDatabaseDataSet.xsd";
             this.EnforceConstraints = true;
             this.SchemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
             this.tableEntry = new EntryDataTable();
             base.Tables.Add(this.tableEntry);
-            this.tableProject = new ProjectDataTable();
-            base.Tables.Add(this.tableProject);
+            this.tableStaff = new StaffDataTable();
+            base.Tables.Add(this.tableStaff);
             this.tableTimesheet = new TimesheetDataTable();
             base.Tables.Add(this.tableTimesheet);
+            this.relationFK_Entry_Timesheet = new global::System.Data.DataRelation("FK_Entry_Timesheet", new global::System.Data.DataColumn[] {
+                        this.tableTimesheet.IDColumn}, new global::System.Data.DataColumn[] {
+                        this.tableEntry.TimesheetIDColumn}, false);
+            this.Relations.Add(this.relationFK_Entry_Timesheet);
+            this.relationFK_Timesheet_Staff = new global::System.Data.DataRelation("FK_Timesheet_Staff", new global::System.Data.DataColumn[] {
+                        this.tableStaff.StaffNumberColumn}, new global::System.Data.DataColumn[] {
+                        this.tableTimesheet.StaffNumberColumn}, false);
+            this.Relations.Add(this.relationFK_Timesheet_Staff);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -268,7 +282,7 @@ namespace TimesheetProgramLogic {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private bool ShouldSerializeProject() {
+        private bool ShouldSerializeStaff() {
             return false;
         }
         
@@ -289,7 +303,7 @@ namespace TimesheetProgramLogic {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedDataSetSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
-            TimesheetProgramDatabase ds = new TimesheetProgramDatabase();
+            TimesheetDatabaseDataSet ds = new TimesheetDatabaseDataSet();
             global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
             global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
             global::System.Xml.Schema.XmlSchemaAny any = new global::System.Xml.Schema.XmlSchemaAny();
@@ -337,7 +351,7 @@ namespace TimesheetProgramLogic {
         public delegate void EntryRowChangeEventHandler(object sender, EntryRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public delegate void ProjectRowChangeEventHandler(object sender, ProjectRowChangeEvent e);
+        public delegate void StaffRowChangeEventHandler(object sender, StaffRowChangeEvent e);
         
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public delegate void TimesheetRowChangeEventHandler(object sender, TimesheetRowChangeEvent e);
@@ -368,6 +382,8 @@ namespace TimesheetProgramLogic {
             private global::System.Data.DataColumn columnBillable;
             
             private global::System.Data.DataColumn columnDescription;
+            
+            private global::System.Data.DataColumn columnTimesheetID;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -484,6 +500,14 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public global::System.Data.DataColumn TimesheetIDColumn {
+                get {
+                    return this.columnTimesheetID;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -519,10 +543,10 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public EntryRow AddEntryRow(System.DateTime Date, int ProjectNumber, System.TimeSpan StartTime, System.TimeSpan FinishTime, string TaskCode, string PhaseCode, bool Overhead, string Billable, string Description) {
+            public EntryRow AddEntryRow(int ID, System.DateTime Date, int ProjectNumber, System.TimeSpan StartTime, System.TimeSpan FinishTime, string TaskCode, string PhaseCode, bool Overhead, string Billable, string Description, TimesheetRow parentTimesheetRowByFK_Entry_Timesheet) {
                 EntryRow rowEntryRow = ((EntryRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        null,
+                        ID,
                         Date,
                         ProjectNumber,
                         StartTime,
@@ -531,10 +555,21 @@ namespace TimesheetProgramLogic {
                         PhaseCode,
                         Overhead,
                         Billable,
-                        Description};
+                        Description,
+                        null};
+                if ((parentTimesheetRowByFK_Entry_Timesheet != null)) {
+                    columnValuesArray[10] = parentTimesheetRowByFK_Entry_Timesheet[0];
+                }
                 rowEntryRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowEntryRow);
                 return rowEntryRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public EntryRow FindByID(int ID) {
+                return ((EntryRow)(this.Rows.Find(new object[] {
+                            ID})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -564,6 +599,7 @@ namespace TimesheetProgramLogic {
                 this.columnOverhead = base.Columns["Overhead"];
                 this.columnBillable = base.Columns["Billable"];
                 this.columnDescription = base.Columns["Description"];
+                this.columnTimesheetID = base.Columns["TimesheetID"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -589,11 +625,12 @@ namespace TimesheetProgramLogic {
                 base.Columns.Add(this.columnBillable);
                 this.columnDescription = new global::System.Data.DataColumn("Description", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnDescription);
-                this.columnID.AutoIncrement = true;
-                this.columnID.AutoIncrementSeed = -1;
-                this.columnID.AutoIncrementStep = -1;
+                this.columnTimesheetID = new global::System.Data.DataColumn("TimesheetID", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTimesheetID);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnID}, true));
                 this.columnID.AllowDBNull = false;
-                this.columnID.ReadOnly = true;
+                this.columnID.Unique = true;
                 this.columnDate.AllowDBNull = false;
                 this.columnProjectNumber.AllowDBNull = false;
                 this.columnStartTime.AllowDBNull = false;
@@ -607,6 +644,7 @@ namespace TimesheetProgramLogic {
                 this.columnBillable.MaxLength = 11;
                 this.columnDescription.AllowDBNull = false;
                 this.columnDescription.MaxLength = 35;
+                this.columnTimesheetID.AllowDBNull = false;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -674,7 +712,7 @@ namespace TimesheetProgramLogic {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                TimesheetProgramDatabase ds = new TimesheetProgramDatabase();
+                TimesheetDatabaseDataSet ds = new TimesheetDatabaseDataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -738,16 +776,16 @@ namespace TimesheetProgramLogic {
         ///</summary>
         [global::System.Serializable()]
         [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
-        public partial class ProjectDataTable : global::System.Data.TypedTableBase<ProjectRow> {
+        public partial class StaffDataTable : global::System.Data.TypedTableBase<StaffRow> {
             
-            private global::System.Data.DataColumn columnNumber;
+            private global::System.Data.DataColumn columnStaffNumber;
             
-            private global::System.Data.DataColumn columnTimesheetID;
+            private global::System.Data.DataColumn columnStaffID;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectDataTable() {
-                this.TableName = "Project";
+            public StaffDataTable() {
+                this.TableName = "Staff";
                 this.BeginInit();
                 this.InitClass();
                 this.EndInit();
@@ -755,7 +793,7 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            internal ProjectDataTable(global::System.Data.DataTable table) {
+            internal StaffDataTable(global::System.Data.DataTable table) {
                 this.TableName = table.TableName;
                 if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
                     this.CaseSensitive = table.CaseSensitive;
@@ -772,24 +810,24 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            protected ProjectDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+            protected StaffDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
                     base(info, context) {
                 this.InitVars();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn NumberColumn {
+            public global::System.Data.DataColumn StaffNumberColumn {
                 get {
-                    return this.columnNumber;
+                    return this.columnStaffNumber;
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn TimesheetIDColumn {
+            public global::System.Data.DataColumn StaffIDColumn {
                 get {
-                    return this.columnTimesheetID;
+                    return this.columnStaffID;
                 }
             }
             
@@ -804,46 +842,53 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectRow this[int index] {
+            public StaffRow this[int index] {
                 get {
-                    return ((ProjectRow)(this.Rows[index]));
+                    return ((StaffRow)(this.Rows[index]));
                 }
             }
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event ProjectRowChangeEventHandler ProjectRowChanging;
+            public event StaffRowChangeEventHandler StaffRowChanging;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event ProjectRowChangeEventHandler ProjectRowChanged;
+            public event StaffRowChangeEventHandler StaffRowChanged;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event ProjectRowChangeEventHandler ProjectRowDeleting;
+            public event StaffRowChangeEventHandler StaffRowDeleting;
             
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public event ProjectRowChangeEventHandler ProjectRowDeleted;
+            public event StaffRowChangeEventHandler StaffRowDeleted;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void AddProjectRow(ProjectRow row) {
+            public void AddStaffRow(StaffRow row) {
                 this.Rows.Add(row);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectRow AddProjectRow(int Number, int TimesheetID) {
-                ProjectRow rowProjectRow = ((ProjectRow)(this.NewRow()));
+            public StaffRow AddStaffRow(int StaffNumber, string StaffID) {
+                StaffRow rowStaffRow = ((StaffRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
-                        Number,
-                        TimesheetID};
-                rowProjectRow.ItemArray = columnValuesArray;
-                this.Rows.Add(rowProjectRow);
-                return rowProjectRow;
+                        StaffNumber,
+                        StaffID};
+                rowStaffRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowStaffRow);
+                return rowStaffRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public StaffRow FindByStaffNumber(int StaffNumber) {
+                return ((StaffRow)(this.Rows.Find(new object[] {
+                            StaffNumber})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public override global::System.Data.DataTable Clone() {
-                ProjectDataTable cln = ((ProjectDataTable)(base.Clone()));
+                StaffDataTable cln = ((StaffDataTable)(base.Clone()));
                 cln.InitVars();
                 return cln;
             }
@@ -851,51 +896,55 @@ namespace TimesheetProgramLogic {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override global::System.Data.DataTable CreateInstance() {
-                return new ProjectDataTable();
+                return new StaffDataTable();
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             internal void InitVars() {
-                this.columnNumber = base.Columns["Number"];
-                this.columnTimesheetID = base.Columns["TimesheetID"];
+                this.columnStaffNumber = base.Columns["StaffNumber"];
+                this.columnStaffID = base.Columns["StaffID"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             private void InitClass() {
-                this.columnNumber = new global::System.Data.DataColumn("Number", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnNumber);
-                this.columnTimesheetID = new global::System.Data.DataColumn("TimesheetID", typeof(int), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnTimesheetID);
-                this.columnNumber.AllowDBNull = false;
-                this.columnTimesheetID.AllowDBNull = false;
+                this.columnStaffNumber = new global::System.Data.DataColumn("StaffNumber", typeof(int), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStaffNumber);
+                this.columnStaffID = new global::System.Data.DataColumn("StaffID", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnStaffID);
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnStaffNumber}, true));
+                this.columnStaffNumber.AllowDBNull = false;
+                this.columnStaffNumber.Unique = true;
+                this.columnStaffID.AllowDBNull = false;
+                this.columnStaffID.MaxLength = 5;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectRow NewProjectRow() {
-                return ((ProjectRow)(this.NewRow()));
+            public StaffRow NewStaffRow() {
+                return ((StaffRow)(this.NewRow()));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
-                return new ProjectRow(builder);
+                return new StaffRow(builder);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override global::System.Type GetRowType() {
-                return typeof(ProjectRow);
+                return typeof(StaffRow);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanged(e);
-                if ((this.ProjectRowChanged != null)) {
-                    this.ProjectRowChanged(this, new ProjectRowChangeEvent(((ProjectRow)(e.Row)), e.Action));
+                if ((this.StaffRowChanged != null)) {
+                    this.StaffRowChanged(this, new StaffRowChangeEvent(((StaffRow)(e.Row)), e.Action));
                 }
             }
             
@@ -903,8 +952,8 @@ namespace TimesheetProgramLogic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowChanging(e);
-                if ((this.ProjectRowChanging != null)) {
-                    this.ProjectRowChanging(this, new ProjectRowChangeEvent(((ProjectRow)(e.Row)), e.Action));
+                if ((this.StaffRowChanging != null)) {
+                    this.StaffRowChanging(this, new StaffRowChangeEvent(((StaffRow)(e.Row)), e.Action));
                 }
             }
             
@@ -912,8 +961,8 @@ namespace TimesheetProgramLogic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleted(e);
-                if ((this.ProjectRowDeleted != null)) {
-                    this.ProjectRowDeleted(this, new ProjectRowChangeEvent(((ProjectRow)(e.Row)), e.Action));
+                if ((this.StaffRowDeleted != null)) {
+                    this.StaffRowDeleted(this, new StaffRowChangeEvent(((StaffRow)(e.Row)), e.Action));
                 }
             }
             
@@ -921,14 +970,14 @@ namespace TimesheetProgramLogic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
                 base.OnRowDeleting(e);
-                if ((this.ProjectRowDeleting != null)) {
-                    this.ProjectRowDeleting(this, new ProjectRowChangeEvent(((ProjectRow)(e.Row)), e.Action));
+                if ((this.StaffRowDeleting != null)) {
+                    this.StaffRowDeleting(this, new StaffRowChangeEvent(((StaffRow)(e.Row)), e.Action));
                 }
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public void RemoveProjectRow(ProjectRow row) {
+            public void RemoveStaffRow(StaffRow row) {
                 this.Rows.Remove(row);
             }
             
@@ -937,7 +986,7 @@ namespace TimesheetProgramLogic {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                TimesheetProgramDatabase ds = new TimesheetProgramDatabase();
+                TimesheetDatabaseDataSet ds = new TimesheetDatabaseDataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -955,7 +1004,7 @@ namespace TimesheetProgramLogic {
                 type.Attributes.Add(attribute1);
                 global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
                 attribute2.Name = "tableTypeName";
-                attribute2.FixedValue = "ProjectDataTable";
+                attribute2.FixedValue = "StaffDataTable";
                 type.Attributes.Add(attribute2);
                 type.Particle = sequence;
                 global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
@@ -1005,8 +1054,6 @@ namespace TimesheetProgramLogic {
             
             private global::System.Data.DataColumn columnID;
             
-            private global::System.Data.DataColumn columnStaffID;
-            
             private global::System.Data.DataColumn columnStaffNumber;
             
             private global::System.Data.DataColumn columnMonth;
@@ -1051,14 +1098,6 @@ namespace TimesheetProgramLogic {
             public global::System.Data.DataColumn IDColumn {
                 get {
                     return this.columnID;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public global::System.Data.DataColumn StaffIDColumn {
-                get {
-                    return this.columnStaffID;
                 }
             }
             
@@ -1123,17 +1162,28 @@ namespace TimesheetProgramLogic {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public TimesheetRow AddTimesheetRow(string StaffID, int StaffNumber, int Month, int Year) {
+            public TimesheetRow AddTimesheetRow(int ID, StaffRow parentStaffRowByFK_Timesheet_Staff, int Month, int Year) {
                 TimesheetRow rowTimesheetRow = ((TimesheetRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
+                        ID,
                         null,
-                        StaffID,
-                        StaffNumber,
                         Month,
                         Year};
+                if ((parentStaffRowByFK_Timesheet_Staff != null)) {
+                    columnValuesArray[1] = parentStaffRowByFK_Timesheet_Staff[0];
+                }
                 rowTimesheetRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowTimesheetRow);
                 return rowTimesheetRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public TimesheetRow FindByStaffNumberMonthYear(int StaffNumber, int Month, int Year) {
+                return ((TimesheetRow)(this.Rows.Find(new object[] {
+                            StaffNumber,
+                            Month,
+                            Year})));
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1154,7 +1204,6 @@ namespace TimesheetProgramLogic {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             internal void InitVars() {
                 this.columnID = base.Columns["ID"];
-                this.columnStaffID = base.Columns["StaffID"];
                 this.columnStaffNumber = base.Columns["StaffNumber"];
                 this.columnMonth = base.Columns["Month"];
                 this.columnYear = base.Columns["Year"];
@@ -1165,21 +1214,17 @@ namespace TimesheetProgramLogic {
             private void InitClass() {
                 this.columnID = new global::System.Data.DataColumn("ID", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnID);
-                this.columnStaffID = new global::System.Data.DataColumn("StaffID", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnStaffID);
                 this.columnStaffNumber = new global::System.Data.DataColumn("StaffNumber", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnStaffNumber);
                 this.columnMonth = new global::System.Data.DataColumn("Month", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMonth);
                 this.columnYear = new global::System.Data.DataColumn("Year", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnYear);
-                this.columnID.AutoIncrement = true;
-                this.columnID.AutoIncrementSeed = -1;
-                this.columnID.AutoIncrementStep = -1;
+                this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
+                                this.columnStaffNumber,
+                                this.columnMonth,
+                                this.columnYear}, true));
                 this.columnID.AllowDBNull = false;
-                this.columnID.ReadOnly = true;
-                this.columnStaffID.AllowDBNull = false;
-                this.columnStaffID.MaxLength = 5;
                 this.columnStaffNumber.AllowDBNull = false;
                 this.columnMonth.AllowDBNull = false;
                 this.columnYear.AllowDBNull = false;
@@ -1250,7 +1295,7 @@ namespace TimesheetProgramLogic {
             public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
                 global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
                 global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
-                TimesheetProgramDatabase ds = new TimesheetProgramDatabase();
+                TimesheetDatabaseDataSet ds = new TimesheetDatabaseDataSet();
                 global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
                 any1.Namespace = "http://www.w3.org/2001/XMLSchema";
                 any1.MinOccurs = new decimal(0);
@@ -1432,41 +1477,74 @@ namespace TimesheetProgramLogic {
                     this[this.tableEntry.DescriptionColumn] = value;
                 }
             }
-        }
-        
-        /// <summary>
-        ///Represents strongly named DataRow class.
-        ///</summary>
-        public partial class ProjectRow : global::System.Data.DataRow {
-            
-            private ProjectDataTable tableProject;
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            internal ProjectRow(global::System.Data.DataRowBuilder rb) : 
-                    base(rb) {
-                this.tableProject = ((ProjectDataTable)(this.Table));
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public int Number {
-                get {
-                    return ((int)(this[this.tableProject.NumberColumn]));
-                }
-                set {
-                    this[this.tableProject.NumberColumn] = value;
-                }
-            }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public int TimesheetID {
                 get {
-                    return ((int)(this[this.tableProject.TimesheetIDColumn]));
+                    return ((int)(this[this.tableEntry.TimesheetIDColumn]));
                 }
                 set {
-                    this[this.tableProject.TimesheetIDColumn] = value;
+                    this[this.tableEntry.TimesheetIDColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public TimesheetRow TimesheetRow {
+                get {
+                    return ((TimesheetRow)(this.GetParentRow(this.Table.ParentRelations["FK_Entry_Timesheet"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Entry_Timesheet"]);
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class StaffRow : global::System.Data.DataRow {
+            
+            private StaffDataTable tableStaff;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            internal StaffRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tableStaff = ((StaffDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public int StaffNumber {
+                get {
+                    return ((int)(this[this.tableStaff.StaffNumberColumn]));
+                }
+                set {
+                    this[this.tableStaff.StaffNumberColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public string StaffID {
+                get {
+                    return ((string)(this[this.tableStaff.StaffIDColumn]));
+                }
+                set {
+                    this[this.tableStaff.StaffIDColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public TimesheetRow[] GetTimesheetRows() {
+                if ((this.Table.ChildRelations["FK_Timesheet_Staff"] == null)) {
+                    return new TimesheetRow[0];
+                }
+                else {
+                    return ((TimesheetRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Timesheet_Staff"])));
                 }
             }
         }
@@ -1493,17 +1571,6 @@ namespace TimesheetProgramLogic {
                 }
                 set {
                     this[this.tableTimesheet.IDColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public string StaffID {
-                get {
-                    return ((string)(this[this.tableTimesheet.StaffIDColumn]));
-                }
-                set {
-                    this[this.tableTimesheet.StaffIDColumn] = value;
                 }
             }
             
@@ -1537,6 +1604,28 @@ namespace TimesheetProgramLogic {
                 }
                 set {
                     this[this.tableTimesheet.YearColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public StaffRow StaffRow {
+                get {
+                    return ((StaffRow)(this.GetParentRow(this.Table.ParentRelations["FK_Timesheet_Staff"])));
+                }
+                set {
+                    this.SetParentRow(value, this.Table.ParentRelations["FK_Timesheet_Staff"]);
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+            public EntryRow[] GetEntryRows() {
+                if ((this.Table.ChildRelations["FK_Entry_Timesheet"] == null)) {
+                    return new EntryRow[0];
+                }
+                else {
+                    return ((EntryRow[])(base.GetChildRows(this.Table.ChildRelations["FK_Entry_Timesheet"])));
                 }
             }
         }
@@ -1579,22 +1668,22 @@ namespace TimesheetProgramLogic {
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public class ProjectRowChangeEvent : global::System.EventArgs {
+        public class StaffRowChangeEvent : global::System.EventArgs {
             
-            private ProjectRow eventRow;
+            private StaffRow eventRow;
             
             private global::System.Data.DataRowAction eventAction;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectRowChangeEvent(ProjectRow row, global::System.Data.DataRowAction action) {
+            public StaffRowChangeEvent(StaffRow row, global::System.Data.DataRowAction action) {
                 this.eventRow = row;
                 this.eventAction = action;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public ProjectRow Row {
+            public StaffRow Row {
                 get {
                     return this.eventRow;
                 }
@@ -1644,7 +1733,7 @@ namespace TimesheetProgramLogic {
         }
     }
 }
-namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
+namespace TimesheetProgramLogic.TimesheetDatabaseDataSetTableAdapters {
     
     
     /// <summary>
@@ -1778,11 +1867,29 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             tableMapping.ColumnMappings.Add("Overhead", "Overhead");
             tableMapping.ColumnMappings.Add("Billable", "Billable");
             tableMapping.ColumnMappings.Add("Description", "Description");
+            tableMapping.ColumnMappings.Add("TimesheetID", "TimesheetID");
             this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = @"DELETE FROM [dbo].[Entry] WHERE (([ID] = @Original_ID) AND ([Date] = @Original_Date) AND ([ProjectNumber] = @Original_ProjectNumber) AND ([StartTime] = @Original_StartTime) AND ([FinishTime] = @Original_FinishTime) AND ([TaskCode] = @Original_TaskCode) AND ([PhaseCode] = @Original_PhaseCode) AND ([Overhead] = @Original_Overhead) AND ([Billable] = @Original_Billable) AND ([Description] = @Original_Description) AND ([TimesheetID] = @Original_TimesheetID))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Date", global::System.Data.SqlDbType.Date, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ProjectNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ProjectNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StartTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StartTime", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_FinishTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FinishTime", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_TaskCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TaskCode", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PhaseCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PhaseCode", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Overhead", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Overhead", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Billable", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Billable", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_TimesheetID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TimesheetID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[Entry] ([Date], [ProjectNumber], [StartTime], [FinishTime], [TaskCode], [PhaseCode], [Overhead], [Billable], [Description]) VALUES (@Date, @ProjectNumber, @StartTime, @FinishTime, @TaskCode, @PhaseCode, @Overhead, @Billable, @Description)";
+            this._adapter.InsertCommand.CommandText = @"INSERT INTO [dbo].[Entry] ([ID], [Date], [ProjectNumber], [StartTime], [FinishTime], [TaskCode], [PhaseCode], [Overhead], [Billable], [Description], [TimesheetID]) VALUES (@ID, @Date, @ProjectNumber, @StartTime, @FinishTime, @TaskCode, @PhaseCode, @Overhead, @Billable, @Description, @TimesheetID);
+SELECT ID, Date, ProjectNumber, StartTime, FinishTime, TaskCode, PhaseCode, Overhead, Billable, Description, TimesheetID FROM Entry WHERE (ID = @ID)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Date", global::System.Data.SqlDbType.Date, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ProjectNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ProjectNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StartTime", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
@@ -1792,13 +1899,41 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Overhead", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Overhead", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Billable", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Billable", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TimesheetID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TimesheetID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[Entry] SET [ID] = @ID, [Date] = @Date, [ProjectNumber] = @ProjectNumber, [StartTime] = @StartTime, [FinishTime] = @FinishTime, [TaskCode] = @TaskCode, [PhaseCode] = @PhaseCode, [Overhead] = @Overhead, [Billable] = @Billable, [Description] = @Description, [TimesheetID] = @TimesheetID WHERE (([ID] = @Original_ID) AND ([Date] = @Original_Date) AND ([ProjectNumber] = @Original_ProjectNumber) AND ([StartTime] = @Original_StartTime) AND ([FinishTime] = @Original_FinishTime) AND ([TaskCode] = @Original_TaskCode) AND ([PhaseCode] = @Original_PhaseCode) AND ([Overhead] = @Original_Overhead) AND ([Billable] = @Original_Billable) AND ([Description] = @Original_Description) AND ([TimesheetID] = @Original_TimesheetID));
+SELECT ID, Date, ProjectNumber, StartTime, FinishTime, TaskCode, PhaseCode, Overhead, Billable, Description, TimesheetID FROM Entry WHERE (ID = @ID)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Date", global::System.Data.SqlDbType.Date, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Date", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ProjectNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ProjectNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StartTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StartTime", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@FinishTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FinishTime", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TaskCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TaskCode", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@PhaseCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PhaseCode", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Overhead", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Overhead", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Billable", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Billable", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TimesheetID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TimesheetID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Date", global::System.Data.SqlDbType.Date, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Date", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ProjectNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ProjectNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StartTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StartTime", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_FinishTime", global::System.Data.SqlDbType.Time, 0, global::System.Data.ParameterDirection.Input, 0, 0, "FinishTime", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_TaskCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TaskCode", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_PhaseCode", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "PhaseCode", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Overhead", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Overhead", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Billable", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Billable", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Description", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Description", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_TimesheetID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TimesheetID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.ConnectionString;
+            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.TimesheetDatabaseConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1808,7 +1943,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
             this._commandCollection[0].CommandText = "SELECT ID, Date, ProjectNumber, StartTime, FinishTime, TaskCode, PhaseCode, Overh" +
-                "ead, Billable, Description FROM dbo.Entry";
+                "ead, Billable, Description, TimesheetID FROM dbo.Entry";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -1816,7 +1951,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TimesheetProgramDatabase.EntryDataTable dataTable) {
+        public virtual int Fill(TimesheetDatabaseDataSet.EntryDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -1829,9 +1964,9 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TimesheetProgramDatabase.EntryDataTable GetData() {
+        public virtual TimesheetDatabaseDataSet.EntryDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            TimesheetProgramDatabase.EntryDataTable dataTable = new TimesheetProgramDatabase.EntryDataTable();
+            TimesheetDatabaseDataSet.EntryDataTable dataTable = new TimesheetDatabaseDataSet.EntryDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
@@ -1839,14 +1974,14 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase.EntryDataTable dataTable) {
+        public virtual int Update(TimesheetDatabaseDataSet.EntryDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase dataSet) {
+        public virtual int Update(TimesheetDatabaseDataSet dataSet) {
             return this.Adapter.Update(dataSet, "Entry");
         }
         
@@ -1868,37 +2003,91 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(int Original_ID, System.DateTime Original_Date, int Original_ProjectNumber, System.TimeSpan Original_StartTime, System.TimeSpan Original_FinishTime, string Original_TaskCode, string Original_PhaseCode, bool Original_Overhead, string Original_Billable, string Original_Description, int Original_TimesheetID) {
+            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_ID));
+            this.Adapter.DeleteCommand.Parameters[1].Value = ((System.DateTime)(Original_Date));
+            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_ProjectNumber));
+            this.Adapter.DeleteCommand.Parameters[3].Value = ((System.TimeSpan)(Original_StartTime));
+            this.Adapter.DeleteCommand.Parameters[4].Value = ((System.TimeSpan)(Original_FinishTime));
+            if ((Original_TaskCode == null)) {
+                throw new global::System.ArgumentNullException("Original_TaskCode");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[5].Value = ((string)(Original_TaskCode));
+            }
+            if ((Original_PhaseCode == null)) {
+                throw new global::System.ArgumentNullException("Original_PhaseCode");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[6].Value = ((string)(Original_PhaseCode));
+            }
+            this.Adapter.DeleteCommand.Parameters[7].Value = ((bool)(Original_Overhead));
+            if ((Original_Billable == null)) {
+                throw new global::System.ArgumentNullException("Original_Billable");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[8].Value = ((string)(Original_Billable));
+            }
+            if ((Original_Description == null)) {
+                throw new global::System.ArgumentNullException("Original_Description");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[9].Value = ((string)(Original_Description));
+            }
+            this.Adapter.DeleteCommand.Parameters[10].Value = ((int)(Original_TimesheetID));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(System.DateTime Date, int ProjectNumber, System.TimeSpan StartTime, System.TimeSpan FinishTime, string TaskCode, string PhaseCode, bool Overhead, string Billable, string Description) {
-            this.Adapter.InsertCommand.Parameters[0].Value = ((System.DateTime)(Date));
-            this.Adapter.InsertCommand.Parameters[1].Value = ((int)(ProjectNumber));
-            this.Adapter.InsertCommand.Parameters[2].Value = ((System.TimeSpan)(StartTime));
-            this.Adapter.InsertCommand.Parameters[3].Value = ((System.TimeSpan)(FinishTime));
+        public virtual int Insert(int ID, System.DateTime Date, int ProjectNumber, System.TimeSpan StartTime, System.TimeSpan FinishTime, string TaskCode, string PhaseCode, bool Overhead, string Billable, string Description, int TimesheetID) {
+            this.Adapter.InsertCommand.Parameters[0].Value = ((int)(ID));
+            this.Adapter.InsertCommand.Parameters[1].Value = ((System.DateTime)(Date));
+            this.Adapter.InsertCommand.Parameters[2].Value = ((int)(ProjectNumber));
+            this.Adapter.InsertCommand.Parameters[3].Value = ((System.TimeSpan)(StartTime));
+            this.Adapter.InsertCommand.Parameters[4].Value = ((System.TimeSpan)(FinishTime));
             if ((TaskCode == null)) {
                 throw new global::System.ArgumentNullException("TaskCode");
             }
             else {
-                this.Adapter.InsertCommand.Parameters[4].Value = ((string)(TaskCode));
+                this.Adapter.InsertCommand.Parameters[5].Value = ((string)(TaskCode));
             }
             if ((PhaseCode == null)) {
                 throw new global::System.ArgumentNullException("PhaseCode");
             }
             else {
-                this.Adapter.InsertCommand.Parameters[5].Value = ((string)(PhaseCode));
+                this.Adapter.InsertCommand.Parameters[6].Value = ((string)(PhaseCode));
             }
-            this.Adapter.InsertCommand.Parameters[6].Value = ((bool)(Overhead));
+            this.Adapter.InsertCommand.Parameters[7].Value = ((bool)(Overhead));
             if ((Billable == null)) {
                 throw new global::System.ArgumentNullException("Billable");
             }
             else {
-                this.Adapter.InsertCommand.Parameters[7].Value = ((string)(Billable));
+                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(Billable));
             }
             if ((Description == null)) {
                 throw new global::System.ArgumentNullException("Description");
             }
             else {
-                this.Adapter.InsertCommand.Parameters[8].Value = ((string)(Description));
+                this.Adapter.InsertCommand.Parameters[9].Value = ((string)(Description));
             }
+            this.Adapter.InsertCommand.Parameters[10].Value = ((int)(TimesheetID));
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -1914,6 +2103,140 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                 }
             }
         }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    int ID, 
+                    System.DateTime Date, 
+                    int ProjectNumber, 
+                    System.TimeSpan StartTime, 
+                    System.TimeSpan FinishTime, 
+                    string TaskCode, 
+                    string PhaseCode, 
+                    bool Overhead, 
+                    string Billable, 
+                    string Description, 
+                    int TimesheetID, 
+                    int Original_ID, 
+                    System.DateTime Original_Date, 
+                    int Original_ProjectNumber, 
+                    System.TimeSpan Original_StartTime, 
+                    System.TimeSpan Original_FinishTime, 
+                    string Original_TaskCode, 
+                    string Original_PhaseCode, 
+                    bool Original_Overhead, 
+                    string Original_Billable, 
+                    string Original_Description, 
+                    int Original_TimesheetID) {
+            this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(ID));
+            this.Adapter.UpdateCommand.Parameters[1].Value = ((System.DateTime)(Date));
+            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(ProjectNumber));
+            this.Adapter.UpdateCommand.Parameters[3].Value = ((System.TimeSpan)(StartTime));
+            this.Adapter.UpdateCommand.Parameters[4].Value = ((System.TimeSpan)(FinishTime));
+            if ((TaskCode == null)) {
+                throw new global::System.ArgumentNullException("TaskCode");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[5].Value = ((string)(TaskCode));
+            }
+            if ((PhaseCode == null)) {
+                throw new global::System.ArgumentNullException("PhaseCode");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[6].Value = ((string)(PhaseCode));
+            }
+            this.Adapter.UpdateCommand.Parameters[7].Value = ((bool)(Overhead));
+            if ((Billable == null)) {
+                throw new global::System.ArgumentNullException("Billable");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[8].Value = ((string)(Billable));
+            }
+            if ((Description == null)) {
+                throw new global::System.ArgumentNullException("Description");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[9].Value = ((string)(Description));
+            }
+            this.Adapter.UpdateCommand.Parameters[10].Value = ((int)(TimesheetID));
+            this.Adapter.UpdateCommand.Parameters[11].Value = ((int)(Original_ID));
+            this.Adapter.UpdateCommand.Parameters[12].Value = ((System.DateTime)(Original_Date));
+            this.Adapter.UpdateCommand.Parameters[13].Value = ((int)(Original_ProjectNumber));
+            this.Adapter.UpdateCommand.Parameters[14].Value = ((System.TimeSpan)(Original_StartTime));
+            this.Adapter.UpdateCommand.Parameters[15].Value = ((System.TimeSpan)(Original_FinishTime));
+            if ((Original_TaskCode == null)) {
+                throw new global::System.ArgumentNullException("Original_TaskCode");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[16].Value = ((string)(Original_TaskCode));
+            }
+            if ((Original_PhaseCode == null)) {
+                throw new global::System.ArgumentNullException("Original_PhaseCode");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[17].Value = ((string)(Original_PhaseCode));
+            }
+            this.Adapter.UpdateCommand.Parameters[18].Value = ((bool)(Original_Overhead));
+            if ((Original_Billable == null)) {
+                throw new global::System.ArgumentNullException("Original_Billable");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[19].Value = ((string)(Original_Billable));
+            }
+            if ((Original_Description == null)) {
+                throw new global::System.ArgumentNullException("Original_Description");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[20].Value = ((string)(Original_Description));
+            }
+            this.Adapter.UpdateCommand.Parameters[21].Value = ((int)(Original_TimesheetID));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(
+                    System.DateTime Date, 
+                    int ProjectNumber, 
+                    System.TimeSpan StartTime, 
+                    System.TimeSpan FinishTime, 
+                    string TaskCode, 
+                    string PhaseCode, 
+                    bool Overhead, 
+                    string Billable, 
+                    string Description, 
+                    int TimesheetID, 
+                    int Original_ID, 
+                    System.DateTime Original_Date, 
+                    int Original_ProjectNumber, 
+                    System.TimeSpan Original_StartTime, 
+                    System.TimeSpan Original_FinishTime, 
+                    string Original_TaskCode, 
+                    string Original_PhaseCode, 
+                    bool Original_Overhead, 
+                    string Original_Billable, 
+                    string Original_Description, 
+                    int Original_TimesheetID) {
+            return this.Update(Original_ID, Date, ProjectNumber, StartTime, FinishTime, TaskCode, PhaseCode, Overhead, Billable, Description, TimesheetID, Original_ID, Original_Date, Original_ProjectNumber, Original_StartTime, Original_FinishTime, Original_TaskCode, Original_PhaseCode, Original_Overhead, Original_Billable, Original_Description, Original_TimesheetID);
+        }
     }
     
     /// <summary>
@@ -1925,7 +2248,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
     [global::System.ComponentModel.DesignerAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterDesigner, Microsoft.VSDesigner" +
         ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")]
     [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-    public partial class ProjectTableAdapter : global::System.ComponentModel.Component {
+    public partial class StaffTableAdapter : global::System.ComponentModel.Component {
         
         private global::System.Data.SqlClient.SqlDataAdapter _adapter;
         
@@ -1939,7 +2262,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public ProjectTableAdapter() {
+        public StaffTableAdapter() {
             this.ClearBeforeFill = true;
         }
         
@@ -2036,24 +2359,41 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             this._adapter = new global::System.Data.SqlClient.SqlDataAdapter();
             global::System.Data.Common.DataTableMapping tableMapping = new global::System.Data.Common.DataTableMapping();
             tableMapping.SourceTable = "Table";
-            tableMapping.DataSetTable = "Project";
-            tableMapping.ColumnMappings.Add("Number", "Number");
-            tableMapping.ColumnMappings.Add("TimesheetID", "TimesheetID");
+            tableMapping.DataSetTable = "Staff";
+            tableMapping.ColumnMappings.Add("StaffNumber", "StaffNumber");
+            tableMapping.ColumnMappings.Add("StaffID", "StaffID");
             this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [dbo].[Staff] WHERE (([StaffNumber] = @Original_StaffNumber) AND ([St" +
+                "affID] = @Original_StaffID))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffID", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[Project] ([Number], [TimesheetID]) VALUES (@Number, @Timesheet" +
-                "ID)";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[Staff] ([StaffNumber], [StaffID]) VALUES (@StaffNumber, @Staff" +
+                "ID);\r\nSELECT StaffNumber, StaffID FROM Staff WHERE (StaffNumber = @StaffNumber)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Number", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Number", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@TimesheetID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "TimesheetID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffID", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = "UPDATE [dbo].[Staff] SET [StaffNumber] = @StaffNumber, [StaffID] = @StaffID WHERE" +
+                " (([StaffNumber] = @Original_StaffNumber) AND ([StaffID] = @Original_StaffID));\r" +
+                "\nSELECT StaffNumber, StaffID FROM Staff WHERE (StaffNumber = @StaffNumber)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffID", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffID", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.ConnectionString;
+            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.TimesheetDatabaseConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2062,7 +2402,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT Number, TimesheetID FROM dbo.Project";
+            this._commandCollection[0].CommandText = "SELECT StaffNumber, StaffID FROM dbo.Staff";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -2070,7 +2410,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TimesheetProgramDatabase.ProjectDataTable dataTable) {
+        public virtual int Fill(TimesheetDatabaseDataSet.StaffDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -2083,9 +2423,9 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TimesheetProgramDatabase.ProjectDataTable GetData() {
+        public virtual TimesheetDatabaseDataSet.StaffDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            TimesheetProgramDatabase.ProjectDataTable dataTable = new TimesheetProgramDatabase.ProjectDataTable();
+            TimesheetDatabaseDataSet.StaffDataTable dataTable = new TimesheetDatabaseDataSet.StaffDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
@@ -2093,15 +2433,15 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase.ProjectDataTable dataTable) {
+        public virtual int Update(TimesheetDatabaseDataSet.StaffDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase dataSet) {
-            return this.Adapter.Update(dataSet, "Project");
+        public virtual int Update(TimesheetDatabaseDataSet dataSet) {
+            return this.Adapter.Update(dataSet, "Staff");
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2122,10 +2462,43 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(int Original_StaffNumber, string Original_StaffID) {
+            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_StaffNumber));
+            if ((Original_StaffID == null)) {
+                throw new global::System.ArgumentNullException("Original_StaffID");
+            }
+            else {
+                this.Adapter.DeleteCommand.Parameters[1].Value = ((string)(Original_StaffID));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(int Number, int TimesheetID) {
-            this.Adapter.InsertCommand.Parameters[0].Value = ((int)(Number));
-            this.Adapter.InsertCommand.Parameters[1].Value = ((int)(TimesheetID));
+        public virtual int Insert(int StaffNumber, string StaffID) {
+            this.Adapter.InsertCommand.Parameters[0].Value = ((int)(StaffNumber));
+            if ((StaffID == null)) {
+                throw new global::System.ArgumentNullException("StaffID");
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[1].Value = ((string)(StaffID));
+            }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
                         != global::System.Data.ConnectionState.Open)) {
@@ -2140,6 +2513,49 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                     this.Adapter.InsertCommand.Connection.Close();
                 }
             }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(int StaffNumber, string StaffID, int Original_StaffNumber, string Original_StaffID) {
+            this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(StaffNumber));
+            if ((StaffID == null)) {
+                throw new global::System.ArgumentNullException("StaffID");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[1].Value = ((string)(StaffID));
+            }
+            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(Original_StaffNumber));
+            if ((Original_StaffID == null)) {
+                throw new global::System.ArgumentNullException("Original_StaffID");
+            }
+            else {
+                this.Adapter.UpdateCommand.Parameters[3].Value = ((string)(Original_StaffID));
+            }
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(string StaffID, int Original_StaffNumber, string Original_StaffID) {
+            return this.Update(Original_StaffNumber, StaffID, Original_StaffNumber, Original_StaffID);
         }
     }
     
@@ -2265,27 +2681,50 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             tableMapping.SourceTable = "Table";
             tableMapping.DataSetTable = "Timesheet";
             tableMapping.ColumnMappings.Add("ID", "ID");
-            tableMapping.ColumnMappings.Add("StaffID", "StaffID");
             tableMapping.ColumnMappings.Add("StaffNumber", "StaffNumber");
             tableMapping.ColumnMappings.Add("Month", "Month");
             tableMapping.ColumnMappings.Add("Year", "Year");
             this._adapter.TableMappings.Add(tableMapping);
+            this._adapter.DeleteCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.DeleteCommand.Connection = this.Connection;
+            this._adapter.DeleteCommand.CommandText = "DELETE FROM [dbo].[Timesheet] WHERE (([ID] = @Original_ID) AND ([StaffNumber] = @" +
+                "Original_StaffNumber) AND ([Month] = @Original_Month) AND ([Year] = @Original_Ye" +
+                "ar))";
+            this._adapter.DeleteCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Month", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Month", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.DeleteCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Year", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Year", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[Timesheet] ([StaffID], [StaffNumber], [Month], [Year]) VALUES " +
-                "(@StaffID, @StaffNumber, @Month, @Year)";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[Timesheet] ([ID], [StaffNumber], [Month], [Year]) VALUES (@ID," +
+                " @StaffNumber, @Month, @Year);\r\nSELECT ID, StaffNumber, Month, Year FROM Timeshe" +
+                "et WHERE (Month = @Month) AND (StaffNumber = @StaffNumber) AND (Year = @Year)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
-            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffID", global::System.Data.SqlDbType.NVarChar, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Month", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Month", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Year", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Year", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand = new global::System.Data.SqlClient.SqlCommand();
+            this._adapter.UpdateCommand.Connection = this.Connection;
+            this._adapter.UpdateCommand.CommandText = @"UPDATE [dbo].[Timesheet] SET [ID] = @ID, [StaffNumber] = @StaffNumber, [Month] = @Month, [Year] = @Year WHERE (([ID] = @Original_ID) AND ([StaffNumber] = @Original_StaffNumber) AND ([Month] = @Original_Month) AND ([Year] = @Original_Year));
+SELECT ID, StaffNumber, Month, Year FROM Timesheet WHERE (Month = @Month) AND (StaffNumber = @StaffNumber) AND (Year = @Year)";
+            this._adapter.UpdateCommand.CommandType = global::System.Data.CommandType.Text;
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Month", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Month", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Year", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Year", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_ID", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "ID", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_StaffNumber", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "StaffNumber", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Month", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Month", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
+            this._adapter.UpdateCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@Original_Year", global::System.Data.SqlDbType.Int, 0, global::System.Data.ParameterDirection.Input, 0, 0, "Year", global::System.Data.DataRowVersion.Original, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         private void InitConnection() {
             this._connection = new global::System.Data.SqlClient.SqlConnection();
-            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.ConnectionString;
+            this._connection.ConnectionString = global::TimesheetProgramLogic.Properties.Settings.Default.TimesheetDatabaseConnectionString;
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2294,7 +2733,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT ID, StaffID, StaffNumber, Month, Year FROM dbo.Timesheet";
+            this._commandCollection[0].CommandText = "SELECT ID, StaffNumber, Month, Year FROM dbo.Timesheet";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -2302,7 +2741,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Fill, true)]
-        public virtual int Fill(TimesheetProgramDatabase.TimesheetDataTable dataTable) {
+        public virtual int Fill(TimesheetDatabaseDataSet.TimesheetDataTable dataTable) {
             this.Adapter.SelectCommand = this.CommandCollection[0];
             if ((this.ClearBeforeFill == true)) {
                 dataTable.Clear();
@@ -2315,9 +2754,9 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, true)]
-        public virtual TimesheetProgramDatabase.TimesheetDataTable GetData() {
+        public virtual TimesheetDatabaseDataSet.TimesheetDataTable GetData() {
             this.Adapter.SelectCommand = this.CommandCollection[0];
-            TimesheetProgramDatabase.TimesheetDataTable dataTable = new TimesheetProgramDatabase.TimesheetDataTable();
+            TimesheetDatabaseDataSet.TimesheetDataTable dataTable = new TimesheetDatabaseDataSet.TimesheetDataTable();
             this.Adapter.Fill(dataTable);
             return dataTable;
         }
@@ -2325,14 +2764,14 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase.TimesheetDataTable dataTable) {
+        public virtual int Update(TimesheetDatabaseDataSet.TimesheetDataTable dataTable) {
             return this.Adapter.Update(dataTable);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
-        public virtual int Update(TimesheetProgramDatabase dataSet) {
+        public virtual int Update(TimesheetDatabaseDataSet dataSet) {
             return this.Adapter.Update(dataSet, "Timesheet");
         }
         
@@ -2354,14 +2793,34 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Delete, true)]
+        public virtual int Delete(int Original_ID, int Original_StaffNumber, int Original_Month, int Original_Year) {
+            this.Adapter.DeleteCommand.Parameters[0].Value = ((int)(Original_ID));
+            this.Adapter.DeleteCommand.Parameters[1].Value = ((int)(Original_StaffNumber));
+            this.Adapter.DeleteCommand.Parameters[2].Value = ((int)(Original_Month));
+            this.Adapter.DeleteCommand.Parameters[3].Value = ((int)(Original_Year));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.DeleteCommand.Connection.State;
+            if (((this.Adapter.DeleteCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.DeleteCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.DeleteCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.DeleteCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(string StaffID, int StaffNumber, int Month, int Year) {
-            if ((StaffID == null)) {
-                throw new global::System.ArgumentNullException("StaffID");
-            }
-            else {
-                this.Adapter.InsertCommand.Parameters[0].Value = ((string)(StaffID));
-            }
+        public virtual int Insert(int ID, int StaffNumber, int Month, int Year) {
+            this.Adapter.InsertCommand.Parameters[0].Value = ((int)(ID));
             this.Adapter.InsertCommand.Parameters[1].Value = ((int)(StaffNumber));
             this.Adapter.InsertCommand.Parameters[2].Value = ((int)(Month));
             this.Adapter.InsertCommand.Parameters[3].Value = ((int)(Year));
@@ -2380,6 +2839,43 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                 }
             }
         }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(int ID, int StaffNumber, int Month, int Year, int Original_ID, int Original_StaffNumber, int Original_Month, int Original_Year) {
+            this.Adapter.UpdateCommand.Parameters[0].Value = ((int)(ID));
+            this.Adapter.UpdateCommand.Parameters[1].Value = ((int)(StaffNumber));
+            this.Adapter.UpdateCommand.Parameters[2].Value = ((int)(Month));
+            this.Adapter.UpdateCommand.Parameters[3].Value = ((int)(Year));
+            this.Adapter.UpdateCommand.Parameters[4].Value = ((int)(Original_ID));
+            this.Adapter.UpdateCommand.Parameters[5].Value = ((int)(Original_StaffNumber));
+            this.Adapter.UpdateCommand.Parameters[6].Value = ((int)(Original_Month));
+            this.Adapter.UpdateCommand.Parameters[7].Value = ((int)(Original_Year));
+            global::System.Data.ConnectionState previousConnectionState = this.Adapter.UpdateCommand.Connection.State;
+            if (((this.Adapter.UpdateCommand.Connection.State & global::System.Data.ConnectionState.Open) 
+                        != global::System.Data.ConnectionState.Open)) {
+                this.Adapter.UpdateCommand.Connection.Open();
+            }
+            try {
+                int returnValue = this.Adapter.UpdateCommand.ExecuteNonQuery();
+                return returnValue;
+            }
+            finally {
+                if ((previousConnectionState == global::System.Data.ConnectionState.Closed)) {
+                    this.Adapter.UpdateCommand.Connection.Close();
+                }
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
+        [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
+        [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
+        public virtual int Update(int ID, int Original_ID, int Original_StaffNumber, int Original_Month, int Original_Year) {
+            return this.Update(ID, Original_StaffNumber, Original_Month, Original_Year, Original_ID, Original_StaffNumber, Original_Month, Original_Year);
+        }
     }
     
     /// <summary>
@@ -2396,7 +2892,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         
         private EntryTableAdapter _entryTableAdapter;
         
-        private ProjectTableAdapter _projectTableAdapter;
+        private StaffTableAdapter _staffTableAdapter;
         
         private TimesheetTableAdapter _timesheetTableAdapter;
         
@@ -2434,12 +2930,12 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         [global::System.ComponentModel.EditorAttribute("Microsoft.VSDesigner.DataSource.Design.TableAdapterManagerPropertyEditor, Microso" +
             "ft.VSDesigner, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3" +
             "a", "System.Drawing.Design.UITypeEditor")]
-        public ProjectTableAdapter ProjectTableAdapter {
+        public StaffTableAdapter StaffTableAdapter {
             get {
-                return this._projectTableAdapter;
+                return this._staffTableAdapter;
             }
             set {
-                this._projectTableAdapter = value;
+                this._staffTableAdapter = value;
             }
         }
         
@@ -2480,9 +2976,9 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                             && (this._entryTableAdapter.Connection != null))) {
                     return this._entryTableAdapter.Connection;
                 }
-                if (((this._projectTableAdapter != null) 
-                            && (this._projectTableAdapter.Connection != null))) {
-                    return this._projectTableAdapter.Connection;
+                if (((this._staffTableAdapter != null) 
+                            && (this._staffTableAdapter.Connection != null))) {
+                    return this._staffTableAdapter.Connection;
                 }
                 if (((this._timesheetTableAdapter != null) 
                             && (this._timesheetTableAdapter.Connection != null))) {
@@ -2504,7 +3000,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                 if ((this._entryTableAdapter != null)) {
                     count = (count + 1);
                 }
-                if ((this._projectTableAdapter != null)) {
+                if ((this._staffTableAdapter != null)) {
                     count = (count + 1);
                 }
                 if ((this._timesheetTableAdapter != null)) {
@@ -2519,23 +3015,23 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private int UpdateUpdatedRows(TimesheetProgramDatabase dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateUpdatedRows(TimesheetDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
+            if ((this._staffTableAdapter != null)) {
+                global::System.Data.DataRow[] updatedRows = dataSet.Staff.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
+                updatedRows = this.GetRealUpdatedRows(updatedRows, allAddedRows);
+                if (((updatedRows != null) 
+                            && (0 < updatedRows.Length))) {
+                    result = (result + this._staffTableAdapter.Update(updatedRows));
+                    allChangedRows.AddRange(updatedRows);
+                }
+            }
             if ((this._timesheetTableAdapter != null)) {
                 global::System.Data.DataRow[] updatedRows = dataSet.Timesheet.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
                 updatedRows = this.GetRealUpdatedRows(updatedRows, allAddedRows);
                 if (((updatedRows != null) 
                             && (0 < updatedRows.Length))) {
                     result = (result + this._timesheetTableAdapter.Update(updatedRows));
-                    allChangedRows.AddRange(updatedRows);
-                }
-            }
-            if ((this._projectTableAdapter != null)) {
-                global::System.Data.DataRow[] updatedRows = dataSet.Project.Select(null, null, global::System.Data.DataViewRowState.ModifiedCurrent);
-                updatedRows = this.GetRealUpdatedRows(updatedRows, allAddedRows);
-                if (((updatedRows != null) 
-                            && (0 < updatedRows.Length))) {
-                    result = (result + this._projectTableAdapter.Update(updatedRows));
                     allChangedRows.AddRange(updatedRows);
                 }
             }
@@ -2556,21 +3052,21 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private int UpdateInsertedRows(TimesheetProgramDatabase dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
+        private int UpdateInsertedRows(TimesheetDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allAddedRows) {
             int result = 0;
+            if ((this._staffTableAdapter != null)) {
+                global::System.Data.DataRow[] addedRows = dataSet.Staff.Select(null, null, global::System.Data.DataViewRowState.Added);
+                if (((addedRows != null) 
+                            && (0 < addedRows.Length))) {
+                    result = (result + this._staffTableAdapter.Update(addedRows));
+                    allAddedRows.AddRange(addedRows);
+                }
+            }
             if ((this._timesheetTableAdapter != null)) {
                 global::System.Data.DataRow[] addedRows = dataSet.Timesheet.Select(null, null, global::System.Data.DataViewRowState.Added);
                 if (((addedRows != null) 
                             && (0 < addedRows.Length))) {
                     result = (result + this._timesheetTableAdapter.Update(addedRows));
-                    allAddedRows.AddRange(addedRows);
-                }
-            }
-            if ((this._projectTableAdapter != null)) {
-                global::System.Data.DataRow[] addedRows = dataSet.Project.Select(null, null, global::System.Data.DataViewRowState.Added);
-                if (((addedRows != null) 
-                            && (0 < addedRows.Length))) {
-                    result = (result + this._projectTableAdapter.Update(addedRows));
                     allAddedRows.AddRange(addedRows);
                 }
             }
@@ -2590,7 +3086,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        private int UpdateDeletedRows(TimesheetProgramDatabase dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
+        private int UpdateDeletedRows(TimesheetDatabaseDataSet dataSet, global::System.Collections.Generic.List<global::System.Data.DataRow> allChangedRows) {
             int result = 0;
             if ((this._entryTableAdapter != null)) {
                 global::System.Data.DataRow[] deletedRows = dataSet.Entry.Select(null, null, global::System.Data.DataViewRowState.Deleted);
@@ -2600,19 +3096,19 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                     allChangedRows.AddRange(deletedRows);
                 }
             }
-            if ((this._projectTableAdapter != null)) {
-                global::System.Data.DataRow[] deletedRows = dataSet.Project.Select(null, null, global::System.Data.DataViewRowState.Deleted);
-                if (((deletedRows != null) 
-                            && (0 < deletedRows.Length))) {
-                    result = (result + this._projectTableAdapter.Update(deletedRows));
-                    allChangedRows.AddRange(deletedRows);
-                }
-            }
             if ((this._timesheetTableAdapter != null)) {
                 global::System.Data.DataRow[] deletedRows = dataSet.Timesheet.Select(null, null, global::System.Data.DataViewRowState.Deleted);
                 if (((deletedRows != null) 
                             && (0 < deletedRows.Length))) {
                     result = (result + this._timesheetTableAdapter.Update(deletedRows));
+                    allChangedRows.AddRange(deletedRows);
+                }
+            }
+            if ((this._staffTableAdapter != null)) {
+                global::System.Data.DataRow[] deletedRows = dataSet.Staff.Select(null, null, global::System.Data.DataViewRowState.Deleted);
+                if (((deletedRows != null) 
+                            && (0 < deletedRows.Length))) {
+                    result = (result + this._staffTableAdapter.Update(deletedRows));
                     allChangedRows.AddRange(deletedRows);
                 }
             }
@@ -2648,7 +3144,7 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
         ///</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-        public virtual int UpdateAll(TimesheetProgramDatabase dataSet) {
+        public virtual int UpdateAll(TimesheetDatabaseDataSet dataSet) {
             if ((dataSet == null)) {
                 throw new global::System.ArgumentNullException("dataSet");
             }
@@ -2660,8 +3156,8 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                 throw new global::System.ArgumentException("All TableAdapters managed by a TableAdapterManager must use the same connection s" +
                         "tring.");
             }
-            if (((this._projectTableAdapter != null) 
-                        && (this.MatchTableAdapterConnection(this._projectTableAdapter.Connection) == false))) {
+            if (((this._staffTableAdapter != null) 
+                        && (this.MatchTableAdapterConnection(this._staffTableAdapter.Connection) == false))) {
                 throw new global::System.ArgumentException("All TableAdapters managed by a TableAdapterManager must use the same connection s" +
                         "tring.");
             }
@@ -2711,13 +3207,13 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                         adaptersWithAcceptChangesDuringUpdate.Add(this._entryTableAdapter.Adapter);
                     }
                 }
-                if ((this._projectTableAdapter != null)) {
-                    revertConnections.Add(this._projectTableAdapter, this._projectTableAdapter.Connection);
-                    this._projectTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(workConnection));
-                    this._projectTableAdapter.Transaction = ((global::System.Data.SqlClient.SqlTransaction)(workTransaction));
-                    if (this._projectTableAdapter.Adapter.AcceptChangesDuringUpdate) {
-                        this._projectTableAdapter.Adapter.AcceptChangesDuringUpdate = false;
-                        adaptersWithAcceptChangesDuringUpdate.Add(this._projectTableAdapter.Adapter);
+                if ((this._staffTableAdapter != null)) {
+                    revertConnections.Add(this._staffTableAdapter, this._staffTableAdapter.Connection);
+                    this._staffTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(workConnection));
+                    this._staffTableAdapter.Transaction = ((global::System.Data.SqlClient.SqlTransaction)(workTransaction));
+                    if (this._staffTableAdapter.Adapter.AcceptChangesDuringUpdate) {
+                        this._staffTableAdapter.Adapter.AcceptChangesDuringUpdate = false;
+                        adaptersWithAcceptChangesDuringUpdate.Add(this._staffTableAdapter.Adapter);
                     }
                 }
                 if ((this._timesheetTableAdapter != null)) {
@@ -2791,9 +3287,9 @@ namespace TimesheetProgramLogic.TimesheetProgramDatabaseTableAdapters {
                     this._entryTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._entryTableAdapter]));
                     this._entryTableAdapter.Transaction = null;
                 }
-                if ((this._projectTableAdapter != null)) {
-                    this._projectTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._projectTableAdapter]));
-                    this._projectTableAdapter.Transaction = null;
+                if ((this._staffTableAdapter != null)) {
+                    this._staffTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._staffTableAdapter]));
+                    this._staffTableAdapter.Transaction = null;
                 }
                 if ((this._timesheetTableAdapter != null)) {
                     this._timesheetTableAdapter.Connection = ((global::System.Data.SqlClient.SqlConnection)(revertConnections[this._timesheetTableAdapter]));

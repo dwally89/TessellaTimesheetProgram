@@ -27,8 +27,7 @@
         public MainWindow()
         {            
             InitializeComponent();
-            controller = new Controller();            
-            Title = Title + " - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID;
+            controller = new Controller();                        
             UpdateGUI();
         }
 
@@ -150,6 +149,13 @@
                 {
                     MessageBox.Show("Unable to open file", "Invalid File", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                catch (SqlException ex)
+                {
+                    if (MessageBox.Show(ex.Message + "\nUnable to load file. Do you want to attempt opening it under a temporary staff ID?", "Error", MessageBoxButton.YesNoCancel, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+                    {
+                        controller.OpenTimesheetUnderTemporaryStaffID(-1, openFile.FileName);                        
+                    }
+                }
 
                 UpdateGUI();
             }                       
@@ -162,6 +168,7 @@
         {
             UpdateDatagrid();
             EnableControls();
+            Title = "Timesheet Program - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID + " - " + controller.Timesheet.Month.ToString("00") + "/" + controller.Timesheet.Year.ToString();
         }
 
         /// <summary>
@@ -195,7 +202,8 @@
             if (settingsWindow.ShowDialog() == true)
             {
                 controller.Settings.UpdateAndWrite(settingsWindow.NewSettings);
-                Title = "Timesheet Program - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID;
+                controller.Timesheet.UpdateStaffDetails(controller.Settings.StaffNumber, controller.Settings.StaffID);
+                UpdateGUI();                
             }
         }
 
@@ -359,7 +367,7 @@
                 }   
             }
 
-            controller.DeleteAllUnsavedTimesheets();            
+            controller.DeleteAllUnsavedAndTemporaryTimesheets();            
         }
 
         /// <summary>
@@ -464,8 +472,17 @@
             if (load.ShowDialog() == true)
             {
                 controller.Timesheet.ID = load.TimesheetID;
-                controller.Timesheet.Month = controller.Timesheet.Entries[0].Date.Month;
-                controller.Timesheet.Year = controller.Timesheet.Entries[0].Date.Year;
+                if (controller.Timesheet.Entries.Count != 0)
+                {
+                    controller.Timesheet.Month = controller.Timesheet.Entries[0].Date.Month;
+                    controller.Timesheet.Year = controller.Timesheet.Entries[0].Date.Year;
+                }
+                else
+                {
+                    controller.Timesheet.Month = 0;
+                    controller.Timesheet.Year = 0;
+                }
+
                 UpdateGUI();
             }
         }

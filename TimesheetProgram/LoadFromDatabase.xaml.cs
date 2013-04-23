@@ -30,7 +30,7 @@
             timesheetData = Timesheet.GetAllTimesheetData();
             foreach (TimesheetData data in timesheetData)
             {
-                cboTimesheetID.Items.Add(data.StaffID + ": " + data.Month.ToString() + "/" + data.Year.ToString());
+                cboTimesheetID.Items.Add(data.StaffNumber.ToString() + ": " + data.Month.ToString() + "/" + data.Year.ToString());
             }
 
             if (timesheetData.Count != 0)

@@ -26,10 +26,11 @@ namespace TimesheetProgramLogic.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLEXPRESS;Integrated Security=True")]
-        public string ConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=.\\SQLEXPRESS;Initial Catalog=TimesheetDatabase;Integrated Security=Tr" +
+            "ue;Pooling=False")]
+        public string TimesheetDatabaseConnectionString {
             get {
-                return ((string)(this["ConnectionString"]));
+                return ((string)(this["TimesheetDatabaseConnectionString"]));
             }
         }
     }

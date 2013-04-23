@@ -22,18 +22,15 @@ namespace TimesheetProgramLogic
         public const string TIMESHEET_EMAIL_ADDRESS = "timesheet@tessella.com";
 
         /// <summary>
-        /// The _settings
-        /// </summary>
-        private Settings _settings;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Timesheet" /> class.
         /// </summary>
-        /// <param name="settings">The settings.</param>
-        public Timesheet(Settings settings)
+        /// <param name="staffNumber">The staff number.</param>
+        /// <param name="staffID">The staff ID.</param>
+        public Timesheet(int staffNumber, string staffID)
         {
-            UnsavedChanges = false;            
-            _settings = settings;            
+            UnsavedChanges = false;
+            this.StaffNumber = staffNumber;
+            this.StaffID = staffID;
         }
 
         /// <summary>
@@ -100,6 +97,22 @@ namespace TimesheetProgramLogic
         public int ID { get; set; }
 
         /// <summary>
+        /// Gets the staff number.
+        /// </summary>
+        /// <value>
+        /// The staff number.
+        /// </value>
+        public int StaffNumber { get; private set; }
+
+        /// <summary>
+        /// Gets the staff ID.
+        /// </summary>
+        /// <value>
+        /// The staff ID.
+        /// </value>
+        public string StaffID { get; private set; }
+
+        /// <summary>
         /// Gets the entries.
         /// </summary>
         /// <value>
@@ -129,7 +142,7 @@ namespace TimesheetProgramLogic
                     {
                         while (reader.Read())
                         {
-                            timesheetData.Add(new TimesheetData(reader.GetInt32(0), reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4)));
+                            timesheetData.Add(new TimesheetData(reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3)));
                         }
                     }
 
@@ -211,7 +224,15 @@ namespace TimesheetProgramLogic
                             isFirstEntry = false;
                         }
 
-                        InsertEntry(entry, this.ID);
+                        try
+                        {
+                            InsertEntry(entry, this.ID);
+                        }
+                        catch (SqlException)
+                        {
+                            PersistInsertEntry(entry);
+                        }
+
                         entryID++;
                     }
                 }
@@ -349,13 +370,17 @@ namespace TimesheetProgramLogic
         public void New()
         {                   
             UnsavedChanges = false;
+            if (!Database.ContainsStaffNumber(StaffNumber))
+            {
+                Database.AddStaffMember(StaffNumber, StaffID);
+            }
+
             using (SqlConnection con = Database.GetConnection())
             {
                 con.Open();
-                using (SqlCommand newTimesheet = new SqlCommand("INSERT INTO Timesheet VALUES(@StaffID, @StaffNumber, @Month, @Year)", con))
-                {
-                    newTimesheet.Parameters.Add(new SqlParameter("StaffID", _settings.StaffID));
-                    newTimesheet.Parameters.Add(new SqlParameter("StaffNumber", _settings.StaffNumber));
+                using (SqlCommand newTimesheet = new SqlCommand("INSERT INTO Timesheet VALUES(@StaffNumber, @Month, @Year)", con))
+                {                    
+                    newTimesheet.Parameters.Add(new SqlParameter("StaffNumber", StaffNumber));
                     newTimesheet.Parameters.Add(new SqlParameter("Month", Month));
                     newTimesheet.Parameters.Add(new SqlParameter("Year", Year));                    
                     newTimesheet.ExecuteNonQuery();
@@ -363,6 +388,17 @@ namespace TimesheetProgramLogic
             }
 
             ID = GetNextUnusedID("Timesheet") - 1;
+        }
+
+        /// <summary>
+        /// Updates the staff details.
+        /// </summary>
+        /// <param name="staffNumber">The staff number.</param>
+        /// <param name="staffID">The staff ID.</param>
+        public void UpdateStaffDetails(int staffNumber, string staffID)
+        {
+            this.StaffID = staffID;
+            this.StaffNumber = staffNumber;
         }
 
         /// <summary>
@@ -675,6 +711,49 @@ namespace TimesheetProgramLogic
                         return projectNumbers;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the length of entry with start time.
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="date">The date.</param>
+        /// <returns>
+        /// The length of the entry with the given start time
+        /// </returns>
+        private TimeSpan GetLengthOfEntryWithStartTime(TimeSpan startTime, DateTime date)
+        {
+            using (SqlConnection con = Database.GetConnection())
+            {
+                con.Open();
+                using (SqlCommand getFinishTimeOfEntryWithStartTime = new SqlCommand("SELECT FinishTime FROM Entry WHERE StartTime=@StartTime AND Date=@Date AND TimesheetID=@TimesheetID", con))
+                {
+                    getFinishTimeOfEntryWithStartTime.Parameters.Add(new SqlParameter("StartTime", startTime));
+                    getFinishTimeOfEntryWithStartTime.Parameters.Add(new SqlParameter("Date", date));
+                    getFinishTimeOfEntryWithStartTime.Parameters.Add(new SqlParameter("TimesheetID", ID));
+                    TimeSpan finishTime = (TimeSpan)getFinishTimeOfEntryWithStartTime.ExecuteScalar();
+                    return finishTime - startTime;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Persists the insert entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        private void PersistInsertEntry(Entry entry)
+        {
+            TimeSpan conflictingEntryLength = GetLengthOfEntryWithStartTime(entry.StartTime, entry.Date);
+            entry.StartTime += conflictingEntryLength;
+            entry.FinishTime += conflictingEntryLength;
+            try
+            {
+                InsertEntry(entry, this.ID);
+            }
+            catch (SqlException)
+            {
+                PersistInsertEntry(entry);
             }
         }
     }

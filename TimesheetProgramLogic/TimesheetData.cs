@@ -14,14 +14,12 @@
         /// Initializes a new instance of the <see cref="TimesheetData" /> class.
         /// </summary>
         /// <param name="id">The id.</param>
-        /// <param name="staffID">The staff ID.</param>
         /// <param name="staffNumber">The staff number.</param>
         /// <param name="month">The month.</param>
         /// <param name="year">The year.</param>
-        public TimesheetData(int id, string staffID, int staffNumber, int month, int year)
+        public TimesheetData(int id, int staffNumber, int month, int year)
         {
-            this.ID = id;
-            this.StaffID = staffID;
+            this.ID = id;            
             this.StaffNumber = staffNumber;
             this.Month = month;
             this.Year = year;
@@ -34,14 +32,6 @@
         /// The ID.
         /// </value>
         public int ID { get; private set; }
-
-        /// <summary>
-        /// Gets the staff ID.
-        /// </summary>
-        /// <value>
-        /// The staff ID.
-        /// </value>
-        public string StaffID { get; private set; }
 
         /// <summary>
         /// Gets the staff number.
