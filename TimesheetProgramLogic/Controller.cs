@@ -27,16 +27,7 @@ namespace TimesheetProgramLogic
         {            
             Settings = new Settings();
             Settings.Read();
-            Timesheet = new Timesheet(Settings.StaffNumber, Settings.StaffID);            
-            try
-            {
-                Timesheet.New();
-            }
-            catch (SqlException)
-            {                 
-                DeleteAllUnsavedAndTemporaryTimesheets();
-                Timesheet.New();
-            }
+            Timesheet = new Timesheet(Settings.StaffNumber, Settings.StaffID);                        
         }
 
         /// <summary>
@@ -172,101 +163,6 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Clears the database.
-        /// </summary>
-        public void ClearDatabase()
-        {
-            Database.Clear();
-        }
-
-        /// <summary>
-        /// Deletes all unsaved timesheets.
-        /// </summary>
-        public void DeleteAllUnsavedAndTemporaryTimesheets()
-        {
-            using (SqlConnection con = Database.GetConnection())
-            {
-                con.Open();
-                using (SqlCommand findUnsavedTimesheetID = new SqlCommand("SELECT ID FROM Timesheet WHERE Month=0 AND Year=0", con))
-                {
-                    DeleteTimesheet((int)findUnsavedTimesheetID.ExecuteScalar());
-                }
-
-                List<int> staffNumbers = new List<int>();                        
-                using (SqlCommand getTemporaryStaffNumbers = new SqlCommand("SELECT StaffNumber FROM Staff WHERE StaffID='TEMP'", con))
-                {
-                    using (SqlDataReader staffNumberReader = getTemporaryStaffNumbers.ExecuteReader())
-                    {                        
-                        while (staffNumberReader.Read())
-                        {
-                            staffNumbers.Add(staffNumberReader.GetInt32(0));
-                        }
-                    }
-                }
-
-                foreach (int staffNumber in staffNumbers)
-                {
-                    List<int> timesheetIDs = new List<int>();
-                    using (SqlCommand getTemporaryTimesheetIDs = new SqlCommand("SELECT ID From Timesheet WHERE StaffNumber=@StaffNumber", con))
-                    {
-                        getTemporaryTimesheetIDs.Parameters.Add(new SqlParameter("StaffNumber", staffNumber));
-                        using (SqlDataReader timesheetIDReader = getTemporaryTimesheetIDs.ExecuteReader())
-                        {                            
-                            while (timesheetIDReader.Read())
-                            {
-                                timesheetIDs.Add(timesheetIDReader.GetInt32(0));
-                            }
-                        }
-                    }
-                    
-                    foreach (int timesheetID in timesheetIDs)
-                    {
-                        using (SqlCommand deleteEntries = new SqlCommand("DELETE FROM Entry WHERE TimesheetID=@TimesheetID", con))
-                        {
-                            deleteEntries.Parameters.Add(new SqlParameter("TimesheetID", timesheetID));
-                            deleteEntries.ExecuteNonQuery();
-                        }
-
-                        using (SqlCommand deleteTimesheet = new SqlCommand("DELETE FROM Timesheet WHERE ID=@TimesheetID", con))
-                        {
-                            deleteTimesheet.Parameters.Add(new SqlParameter("TimesheetID", timesheetID));
-                            deleteTimesheet.ExecuteNonQuery();
-                        }                                        
-
-                        using (SqlCommand deleteStaffMember = new SqlCommand("DELETE FROM Staff WHERE StaffNumber=@StaffNumber", con))
-                        {
-                            deleteStaffMember.Parameters.Add(new SqlParameter("StaffNumber", staffNumber));
-                            deleteStaffMember.ExecuteNonQuery();
-                        }                        
-                    }                    
-                }
-            }           
-        }
-
-        /// <summary>
-        /// Deletes the timesheet.
-        /// </summary>
-        /// <param name="timesheetID">The timesheet ID.</param>
-        public void DeleteTimesheet(int timesheetID)
-        {
-            using (SqlConnection con = Database.GetConnection())
-            {
-                con.Open();
-                using (SqlCommand deleteTimesheet = new SqlCommand("DELETE FROM Entry WHERE TimesheetID=@ID", con))
-                {
-                    deleteTimesheet.Parameters.Add(new SqlParameter("ID", timesheetID));
-                    deleteTimesheet.ExecuteNonQuery();
-                }
-
-                using (SqlCommand deleteTimesheet = new SqlCommand("DELETE FROM Timesheet WHERE ID=@ID", con))
-                {
-                    deleteTimesheet.Parameters.Add(new SqlParameter("ID", timesheetID));
-                    deleteTimesheet.ExecuteNonQuery();
-                }
-            }            
-        }
-
-        /// <summary>
         /// Opens the timesheet under temporary staff ID.
         /// </summary>
         /// <param name="staffNumber">The staff number.</param>
@@ -284,6 +180,19 @@ namespace TimesheetProgramLogic
             {
                 OpenTimesheetUnderTemporaryStaffID(staffNumber - 1, filename);
             }
+        }
+
+        /// <summary>
+        /// Deletes the timesheet.
+        /// </summary>
+        /// <param name="timesheetID">The timesheet ID.</param>
+        /// <exception cref="TimesheetProgramLogic.CannotDeleteDefaultBlankTimesheetException">dfgdfgdfgdf sdfgfdgfd</exception>
+        public void DeleteTimesheet(int timesheetID)
+        {            
+            if (Timesheet.Month == 0 && Timesheet.Year == 0)
+            {
+                throw new CannotDeleteDefaultBlankTimesheetException();
+            }            
         }
     }
 }

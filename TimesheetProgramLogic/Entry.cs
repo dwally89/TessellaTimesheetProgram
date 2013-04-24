@@ -615,7 +615,7 @@ namespace TimesheetProgramLogic
         /// <exception cref="TimesheetProgramLogic.InvalidProjectNumberException">blah blah blah</exception>
         /// <exception cref="TimesheetProgramLogic.InvalidBillableException">blah blah blah</exception>
         private void FullConstructor(int id, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool readFromBuild)
-        {
+        {            
             this.ID = id;
             _date = date;
             if (projectNumber < 0 || projectNumber > 9999)

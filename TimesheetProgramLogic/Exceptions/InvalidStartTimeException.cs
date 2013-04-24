@@ -8,7 +8,7 @@
     /// <summary>
     /// blah blah
     /// </summary>
-    public class InvalidStartTimeException : Exception
+    public class InvalidEntryTimeException : Exception
     {
     }
 }

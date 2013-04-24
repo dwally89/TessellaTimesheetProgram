@@ -94,9 +94,9 @@
                 {
                     controller.Timesheet.AddEntry(newEntry.Entry);
                 }
-                catch (InvalidStartTimeException)
+                catch (InvalidEntryTimeException)
                 {
-                    MessageBox.Show("There is already an entry with that start time", "Invalid Start Time", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("There is already an entry that occurs at that time", "Invalid Time", MessageBoxButton.OK, MessageBoxImage.Error);
                     AddEntry(newEntry.Entry);
                     return;
                 }
@@ -176,7 +176,7 @@
         /// </summary>
         private void EnableControls()
         {            
-            bool timesheetContainsEntries = controller.Timesheet.NumberOfEntries() != 0;
+            bool timesheetContainsEntries = controller.Timesheet.Entries.Count != 0;
             mnuDeleteEntry.IsEnabled = timesheetContainsEntries;
             mnuEditEntry.IsEnabled = timesheetContainsEntries;
             mnuSave.IsEnabled = timesheetContainsEntries;
@@ -218,7 +218,10 @@
 
             try
             {
-                editEntry.ShowDialog();
+                if (editEntry.ShowDialog() == false)
+                {
+                    return;
+                }
             }
             catch (InvalidPhaseCodeException)
             {
@@ -237,7 +240,7 @@
                 MnuEditEntry_Click(sender, e);
                 return;
             }
-            catch (InvalidStartTimeException)
+            catch (InvalidEntryTimeException)
             {
                 MessageBox.Show("There is already an entry with that start time", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 MnuEditEntry_Click(sender, e);
@@ -365,9 +368,7 @@
                 {
                     controller.Save();                    
                 }   
-            }
-
-            controller.DeleteAllUnsavedAndTemporaryTimesheets();            
+            }           
         }
 
         /// <summary>
@@ -398,7 +399,7 @@
         private bool GetPasswordIfRequired(out SecureString password)
         {
             password = null;
-            if (!controller.Settings.SubmitViaNotes)
+            if (controller.Settings.SubmitViaNotes)
             {
                 return true;
             }
@@ -462,32 +463,6 @@
         }
 
         /// <summary>
-        /// Handles the Click event of the MnuLoadFromDatabase control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void MnuLoadFromDatabase_Click(object sender, RoutedEventArgs e)
-        {
-            LoadDeleteFromDatabase load = new LoadDeleteFromDatabase(LoadDeleteFromDatabase.FormType.Load);
-            if (load.ShowDialog() == true)
-            {
-                controller.Timesheet.ID = load.TimesheetID;
-                if (controller.Timesheet.Entries.Count != 0)
-                {
-                    controller.Timesheet.Month = controller.Timesheet.Entries[0].Date.Month;
-                    controller.Timesheet.Year = controller.Timesheet.Entries[0].Date.Year;
-                }
-                else
-                {
-                    controller.Timesheet.Month = 0;
-                    controller.Timesheet.Year = 0;
-                }
-
-                UpdateGUI();
-            }
-        }
-
-        /// <summary>
         /// Handles the Click event of the MnuDeleteFromDatabase control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -498,11 +473,19 @@
             if (delete.ShowDialog() == true)
             {
                 if (MessageBox.Show("Are you sure you want to delete the timesheet?", "Are you sure?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {                    
-                    controller.DeleteTimesheet(delete.TimesheetID);
-                }
+                {
+                    try
+                    {
+                        controller.DeleteTimesheet(delete.TimesheetID);                        
+                    }
+                    catch (CannotDeleteDefaultBlankTimesheetException)
+                    {
+                        MessageBox.Show("Cannot delete the default blank timesheet", "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        return;
+                    }
 
-                UpdateGUI();
+                    UpdateGUI();
+                }                
             }
         }
     }

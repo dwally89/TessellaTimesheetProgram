@@ -7,8 +7,6 @@
             <MenuItem Header="Timesheet">
                 <MenuItem Header="New..." Name="mnuNewTimesheet" Click="MnuNewTimesheet_Click" />
                 <MenuItem Header="Open File..." Name="mnuOpen" Click="MnuOpen_Click" />
-                <MenuItem Header="Load From Database..." Name="mnuLoadFromDatabase" Click="MnuLoadFromDatabase_Click" />
-                <MenuItem Header="Delete From Database..." Name="mnuDeleteFromDatabase" Click="MnuDeleteFromDatabase_Click" />
                 <MenuItem Header="Save" Name="mnuSave" Click="MnuSave_Click" />
                 <MenuItem Header="Save As..." Name="mnuSaveAs" Click="MnuSaveAs_Click" />
                 <MenuItem Header="Build" Name="mnuBuildTimesheet" Click="MnuBuildTimesheet_Click" />

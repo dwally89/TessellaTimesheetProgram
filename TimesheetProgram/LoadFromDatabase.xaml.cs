@@ -11,7 +11,7 @@
         /// <summary>
         /// The timesheet data
         /// </summary>
-        private List<TimesheetData> timesheetData;
+        private List<TimesheetData> timesheetData = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadDeleteFromDatabase" /> class.
@@ -26,8 +26,7 @@
                 btnLoad.Content = "Delete";
                 Title = "Delete From Database";
             }
-
-            timesheetData = Timesheet.GetAllTimesheetData();
+            
             foreach (TimesheetData data in timesheetData)
             {
                 cboTimesheetID.Items.Add(data.StaffNumber.ToString() + ": " + data.Month.ToString() + "/" + data.Year.ToString());
