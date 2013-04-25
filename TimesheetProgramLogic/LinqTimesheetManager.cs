@@ -7,50 +7,56 @@
     /// <summary>
     /// manages the timesheet
     /// </summary>
-    public class LinqTimesheetManager : TimesheetProgramLogic.ITimesheetManager
+    public class LinqTimesheetManager : ATimesheetManager
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LinqTimesheetManager" /> class.
+        /// </summary>
+        /// <param name="timesheet">The timesheet.</param>
+        public LinqTimesheetManager(Timesheet timesheet)
+        {
+            this.Timesheet = timesheet;
+        }
+
         /// <summary>
         /// Gets the next unused entry ID.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <returns>
         /// fdgdfg dfgfdgfd
         /// </returns>
-        public int GetNextUnusedEntryID(List<Entry> entries)
+        public override int GetNextUnusedEntryID()
         {
-            if (entries.Count == 0)
+            if (Timesheet.Entries.Count == 0)
             {
                 return 0;
             }
             else
             {
-                return entries.Max(entry => entry.ID) + 1;
+                return Timesheet.Entries.Max(entry => entry.ID) + 1;
             }
         }
 
         /// <summary>
         /// Gets all entries from project.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="projectNumber">The project number.</param>
         /// <returns>
         /// DFFD GDFGFD
         /// </returns>
-        public List<Entry> GetAllEntriesFromProject(List<Entry> entries, int projectNumber)
+        public override List<Entry> GetAllEntriesFromProject(int projectNumber)
         {
-            return entries.Where(entry => entry.ProjectNumber == projectNumber).ToList();
+            return Timesheet.Entries.Where(entry => entry.ProjectNumber == projectNumber).ToList();
         }
 
         /// <summary>
         /// Gets all project numbers.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <returns>
         /// A list of all project numbers
         /// </returns>
-        public List<int> GetAllProjectNumbers(List<Entry> entries)
+        public override List<int> GetAllProjectNumbers()
         {
-            var x = (from entry in entries select entry.ProjectNumber).Distinct().ToList();
+            var x = (from entry in Timesheet.Entries select entry.ProjectNumber).Distinct().ToList();
             x.Sort();
             return x;
         }
@@ -58,81 +64,70 @@
         /// <summary>
         /// Edits the entry.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="editedEntry">The edited entry.</param>
-        /// <returns>
-        /// gfdgfd dfgdfgfd
-        /// </returns>
-        public List<Entry> EditEntry(List<Entry> entries, Entry editedEntry)
+        public override void PerformEditEntry(Entry editedEntry)
         {
-            List<Entry> filteredEntries = entries.Where(e => e.ID != editedEntry.ID).ToList();
-            filteredEntries.Add(editedEntry);
-            return filteredEntries;
+            Timesheet.Entries.Remove(Timesheet.Entries.Where(e => e.ID == editedEntry.ID).ToList()[0]);            
+            Timesheet.Entries.Add(editedEntry);            
         }
 
         /// <summary>
         /// Deletes the entry.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="entryToDelete">The entry to delete.</param>
-        /// <returns>
-        /// dfgdfgfd gdfgfdgfd
-        /// </returns>
-        public List<Entry> DeleteEntry(List<Entry> entries, Entry entryToDelete)
+        public override void DeleteEntry(Entry entryToDelete)
         {
-            return entries.Where(entry => entry.ID != entryToDelete.ID).ToList();            
+            Timesheet.Entries.Remove(Timesheet.Entries.Where(entry => entry.ID == entryToDelete.ID).ToList()[0]);            
         }
 
         /// <summary>
         /// Determines whether [contains entry with start time] [the specified start time].
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="entry">The entry.</param>
         /// <returns>
         ///   <c>true</c> if [contains entry with start time] [the specified start time]; otherwise, <c>false</c>.
         /// </returns>
-        public bool VerifyEntryTime(List<Entry> entries, Entry entry)
+        public override bool VerifyEntryTime(Entry entry)
         {
             /* If entry.starttime >= existing entry startime
              * and
              * entry.finishtime <= existing entry finishtime
                */
-            return GetConflictingEntries(entries, entry).Count == 0;            
+            return GetConflictingEntries(entry).Count == 0;            
         }
 
         /// <summary>
         /// Gets the length of conflicting entry.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="newEntry">The new entry.</param>
-        /// <returns>gfhgfhgf gfhfghfg</returns>
-        public TimeSpan GetLengthOfConflictingEntry(List<Entry> entries, Entry newEntry)
+        /// <returns>
+        /// gfhgfhgf gfhfghfg
+        /// </returns>
+        public override TimeSpan GetLengthOfConflictingEntry(Entry newEntry)
         {
-            Entry entry = GetConflictingEntries(entries, newEntry)[0];
+            Entry entry = GetConflictingEntries(newEntry)[0];
             return entry.FinishTime - entry.StartTime;
         }
 
         /// <summary>
         /// Inserts the entry.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="entry">The entry.</param>
-        /// <returns>dfgdfg dfgfdgfd</returns>
-        public List<Entry> InsertEntry(List<Entry> entries, Entry entry)
+        public override void InsertEntry(Entry entry)
         {
-            entries.Add(entry);
-            return entries;
+            Timesheet.Entries.Add(entry);            
         }
 
         /// <summary>
         /// Gets the conflicting entries.
         /// </summary>
-        /// <param name="entries">The entries.</param>
         /// <param name="entry">The entry.</param>
-        /// <returns>fghfghgf fghfhgfhgf</returns>
-        private List<Entry> GetConflictingEntries(List<Entry> entries, Entry entry)
+        /// <returns>
+        /// fghfghgf fghfhgfhgf
+        /// </returns>
+        private List<Entry> GetConflictingEntries(Entry entry)
         {
-            entries = entries.Where(e => e.ID != entry.ID).ToList();
+            List<Entry> entries = Timesheet.Entries.Where(e => e.ID != entry.ID && e.Date == entry.Date).ToList();
             List<Entry> existingStartTimeOverlaps = entries.Where(e => e.StartTime >= entry.StartTime && e.StartTime < entry.FinishTime).ToList();
             List<Entry> existingFinishTimeOverlaps = entries.Where(e => e.FinishTime > entry.StartTime && e.FinishTime <= entry.FinishTime).ToList();
 
@@ -140,7 +135,7 @@
             entries.AddRange(existingStartTimeOverlaps);
             entries.AddRange(existingFinishTimeOverlaps);
                         
-            return entries.Where(e => e.Date == entry.Date).ToList();
+            return entries.ToList();
         }
     }
 }

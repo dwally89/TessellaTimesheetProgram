@@ -28,7 +28,7 @@
             </MenuItem>
         </Menu>
 
-        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}"
+        <DataGrid AutoGenerateColumns="False"
                   Margin="0,29,0,0" 
                   Name="dataGrid" 
                   SelectionMode="Single" SelectionUnit="FullRow" 

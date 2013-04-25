@@ -14,7 +14,7 @@
         /// <summary>
         /// The timesheet
         /// </summary>
-        private Timesheet timesheet;
+        private Controller controller;
 
         /// <summary>
         /// The entry ID
@@ -24,11 +24,11 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="AddEditEntry" /> class.
         /// </summary>
-        /// <param name="timesheet">The timesheet.</param>
-        public AddEditEntry(Timesheet timesheet)
+        /// <param name="controller">The controller.</param>
+        public AddEditEntry(Controller controller)
         {
             InitializeComponent();
-            CommonConstructor(timesheet);
+            CommonConstructor(controller);
             cboStartTime.SelectedIndex = 0;
             cboFinishTime.SelectedIndex = 0;
             cboPhaseCode.SelectedIndex = 0;
@@ -40,11 +40,11 @@
         /// Initializes a new instance of the <see cref="AddEditEntry" /> class.
         /// </summary>
         /// <param name="entryToEdit">The entry to edit.</param>
-        /// <param name="timesheet">The timesheet.</param>
-        public AddEditEntry(Entry entryToEdit, Timesheet timesheet)
+        /// <param name="controller">The controller.</param>
+        public AddEditEntry(Entry entryToEdit, Controller controller)
         {
             InitializeComponent();
-            CommonConstructor(timesheet);
+            CommonConstructor(controller);
             datePicker.SelectedDate = entryToEdit.Date;
             txtProjectNumber.Text = entryToEdit.ProjectNumber.ToString();
             cboStartTime.Text = entryToEdit.StartTime.ToString("hh\\:mm");
@@ -81,8 +81,8 @@
         /// <summary>
         /// Commons the constructor.
         /// </summary>
-        /// <param name="timesheet">The timesheet.</param>
-        private void CommonConstructor(Timesheet timesheet)
+        /// <param name="controller">The controller.</param>
+        private void CommonConstructor(Controller controller)
         {
             for (int hour = 8; hour <= 18; hour++)
             {
@@ -104,7 +104,7 @@
             }
 
             this.Entry = null;
-            this.timesheet = timesheet;
+            this.controller = controller;            
         }
 
         /// <summary>
@@ -225,7 +225,7 @@
                     {                        
                         if (entryID == -1)
                         {
-                            entryID = timesheet.Manager.GetNextUnusedEntryID(timesheet.Entries);                     
+                            entryID = controller.Manager.GetNextUnusedEntryID();                     
                         }                        
 
                         Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text, false);

@@ -14,7 +14,7 @@ namespace TimesheetProgramLogic
     /// <summary>
     /// TODO: Update summary.
     /// </summary>
-    public class Entry : INotifyPropertyChanged
+    public class Entry
     {
         /// <summary>
         /// The MA x_ TASKCOD e_ LENGTH
@@ -102,51 +102,6 @@ namespace TimesheetProgramLogic
             "NO",
             "ACCOUNTABLE"
         };        
-
-        /// <summary>
-        /// The _start time
-        /// </summary>
-        private TimeSpan _startTime;
-
-        /// <summary>
-        /// The _finish time
-        /// </summary>
-        private TimeSpan _finishTime;
-
-        /// <summary>
-        /// The _date
-        /// </summary>
-        private DateTime _date;
-
-        /// <summary>
-        /// The _billable
-        /// </summary>
-        private string _billable;
-
-        /// <summary>
-        /// The _task code
-        /// </summary>
-        private string _taskCode;
-
-        /// <summary>
-        /// The _project number
-        /// </summary>
-        private int _projectNumber;
-
-        /// <summary>
-        /// The _phase code
-        /// </summary>
-        private string _phaseCode;
-
-        /// <summary>
-        /// The _overhead
-        /// </summary>
-        private bool _overhead;
-
-        /// <summary>
-        /// The _description
-        /// </summary>
-        private string _description;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entry" /> class.
@@ -253,11 +208,6 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Occurs when [property changed].
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
         /// Gets or sets a value indicating whether this instance is read from build.
         /// </summary>
         /// <value>
@@ -276,19 +226,7 @@ namespace TimesheetProgramLogic
         /// The date.
         /// </value>
         [DisplayName("Date")]
-        public DateTime Date
-        {
-            get
-            {
-                return _date;
-            }
-
-            set
-            {
-                _date = value;
-                OnPropertyChanged("Date");
-            }
-        }
+        public DateTime Date { get; set; }
 
         /// <summary>
         /// Gets or sets the project number.
@@ -297,19 +235,7 @@ namespace TimesheetProgramLogic
         /// The project number.
         /// </value>
         [DisplayName("Proj")]
-        public int ProjectNumber
-        {
-            get
-            {
-                return _projectNumber;
-            }
-
-            set
-            {
-                _projectNumber = value;
-                OnPropertyChanged("ProjectNumber");
-            }
-        }
+        public int ProjectNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the ID.
@@ -331,19 +257,7 @@ namespace TimesheetProgramLogic
         /// </value>
         [DisplayName("Start")]
         [XmlIgnore]
-        public TimeSpan StartTime
-        {            
-            get
-            {
-                return _startTime;
-            }
-
-            set
-            {
-                _startTime = value;
-                OnPropertyChanged("StartTime");
-            }
-        }
+        public TimeSpan StartTime { get; set; }
 
         /// <summary>
         /// Gets or sets the start time ticks.
@@ -355,12 +269,12 @@ namespace TimesheetProgramLogic
         {
             get
             {
-                return _startTime.Ticks;
+                return StartTime.Ticks;
             }
 
             set
             {
-                _startTime = new TimeSpan(value);
+                StartTime = new TimeSpan(value);
             }
         }
 
@@ -372,19 +286,7 @@ namespace TimesheetProgramLogic
         /// </value>
         [DisplayName("Finish")]
         [XmlIgnore]
-        public TimeSpan FinishTime
-        {
-            get
-            {
-                return _finishTime;
-            }
-
-            set
-            {
-                _finishTime = value;
-                OnPropertyChanged("FinishTime");
-            }
-        }
+        public TimeSpan FinishTime { get; set; }
 
         /// <summary>
         /// Gets or sets the finish time ticks.
@@ -396,12 +298,12 @@ namespace TimesheetProgramLogic
         {
             get
             {
-                return _finishTime.Ticks;
+                return FinishTime.Ticks;
             }
 
             set
             {
-                _finishTime = new TimeSpan(value);
+                FinishTime = new TimeSpan(value);
             }
         }
 
@@ -416,7 +318,7 @@ namespace TimesheetProgramLogic
         {
             get
             {                             
-                return Convert.ToDecimal((_finishTime - _startTime).TotalHours);
+                return Convert.ToDecimal((FinishTime - StartTime).TotalHours);
             }
         }
 
@@ -441,19 +343,7 @@ namespace TimesheetProgramLogic
         /// The task code.
         /// </value>
         [DisplayName("Task Code")]
-        public string TaskCode
-        {
-            get
-            {
-                return _taskCode;
-            }
-
-            set
-            {
-                _taskCode = value;
-                OnPropertyChanged("TaskCode");
-            }
-        }
+        public string TaskCode { get; set; }
 
         /// <summary>
         /// Gets or sets the phase code.
@@ -462,19 +352,7 @@ namespace TimesheetProgramLogic
         /// The phase code.
         /// </value>
         [DisplayName("Phase Code")]
-        public string PhaseCode
-        {
-            get
-            {
-                return _phaseCode;
-            }
-
-            set
-            {
-                _phaseCode = value;
-                OnPropertyChanged("PhaseCode");
-            }
-        }
+        public string PhaseCode { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Entry" /> is overhead.
@@ -483,19 +361,7 @@ namespace TimesheetProgramLogic
         ///   <c>true</c> if overhead; otherwise, <c>false</c>.
         /// </value>
         [DisplayName("O/H")]
-        public bool Overhead
-        {
-            get
-            {
-                return _overhead;
-            }
-
-            set
-            {
-                _overhead = value;
-                OnPropertyChanged("Overhead");
-            }
-        }
+        public bool Overhead { get; set; }
 
         /// <summary>
         /// Gets or sets the billable.
@@ -504,20 +370,8 @@ namespace TimesheetProgramLogic
         /// The billable.
         /// </value>
         [DisplayName("Billable")]
-        public string Billable
-        {
-            get
-            {
-                return _billable;
-            }
-
-            set
-            {
-                _billable = value;
-                OnPropertyChanged("Billable");
-            }
-        }
-
+        public string Billable { get; set; }
+            
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
@@ -525,19 +379,7 @@ namespace TimesheetProgramLogic
         /// The description.
         /// </value>
         [DisplayName("Description")]
-        public string Description
-        {
-            get
-            {
-                return _description;
-            }
-
-            set
-            {
-                _description = value;
-                OnPropertyChanged("Description");
-            }
-        }
+        public string Description { get; set; }
 
         /// <summary>
         /// Mains this instance.
@@ -566,36 +408,6 @@ namespace TimesheetProgramLogic
         }
 
         /// <summary>
-        /// Called when [property changed].
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        public void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
-        /// Updates the specified entry.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        public void Update(Entry entry)
-        {
-            this.Billable = entry.Billable;
-            this.Date = entry.Date;
-            this.Description = entry.Description;
-            this.FinishTime = entry.FinishTime;
-            this.IsReadFromBuild = entry.IsReadFromBuild;
-            this.Overhead = entry.Overhead;
-            this.PhaseCode = entry.PhaseCode;
-            this.ProjectNumber = entry.ProjectNumber;
-            this.StartTime = entry.StartTime;
-            this.TaskCode = entry.TaskCode;            
-        }
-
-        /// <summary>
         /// Full_constructors the specified date.
         /// </summary>
         /// <param name="id">The id.</param>
@@ -617,47 +429,43 @@ namespace TimesheetProgramLogic
         private void FullConstructor(int id, DateTime date, int projectNumber, TimeSpan startTime, TimeSpan finishTime, string taskCode, string phaseCode, bool overhead, string billable, string description, bool readFromBuild)
         {            
             this.ID = id;
-            _date = date;
+            this.Date = date;
             if (projectNumber < 0 || projectNumber > 9999)
             {
                 throw new InvalidProjectNumberException();
             }
             else
             {
-                _projectNumber = projectNumber;
+                this.ProjectNumber = projectNumber;
             }
 
-            _startTime = startTime;
-            _finishTime = finishTime;
-            _taskCode = taskCode;
             if (PhaseCodes.Contains(phaseCode))
             {
-                _phaseCode = phaseCode;
+                this.PhaseCode = phaseCode;
+            }
+            else if (readFromBuild)
+            {
+                this.PhaseCode = string.Empty;
             }
             else
             {
-                if (readFromBuild)
-                {
-                    _phaseCode = string.Empty;
-                }
-                else
-                {
-                    throw new InvalidPhaseCodeException();
-                }               
+                throw new InvalidPhaseCodeException();
             }
-
-            _overhead = overhead;
-
+            
             if (Billables.Contains(billable.ToUpper()))
             {
-                _billable = billable;
+                this.Billable = billable;
             }
             else
             {
                 throw new InvalidBillableException();
             }
 
-            _description = description;
+            this.StartTime = startTime;
+            this.FinishTime = finishTime;
+            this.TaskCode = taskCode;
+            this.Overhead = overhead;            
+            this.Description = description;
             IsReadFromBuild = false;
         }
     }

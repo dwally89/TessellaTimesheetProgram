@@ -26,21 +26,17 @@ namespace TimesheetProgramLogic
         public Controller()
         {            
             Settings = new Settings();
-            Settings.Read();
-            Timesheet = new Timesheet(Settings.StaffNumber, Settings.StaffID);                        
+            Settings.Read();                        
+            this.Manager = new LinqTimesheetManager(new Timesheet(Settings.StaffNumber, Settings.StaffID));            
         }
 
         /// <summary>
-        /// Gets the timesheet.
+        /// Gets the manager.
         /// </summary>
         /// <value>
-        /// The timesheet.
+        /// The manager.
         /// </value>
-        public Timesheet Timesheet
-        {
-            get;
-            private set;
-        }
+        public ATimesheetManager Manager { get; private set; }
 
         /// <summary>
         /// Gets the settings.
@@ -80,7 +76,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         public void RunTCheck()
         {
-            TCheck.Run(Settings, Timesheet.Month.ToString("00"), (Timesheet.Year - 2000).ToString());
+            TCheck.Run(Settings, Manager.Timesheet.Month.ToString("00"), (Manager.Timesheet.Year - 2000).ToString());
         }
 
         /// <summary>
@@ -91,12 +87,12 @@ namespace TimesheetProgramLogic
         /// <exception cref="UnableToSubmitEmailException">Occurs if unable to submit an email</exception>        
         public void Submit(ASubmittable submitable, SecureString password = null)
         {
-            string sMonth = Timesheet.Month.ToString("00");
+            string sMonth = Manager.Timesheet.Month.ToString("00");
 
             // Don't want to submit XML file, want to submit build
             if (!Util.IsXmlFilename(filename))
             {
-                Submitter.Send(Settings, sMonth, Timesheet.Year.ToString(), filename, submitable.EmailAddress, password);                
+                Submitter.Send(Settings, sMonth, Manager.Timesheet.Year.ToString(), filename, submitable.EmailAddress, password);                
             }
             else
             {
@@ -131,16 +127,8 @@ namespace TimesheetProgramLogic
                     filename = filename + "X";
                 }
 
-                Serialization.Serialize(Timesheet, filename);
+                Serialization.Serialize(Manager.Timesheet, filename);
             }
-        }
-
-        /// <summary>
-        /// News the timesheet.
-        /// </summary>
-        public void NewTimesheet()
-        {
-            Timesheet.New();
         }
 
         /// <summary>
@@ -151,48 +139,22 @@ namespace TimesheetProgramLogic
         {
             this.filename = filename;            
             if (Util.IsXmlFilename(filename))
-            {
-                Timesheet.ReadXML(filename);
+            {       
+                Manager.ReadXML(filename);
             }
             else
             {
-                Timesheet.ReadBuild(filename);
-            }            
-
-            Timesheet.UnsavedChanges = false;
+                Manager.ReadBuild(filename);
+            }                       
         }
 
         /// <summary>
-        /// Opens the timesheet under temporary staff ID.
+        /// Deletes the entry.
         /// </summary>
-        /// <param name="staffNumber">The staff number.</param>
-        /// <param name="filename">The filename.</param>
-        public void OpenTimesheetUnderTemporaryStaffID(int staffNumber, string filename)
+        /// <param name="entry">The entry.</param>
+        public void DeleteEntry(Entry entry)
         {
-            Settings.StaffID = "TEMP";
-            Settings.StaffNumber = staffNumber;
-            Timesheet.UpdateStaffDetails(staffNumber, "TEMP");
-            try
-            {
-                Open(filename);
-            }
-            catch (SqlException)
-            {
-                OpenTimesheetUnderTemporaryStaffID(staffNumber - 1, filename);
-            }
-        }
-
-        /// <summary>
-        /// Deletes the timesheet.
-        /// </summary>
-        /// <param name="timesheetID">The timesheet ID.</param>
-        /// <exception cref="TimesheetProgramLogic.CannotDeleteDefaultBlankTimesheetException">dfgdfgdfgdf sdfgfdgfd</exception>
-        public void DeleteTimesheet(int timesheetID)
-        {            
-            if (Timesheet.Month == 0 && Timesheet.Year == 0)
-            {
-                throw new CannotDeleteDefaultBlankTimesheetException();
-            }            
+            Manager.DeleteEntry(entry);
         }
     }
 }

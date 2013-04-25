@@ -57,7 +57,7 @@
             SaveFileDialog dialog = SaveAsType(FileType.Build);
             if (dialog.ShowDialog() == true)
             {                
-                controller.Timesheet.Build(dialog.FileName, controller.Settings.StaffID, controller.Settings.StaffNumber);
+                controller.Manager.Build(dialog.FileName, controller.Settings.StaffID, controller.Settings.StaffNumber);
             }
         }
 
@@ -81,18 +81,18 @@
 
             if (entry == null)
             {
-                newEntry = new AddEditEntry(controller.Timesheet);
+                newEntry = new AddEditEntry(controller);
             }
             else
             {
-                newEntry = new AddEditEntry(entry, controller.Timesheet);
+                newEntry = new AddEditEntry(entry, controller);
             }
 
             if (newEntry.ShowDialog() == true)
             {
                 try
                 {
-                    controller.Timesheet.AddEntry(newEntry.Entry);
+                    controller.Manager.AddEntry(newEntry.Entry);
                 }
                 catch (InvalidEntryTimeException)
                 {
@@ -123,8 +123,8 @@
         private void UpdateDatagrid()
         {
             dataGrid.Items.Clear();
-            List<Entry> entries = controller.Timesheet.Entries;
-            
+            List<Entry> entries = controller.Manager.Timesheet.Entries;
+            entries.Sort(new SortEntriesViaDateTime());
             foreach (Entry entry in entries)
             {
                 dataGrid.Items.Add(entry);
@@ -149,13 +149,6 @@
                 {
                     MessageBox.Show("Unable to open file", "Invalid File", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                catch (SqlException ex)
-                {
-                    if (MessageBox.Show(ex.Message + "\nUnable to load file. Do you want to attempt opening it under a temporary staff ID?", "Error", MessageBoxButton.YesNoCancel, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
-                    {
-                        controller.OpenTimesheetUnderTemporaryStaffID(-1, openFile.FileName);                        
-                    }
-                }
 
                 UpdateGUI();
             }                       
@@ -168,7 +161,7 @@
         {
             UpdateDatagrid();
             EnableControls();
-            Title = "Timesheet Program - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID + " - " + controller.Timesheet.Month.ToString("00") + "/" + controller.Timesheet.Year.ToString();
+            Title = "Timesheet Program - " + controller.Settings.StaffNumber + ": " + controller.Settings.StaffID + " - " + controller.Manager.Timesheet.Month.ToString("00") + "/" + controller.Manager.Timesheet.Year.ToString();
         }
 
         /// <summary>
@@ -176,7 +169,7 @@
         /// </summary>
         private void EnableControls()
         {            
-            bool timesheetContainsEntries = controller.Timesheet.Entries.Count != 0;
+            bool timesheetContainsEntries = controller.Manager.Timesheet.Entries.Count != 0;
             mnuDeleteEntry.IsEnabled = timesheetContainsEntries;
             mnuEditEntry.IsEnabled = timesheetContainsEntries;
             mnuSave.IsEnabled = timesheetContainsEntries;
@@ -203,7 +196,7 @@
             if (settingsWindow.ShowDialog() == true)
             {
                 controller.Settings.UpdateAndWrite(settingsWindow.NewSettings);
-                controller.Timesheet.UpdateStaffDetails(controller.Settings.StaffNumber, controller.Settings.StaffID);
+                controller.Manager.Timesheet.UpdateStaffDetails(controller.Settings.StaffNumber, controller.Settings.StaffID);
                 UpdateGUI();                
             }
         }
@@ -215,7 +208,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuEditEntry_Click(object sender, RoutedEventArgs e)
         {
-            AddEditEntry editEntry = new AddEditEntry((Entry)dataGrid.SelectedItem, controller.Timesheet);                   
+            AddEditEntry editEntry = new AddEditEntry((Entry)dataGrid.SelectedItem, controller);                   
 
             try
             {
@@ -233,7 +226,7 @@
              
             try
             {
-                controller.Timesheet.EditEntry(editEntry.Entry);
+                controller.Manager.EditEntry(editEntry.Entry);
             }
             catch (EntriesNotInSameMonthException)
             {
@@ -260,7 +253,7 @@
         {
             if (MessageBox.Show("Are you sure that you want to delete the selected entry?", "Are you sure?", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                controller.Timesheet.DeleteEntry((Entry)dataGrid.SelectedItem);
+                controller.DeleteEntry((Entry)dataGrid.SelectedItem);
                 UpdateGUI();
             }
         }
@@ -273,7 +266,7 @@
         private void MnuNewTimesheet_Click(object sender, RoutedEventArgs e)
         {
             bool createTimesheet = true;
-            if (controller.Timesheet.UnsavedChanges)
+            if (controller.Manager.UnsavedChanges)
             {
                 MessageBoxResult result = MessageBox.Show("Do you want to save the current timesheet?", "Do you want to save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
@@ -288,7 +281,7 @@
 
             if (createTimesheet)            
             {
-                controller.NewTimesheet();
+                controller.Manager.New();
                 UpdateGUI();
             }
         }
@@ -332,7 +325,7 @@
         private SaveFileDialog SaveAsType(FileType type)
         {
             SaveFileDialog saveAs = new SaveFileDialog();
-            int month = controller.Timesheet.Month;
+            int month = controller.Manager.Timesheet.Month;
             if (month == 0)
             {
                 month = DateTime.Today.Month;
@@ -362,7 +355,7 @@
         /// <param name="e">The <see cref="CancelEventArgs" /> instance containing the event data.</param>
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (controller.Timesheet.UnsavedChanges)
+            if (controller.Manager.UnsavedChanges)
             {
                 MessageBoxResult result = MessageBox.Show("Do you want to save the current timesheet?", "Do you want to save?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
@@ -460,34 +453,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuSubmitTimesheet_Click(object sender, RoutedEventArgs e)
         {
-            Submit(controller.Timesheet);
-        }
-
-        /// <summary>
-        /// Handles the Click event of the MnuDeleteFromDatabase control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
-        private void MnuDeleteFromDatabase_Click(object sender, RoutedEventArgs e)
-        {
-            LoadDeleteFromDatabase delete = new LoadDeleteFromDatabase(LoadDeleteFromDatabase.FormType.Delete);
-            if (delete.ShowDialog() == true)
-            {
-                if (MessageBox.Show("Are you sure you want to delete the timesheet?", "Are you sure?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        controller.DeleteTimesheet(delete.TimesheetID);                        
-                    }
-                    catch (CannotDeleteDefaultBlankTimesheetException)
-                    {
-                        MessageBox.Show("Cannot delete the default blank timesheet", "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    }
-
-                    UpdateGUI();
-                }                
-            }
+            Submit(controller.Manager.Timesheet);
         }
 
         /// <summary>
@@ -497,7 +463,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuMonthlySummary_Click(object sender, RoutedEventArgs e)
         {
-            MonthlySummary summary = Statistics.CalculateMonthlySummary(controller.Timesheet);
+            MonthlySummary summary = Statistics.CalculateMonthlySummary(controller.Manager.Timesheet);
             MessageBox.Show("Number of days worked so far: " + summary.NumberOfDaysWorkedSoFar + "\nTotal hours so far: " + summary.TotalHoursWorkedSoFar + "\nAverage hours per day: " + summary.AverageHoursPerDay + "\nExpected hours per day: " + summary.ExpectedHoursPerDay, "Monthly Summary", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
@@ -508,7 +474,7 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void MnuWeeklySummary_Click(object sender, RoutedEventArgs e)
         {
-            WeeklySummary summary = Statistics.CalculateWeeklySummary(controller.Timesheet);
+            WeeklySummary summary = Statistics.CalculateWeeklySummary(controller.Manager.Timesheet);
             MessageBox.Show("Number of days worked so far: " + summary.NumberOfDaysWorkedSoFar + "\nTotal hours so far: " + summary.TotalHoursWorkedSoFar + "\nNumber of weeks worked so far: " + summary.NumberOfWeeksWorkedSoFar + "\nNumber of hours per week: " + summary.NumberOfHoursPerWeek + "\nExpected hours per week: " + summary.ExpectedHoursPerWeek, "Weekly Summary", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
