@@ -186,57 +186,54 @@
             if (lblTotalTime.Content.Equals("Invalid time"))
             {
                 MessageBox.Show("Invalid time", "Invalid Time", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
-            else if (txtDescription.Text.Length > Entry.MAX_DESCRIPTION_LENGTH || txtDescription.Text.Length < 1)
+            
+            if (txtDescription.Text.Length > Entry.MAX_DESCRIPTION_LENGTH || txtDescription.Text.Length < 1)
             {
                 MessageBox.Show("Description must be less than " + Entry.MAX_DESCRIPTION_LENGTH + " characters and non-empty.", "Invalid Description", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
-            else if (txtDescription.Text.StartsWith("*") || txtDescription.Text.StartsWith("#"))
+            
+            if (txtDescription.Text.StartsWith("*") || txtDescription.Text.StartsWith("#"))
             {
                 MessageBox.Show("Descriptions can not begin with a * or #.", "Invalid Description", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
-            else if (int.TryParse(txtProjectNumber.Text, out projectNumber))
-            {
-                if ((projectNumber > 9999 || projectNumber < 1000) && projectNumber != 0)
-                {
-                    MessageBox.Show("Project number must be a four digit number", "Invalid Project Number", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else if (cboTaskCode.Text.Length > 8 || cboTaskCode.Text.Length < 2)
-                {
-                    MessageBox.Show("Task code must be between 2 and 8 characters", "Invalid Task Code", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else
-                {
-                    bool overhead;
-                    if (cboOverhead.Text.Equals("No"))
-                    {
-                        overhead = false;
-                    }
-                    else
-                    {
-                        overhead = true;
-                    }
-
-                    if (overhead && !cboBillable.Text.Equals("Yes"))
-                    {
-                        MessageBox.Show("Only billable tasks can have overheads", "Can't Have Overheads", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    }
-                    else
-                    {                        
-                        if (entryID == -1)
-                        {
-                            entryID = controller.Manager.GetNextUnusedEntryID();                     
-                        }                        
-
-                        Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text, false);
-                        DialogResult = true;
-                    }
-                }
-            }
-            else
+            
+            if (!int.TryParse(txtProjectNumber.Text, out projectNumber))
             {
                 MessageBox.Show("Project number must be a four digit number", "Invalid Project Number", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            }            
+                return;
+            }   
+
+            if ((projectNumber > 9999 || projectNumber < 1000) && projectNumber != 0)
+            {
+                MessageBox.Show("Project number must be a four digit number", "Invalid Project Number", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+                
+            if (cboTaskCode.Text.Length > 8 || cboTaskCode.Text.Length < 2)
+            {
+                MessageBox.Show("Task code must be between 2 and 8 characters", "Invalid Task Code", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            bool overhead = !cboOverhead.Text.Equals("No");            
+
+            if (overhead && !cboBillable.Text.Equals("Yes"))
+            {
+                MessageBox.Show("Only billable tasks can have overheads", "Can't Have Overheads", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }                    
+                                            
+            if (entryID == -1)
+            {
+                entryID = controller.Manager.GetNextUnusedEntryID();                     
+            }                        
+
+            Entry = new Entry(entryID, (DateTime)datePicker.SelectedDate, projectNumber, TimeSpan.Parse(cboStartTime.Text), TimeSpan.Parse(cboFinishTime.Text), cboTaskCode.Text, cboPhaseCode.Text, overhead, cboBillable.Text, txtDescription.Text, false);
+            DialogResult = true;                                             
         }
 
         /// <summary>

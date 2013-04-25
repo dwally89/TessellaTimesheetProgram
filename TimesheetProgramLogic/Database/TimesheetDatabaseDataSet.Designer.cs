@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace TimesheetProgramLogic {
+namespace TimesheetProgramLogic.Database {
     
     
     /// <summary>
@@ -1733,7 +1733,7 @@ namespace TimesheetProgramLogic {
         }
     }
 }
-namespace TimesheetProgramLogic.TimesheetDatabaseDataSetTableAdapters {
+namespace TimesheetProgramLogic.Database.TimesheetDatabaseDataSetTableAdapters {
     
     
     /// <summary>

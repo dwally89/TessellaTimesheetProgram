@@ -9,6 +9,15 @@
     public abstract class ATimesheetManager
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="ATimesheetManager" /> class.
+        /// </summary>
+        /// <param name="timesheet">The timesheet.</param>
+        public ATimesheetManager(Timesheet timesheet)
+        {
+            this.Timesheet = timesheet;
+        }
+
+        /// <summary>
         /// Gets or sets the timesheet.
         /// </summary>
         /// <value>
@@ -21,7 +30,7 @@
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [unsaved changes].
+        /// Gets a value indicating whether [unsaved changes].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [unsaved changes]; otherwise, <c>false</c>.
@@ -29,7 +38,7 @@
         public bool UnsavedChanges
         {
             get;
-            set;
+            private set;
         }
 
         /// <summary>
@@ -42,33 +51,10 @@
         }
 
         /// <summary>
-        /// Performs the edit entry.
-        /// </summary>
-        /// <param name="editedEntry">The edited entry.</param>
-        public abstract void PerformEditEntry(Entry editedEntry);
-
-        /// <summary>
         /// Deletes the entry.
         /// </summary>
         /// <param name="entryToDelete">The entry to delete.</param>
         public abstract void DeleteEntry(Entry entryToDelete);
-
-        /// <summary>
-        /// Gets all entries from project.
-        /// </summary>
-        /// <param name="projectNumber">The project number.</param>
-        /// <returns>
-        /// fdgdfgfd dfgdfgd
-        /// </returns>
-        public abstract List<Entry> GetAllEntriesFromProject(int projectNumber);
-
-        /// <summary>
-        /// Gets all project numbers.
-        /// </summary>
-        /// <returns>
-        /// fdgdfg dfgfdgdf
-        /// </returns>
-        public abstract List<int> GetAllProjectNumbers();
 
         /// <summary>
         /// Gets the next unused entry ID.
@@ -77,140 +63,6 @@
         /// fdgdfg dfgfdgfd
         /// </returns>
         public abstract int GetNextUnusedEntryID();
-
-        /// <summary>
-        /// Verifies the entry time.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        /// <returns>
-        /// bfdbfd sdfgdgfd
-        /// </returns>
-        public abstract bool VerifyEntryTime(Entry entry);
-
-        /// <summary>
-        /// Inserts the entry.
-        /// </summary>
-        /// <param name="entry">The entry.</param>
-        public abstract void InsertEntry(Entry entry);
-
-        /// <summary>
-        /// Gets the length of conflicting entry.
-        /// </summary>
-        /// <param name="newEntry">The new entry.</param>
-        /// <returns>
-        /// gfhgfhgf fghfhgf
-        /// </returns>
-        public abstract TimeSpan GetLengthOfConflictingEntry(Entry newEntry);
-
-        /// <summary>
-        /// Parses the timesheet.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        public void Parse(string filename)
-        {
-            List<string> fileContents = DataIO.ReadTextFile(filename);
-            int projectNumber = -1;
-            int entryID = 0;
-            bool isFirstEntry = true;
-            foreach (string line in fileContents)
-            {
-                if (!line.StartsWith("*"))
-                {
-                    if (line.StartsWith("P"))
-                    {
-                        projectNumber = int.Parse(line.Replace("P", string.Empty));
-                    }
-                    else if (line != "END")
-                    {
-                        Entry entry = new Entry(projectNumber, line, entryID);
-                        if (isFirstEntry)
-                        {
-                            Timesheet.Month = entry.Date.Month;
-                            Timesheet.Year = entry.Date.Year;
-                            New();
-                            isFirstEntry = false;
-                        }
-
-                        PersistAddEntry(entry);
-
-                        entryID++;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds the entry.
-        /// </summary>
-        /// <param name="newEntry">The new entry.</param>
-        /// <exception cref="TimesheetProgramLogic.EntriesNotInSameMonthException">blah blah blah</exception>
-        /// <exception cref="TimesheetProgramLogic.ProjectCantBeBillableAndAccountableException">blha blha blha</exception>
-        /// <exception cref="EntriesNotInSameMonthException">Occurs when all entries aren't in the same month</exception>
-        /// <exception cref="ProjectCantBeBillableAndAccountableException">Occurs when the project is both billable and accountable</exception>
-        public void AddEntry(Entry newEntry)
-        {
-            if (Timesheet.Entries.Count == 0)
-            {
-                Timesheet.Month = newEntry.Date.Month;
-                Timesheet.Year = newEntry.Date.Year;
-                Timesheet.UpdateMonthAndYear(newEntry.Date.Month, newEntry.Date.Year);
-            }
-
-            if (!VerifyEntryTime(newEntry))
-            {
-                throw new InvalidEntryTimeException();
-            }
-
-            if (VerifyEntryMonth(newEntry, true))
-            {
-                InsertEntry(newEntry);
-                UnsavedChanges = true;
-            }
-        }
-
-        /// <summary>
-        /// Persists the add entry.
-        /// </summary>
-        /// <param name="newEntry">The new entry.</param>
-        public void PersistAddEntry(Entry newEntry)
-        {
-            try
-            {
-                AddEntry(newEntry);
-            }
-            catch (InvalidEntryTimeException)
-            {
-                TimeSpan lengthOfConflictingEntry = GetLengthOfConflictingEntry(newEntry);
-                newEntry.StartTime += lengthOfConflictingEntry;
-                newEntry.FinishTime += lengthOfConflictingEntry;
-                PersistAddEntry(newEntry);
-            }
-        }
-
-        /// <summary>
-        /// Edits the entry.
-        /// </summary>
-        /// <param name="editedEntry">The edited entry.</param>
-        /// <exception cref="System.Exception">Entry could not be edited</exception>
-        public void EditEntry(Entry editedEntry)
-        {
-            bool checkMonth = true;
-            if (Timesheet.Entries.Count == 1)
-            {
-                checkMonth = false;
-            }
-
-            if (!VerifyEntryTime(editedEntry))
-            {
-                throw new InvalidEntryTimeException();
-            }
-
-            if (VerifyEntryMonth(editedEntry, checkMonth))
-            {
-                PerformEditEntry(editedEntry);
-                UnsavedChanges = true;
-            }
-        }
 
         /// <summary>
         /// Reads the build.
@@ -328,6 +180,96 @@
         }
 
         /// <summary>
+        /// Adds the entry.
+        /// </summary>
+        /// <param name="newEntry">The new entry.</param>
+        /// <exception cref="TimesheetProgramLogic.EntriesNotInSameMonthException">blah blah blah</exception>
+        /// <exception cref="TimesheetProgramLogic.ProjectCantBeBillableAndAccountableException">blha blha blha</exception>
+        /// <exception cref="EntriesNotInSameMonthException">Occurs when all entries aren't in the same month</exception>
+        /// <exception cref="ProjectCantBeBillableAndAccountableException">Occurs when the project is both billable and accountable</exception>
+        public void AddEntry(Entry newEntry)
+        {
+            if (Timesheet.Entries.Count == 0)
+            {
+                Timesheet.Month = newEntry.Date.Month;
+                Timesheet.Year = newEntry.Date.Year;
+                Timesheet.UpdateMonthAndYear(newEntry.Date.Month, newEntry.Date.Year);
+            }
+
+            VerifyEntry(newEntry, true);
+
+            InsertEntry(newEntry);
+            UnsavedChanges = true;
+        }
+
+        /// <summary>
+        /// Edits the entry.
+        /// </summary>
+        /// <param name="editedEntry">The edited entry.</param>
+        /// <exception cref="System.Exception">Entry could not be edited</exception>
+        public void EditEntry(Entry editedEntry)
+        {
+            VerifyEntry(editedEntry, Timesheet.Entries.Count != 1);
+
+            PerformEditEntry(editedEntry);
+            UnsavedChanges = true;
+        }
+
+        /// <summary>
+        /// Performs the edit entry.
+        /// </summary>
+        /// <param name="editedEntry">The edited entry.</param>
+        protected abstract void PerformEditEntry(Entry editedEntry);
+        
+        /// <summary>
+        /// Gets all entries from project.
+        /// </summary>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>
+        /// fdgdfgfd dfgdfgd
+        /// </returns>
+        protected abstract List<Entry> GetAllEntriesFromProject(int projectNumber);
+
+        /// <summary>
+        /// Gets all project numbers.
+        /// </summary>
+        /// <returns>
+        /// fdgdfg dfgfdgdf
+        /// </returns>
+        protected abstract List<int> GetAllProjectNumbers();        
+
+        /// <summary>
+        /// Gets the conflicting entries.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <returns>dfgdfgd fdgdfgfd</returns>
+        protected abstract List<Entry> GetConflictingEntries(Entry entry);
+
+        /// <summary>
+        /// Inserts the entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        protected abstract void InsertEntry(Entry entry);               
+
+        /// <summary>
+        /// Determines whether the specified project number is billable.
+        /// </summary>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified project number is billable; otherwise, <c>false</c>.
+        /// </returns>
+        protected abstract bool IsBillable(int projectNumber);
+
+        /// <summary>
+        /// Determines whether the specified project number is accountable.
+        /// </summary>
+        /// <param name="projectNumber">The project number.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified project number is accountable; otherwise, <c>false</c>.
+        /// </returns>
+        protected abstract bool IsAccountable(int projectNumber);
+
+        /// <summary>
         /// Verifies the entry.
         /// </summary>
         /// <param name="entry">The entry.</param>
@@ -341,11 +283,123 @@
         {
             if (Timesheet.Month != entry.Date.Month && Timesheet.Year != entry.Date.Year && check_month)
             {
-                throw new EntriesNotInSameMonthException();
+                return false;
             }
             else
             {
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// Verifies the entry.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <param name="checkMonth">if set to <c>true</c> [check month].</param>
+        /// <exception cref="InvalidEntryTimeException">dfgdfgdf dfgdfgfd</exception>
+        /// <exception cref="EntriesNotInSameMonthException">dfgdfgdf dfgfdgd</exception>
+        /// <exception cref="ProjectCantBeBillableAndAccountableException">dfgdfg dfgdfgfd</exception>
+        private void VerifyEntry(Entry entry, bool checkMonth)
+        {
+            if (!VerifyEntryTime(entry))
+            {
+                throw new InvalidEntryTimeException();
+            }
+
+            if (!VerifyEntryMonth(entry, checkMonth))
+            {
+                throw new EntriesNotInSameMonthException();
+            }
+
+            if ((IsBillable(entry.ProjectNumber) && entry.Billable.Equals("Accountable"))
+                || (IsAccountable(entry.ProjectNumber) && entry.Billable.Equals("Yes")))
+            {
+                throw new ProjectCantBeBillableAndAccountableException();
+            }
+        }
+
+        /// <summary>
+        /// Determines whether [contains entry with start time] [the specified start time].
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        /// <returns>
+        ///   <c>true</c> if [contains entry with start time] [the specified start time]; otherwise, <c>false</c>.
+        /// </returns>
+        private bool VerifyEntryTime(Entry entry)
+        {
+            /* If entry.starttime >= existing entry startime
+             * and
+             * entry.finishtime <= existing entry finishtime
+               */
+            return GetConflictingEntries(entry).Count == 0;
+        }
+        
+        /// <summary>
+        /// Gets the length of conflicting entry.
+        /// </summary>
+        /// <param name="newEntry">The new entry.</param>
+        /// <returns>
+        /// gfhgfhgf gfhfghfg
+        /// </returns>
+        private TimeSpan GetLengthOfConflictingEntry(Entry newEntry)
+        {
+            Entry entry = GetConflictingEntries(newEntry)[0];
+            return entry.FinishTime - entry.StartTime;
+        }
+
+        /// <summary>
+        /// Persists the add entry.
+        /// </summary>
+        /// <param name="newEntry">The new entry.</param>
+        private void PersistAddEntry(Entry newEntry)
+        {
+            try
+            {
+                AddEntry(newEntry);
+            }
+            catch (InvalidEntryTimeException)
+            {
+                TimeSpan lengthOfConflictingEntry = GetLengthOfConflictingEntry(newEntry);
+                newEntry.StartTime += lengthOfConflictingEntry;
+                newEntry.FinishTime += lengthOfConflictingEntry;
+                PersistAddEntry(newEntry);
+            }
+        }
+
+        /// <summary>
+        /// Parses the timesheet.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        private void Parse(string filename)
+        {
+            List<string> fileContents = DataIO.ReadTextFile(filename);
+            int projectNumber = -1;
+            int entryID = 0;
+            bool isFirstEntry = true;
+            foreach (string line in fileContents)
+            {
+                if (!line.StartsWith("*"))
+                {
+                    if (line.StartsWith("P"))
+                    {
+                        projectNumber = int.Parse(line.Replace("P", string.Empty));
+                    }
+                    else if (line != "END")
+                    {
+                        Entry entry = new Entry(projectNumber, line, entryID);
+                        if (isFirstEntry)
+                        {
+                            Timesheet.Month = entry.Date.Month;
+                            Timesheet.Year = entry.Date.Year;
+                            New();
+                            isFirstEntry = false;
+                        }
+
+                        PersistAddEntry(entry);
+
+                        entryID++;
+                    }
+                }
             }
         }
     }
