@@ -22,6 +22,10 @@
                 <MenuItem Header="Submit" Name="mnuSubmitTCheck" Click="MnuSubmitTCheck_Click" />
             </MenuItem>
             <MenuItem Header="Settings" Name="mnuSettings" Click="MnuSettings_Click" />
+            <MenuItem Header="Statistics" Name="mnuStatistics">
+                <MenuItem Header="Monthly Summary" Name="mnuMonthlySummary" Click="MnuMonthlySummary_Click" />
+                <MenuItem Header="Weekly Summary" Name="mnuWeeklySummary" Click="MnuWeeklySummary_Click" />
+            </MenuItem>
         </Menu>
 
         <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding UpdateSourceTrigger=PropertyChanged}"

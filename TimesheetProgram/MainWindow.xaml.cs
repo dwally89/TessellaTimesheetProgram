@@ -183,12 +183,13 @@
             mnuSaveAs.IsEnabled = timesheetContainsEntries;
             mnuBuildTimesheet.IsEnabled = timesheetContainsEntries;
             mnuTCheck.IsEnabled = timesheetContainsEntries;
+            mnuSubmitTimesheet.IsEnabled = timesheetContainsEntries;
+            mnuStatistics.IsEnabled = timesheetContainsEntries;
+
             if (timesheetContainsEntries)
             {
                 dataGrid.SelectedIndex = 0;
-            }
-
-            mnuSubmitTimesheet.IsEnabled = timesheetContainsEntries;
+            }            
         }
 
         /// <summary>
@@ -487,6 +488,28 @@
                     UpdateGUI();
                 }                
             }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MnuMonthlySummary control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void MnuMonthlySummary_Click(object sender, RoutedEventArgs e)
+        {
+            MonthlySummary summary = Statistics.CalculateMonthlySummary(controller.Timesheet);
+            MessageBox.Show("Number of days worked so far: " + summary.NumberOfDaysWorkedSoFar + "\nTotal hours so far: " + summary.TotalHoursWorkedSoFar + "\nAverage hours per day: " + summary.AverageHoursPerDay + "\nExpected hours per day: " + summary.ExpectedHoursPerDay, "Monthly Summary", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the MnuWeeklySummary control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
+        private void MnuWeeklySummary_Click(object sender, RoutedEventArgs e)
+        {
+            WeeklySummary summary = Statistics.CalculateWeeklySummary(controller.Timesheet);
+            MessageBox.Show("Number of days worked so far: " + summary.NumberOfDaysWorkedSoFar + "\nTotal hours so far: " + summary.TotalHoursWorkedSoFar + "\nNumber of weeks worked so far: " + summary.NumberOfWeeksWorkedSoFar + "\nNumber of hours per week: " + summary.NumberOfHoursPerWeek + "\nExpected hours per week: " + summary.ExpectedHoursPerWeek, "Weekly Summary", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }
