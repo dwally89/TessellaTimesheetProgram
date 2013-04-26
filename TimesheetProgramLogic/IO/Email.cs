@@ -82,12 +82,12 @@
         /// <param name="settings">The settings.</param>
         private void CommonConstructor(Settings settings)
         {
-            this.smtpServer = settings.SmtpServer;
-            this.staffID = settings.StaffID;
-            this.port = settings.Port;
-            this.username = settings.EmailUsername;
+            this.smtpServer = settings.SmtpServer.Value;
+            this.staffID = settings.StaffID.ID;
+            this.port = int.Parse(settings.Port.Value);
+            this.username = settings.EmailUsername.Value;
             this.enableSSL = settings.EnableSSL;
-            this.fromEmailAddress = settings.EmailAddress;
+            this.fromEmailAddress = settings.EmailAddress.Value;
         }
     }
 }

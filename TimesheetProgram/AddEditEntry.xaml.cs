@@ -45,24 +45,7 @@
         {
             InitializeComponent();
             CommonConstructor(controller);
-            datePicker.SelectedDate = entryToEdit.Date;
-            txtProjectNumber.Text = entryToEdit.ProjectNumber.ToString();
-            cboStartTime.Text = entryToEdit.StartTime.ToString("hh\\:mm");
-            cboFinishTime.Text = entryToEdit.FinishTime.ToString("hh\\:mm");
-            cboTaskCode.Text = entryToEdit.TaskCode;
-            cboPhaseCode.Text = entryToEdit.PhaseCode;
-            if (entryToEdit.Overhead)
-            {
-                cboOverhead.Text = "Yes";
-            }
-            else
-            {
-                cboOverhead.Text = "No";
-            }
-
-            cboBillable.Text = entryToEdit.Billable;
-            txtDescription.Text = entryToEdit.Description;
-            entryID = entryToEdit.ID;
+            SetupGUI(entryToEdit);
             this.Title = "Edit Entry";
         }
 
@@ -84,6 +67,41 @@
         /// <param name="controller">The controller.</param>
         private void CommonConstructor(Controller controller)
         {
+            PopulateComboBoxes();
+            PopulateTaskCodes();
+            PopulatePhaseCodes();
+
+            this.Entry = null;
+            this.controller = controller;            
+        }
+
+        /// <summary>
+        /// Populates the phase codes.
+        /// </summary>
+        private void PopulatePhaseCodes()
+        {
+            foreach (string phaseCode in Entry.PhaseCodes)
+            {
+                cboPhaseCode.Items.Add(phaseCode);
+            }
+        }
+
+        /// <summary>
+        /// Populates the task codes.
+        /// </summary>
+        private void PopulateTaskCodes()
+        {
+            foreach (string taskCode in Entry.TaskCodes)
+            {
+                cboTaskCode.Items.Add(taskCode);
+            }
+        }
+
+        /// <summary>
+        /// Populates the combo boxes.
+        /// </summary>
+        private void PopulateComboBoxes()
+        {
             for (int hour = 8; hour <= 18; hour++)
             {
                 for (int minute = 0; minute < 60; minute = minute + 15)
@@ -91,20 +109,7 @@
                     cboStartTime.Items.Add(hour.ToString("00") + ":" + minute.ToString("00"));
                     cboFinishTime.Items.Add(hour.ToString("00") + ":" + minute.ToString("00"));
                 }
-            }            
-
-            foreach (string taskCode in Entry.TaskCodes)
-            {
-                cboTaskCode.Items.Add(taskCode);
             }
-
-            foreach (string phaseCode in Entry.PhaseCodes)
-            {
-                cboPhaseCode.Items.Add(phaseCode);
-            }
-
-            this.Entry = null;
-            this.controller = controller;            
         }
 
         /// <summary>
@@ -247,6 +252,32 @@
             {
                 txtProjectNumber.Text = "0000";
             }
+        }
+
+        /// <summary>
+        /// Setups the GUI.
+        /// </summary>
+        /// <param name="entry">The entry.</param>
+        private void SetupGUI(Entry entry)
+        {
+            datePicker.SelectedDate = entry.Date;
+            txtProjectNumber.Text = entry.ProjectNumber.ToString();
+            cboStartTime.Text = entry.StartTime.ToString("hh\\:mm");
+            cboFinishTime.Text = entry.FinishTime.ToString("hh\\:mm");
+            cboTaskCode.Text = entry.TaskCode;
+            cboPhaseCode.Text = entry.PhaseCode;
+            if (entry.Overhead)
+            {
+                cboOverhead.Text = "Yes";
+            }
+            else
+            {
+                cboOverhead.Text = "No";
+            }
+
+            cboBillable.Text = entry.Billable;
+            txtDescription.Text = entry.Description;
+            entryID = entry.ID;
         }
     }
 }

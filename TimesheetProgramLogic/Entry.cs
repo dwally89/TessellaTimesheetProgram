@@ -137,12 +137,7 @@ namespace TimesheetProgramLogic
                 {
                     if (taskCode == string.Empty)
                     {
-                        if (part.StartsWith("-"))
-                        {
-                            billable = "No";
-                        }
-
-                        taskCode = part.Replace("-", string.Empty);
+                        ParseTaskCode(ref taskCode, ref billable, part);
                     }
                     else if (phaseCode == string.Empty)
                     {
@@ -158,29 +153,11 @@ namespace TimesheetProgramLogic
                     }
                     else if (time == -1)
                     {
-                        time = double.Parse(part);
-                        hours = (int)time;
-                        minutes = (int)((time - hours) * 60);
+                        ParseTime(ref time, ref hours, ref minutes, part);
                     }
                     else
                     {
-                        if (description == string.Empty)
-                        {
-                            if (part.StartsWith("#"))
-                            {
-                                billable = "Accountable";
-                            }
-                            else if (part.StartsWith("*"))
-                            {
-                                overhead = true;
-                            }
-
-                            description += part.Replace("#", string.Empty).Replace("*", string.Empty);
-                        }
-                        else
-                        {
-                            description += " " + part;
-                        }
+                        ParseDescription(ref description, ref billable, ref overhead, part);
                     }
                 }
             }
@@ -467,6 +444,64 @@ namespace TimesheetProgramLogic
             this.Overhead = overhead;            
             this.Description = description;
             IsReadFromBuild = false;
+        }
+
+        /// <summary>
+        /// Parses the description.
+        /// </summary>
+        /// <param name="description">The description.</param>
+        /// <param name="billable">The billable.</param>
+        /// <param name="overhead">if set to <c>true</c> [overhead].</param>
+        /// <param name="part">The part.</param>
+        private void ParseDescription(ref string description, ref string billable, ref bool overhead, string part)
+        {
+            if (description == string.Empty)
+            {
+                if (part.StartsWith("#"))
+                {
+                    billable = "Accountable";
+                }
+                else if (part.StartsWith("*"))
+                {
+                    overhead = true;
+                }
+
+                description += part.Replace("#", string.Empty).Replace("*", string.Empty);
+            }
+            else
+            {
+                description += " " + part;
+            }
+        }
+
+        /// <summary>
+        /// Parses the time.
+        /// </summary>
+        /// <param name="time">The time.</param>
+        /// <param name="hours">The hours.</param>
+        /// <param name="minutes">The minutes.</param>
+        /// <param name="part">The part.</param>
+        private void ParseTime(ref double time, ref int hours, ref int minutes, string part)
+        {
+            time = double.Parse(part);
+            hours = (int)time;
+            minutes = (int)((time - hours) * 60);
+        }
+
+        /// <summary>
+        /// Parses the task code.
+        /// </summary>
+        /// <param name="taskCode">The task code.</param>
+        /// <param name="billable">The billable.</param>
+        /// <param name="part">The part.</param>
+        private void ParseTaskCode(ref string taskCode, ref string billable, string part)
+        {
+            if (part.StartsWith("-"))
+            {
+                billable = "No";
+            }
+
+            taskCode = part.Replace("-", string.Empty);
         }
     }
 }

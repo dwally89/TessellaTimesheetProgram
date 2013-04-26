@@ -28,9 +28,10 @@ namespace TimesheetProgramLogic
         /// <param name="tCheckPath">The t check path.</param>
         /// <param name="timesheetPath">The timesheet path.</param>
         /// <param name="submitViaNotes">if set to <c>true</c> [submit via notes].</param>
-        public Settings(string staffID, int staffNumber, string tCheckPath, string timesheetPath, bool submitViaNotes)
+        public Settings(StaffID staffID, StaffNumber staffNumber, TCheckPath tCheckPath, TimesheetPath timesheetPath, bool submitViaNotes)
         {
             CommonConstructor(staffID, staffNumber, tCheckPath, timesheetPath, submitViaNotes);
+            NotSubmitViaNotesConstructor(new SmtpServer(), new Port(), new EmailUsername(), false, new EmailAddress());            
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace TimesheetProgramLogic
         /// <param name="emailUsername">The email username.</param>
         /// <param name="enableSSL">if set to <c>true</c> [enable SSL].</param>
         /// <param name="emailAddress">The email address.</param>
-        public Settings(string staffID, int staffNumber, string tCheckPath, string timesheetPath, bool submitViaNotes, string smtpServer, int port, string emailUsername, bool enableSSL, string emailAddress)
+        public Settings(StaffID staffID, StaffNumber staffNumber, TCheckPath tCheckPath, TimesheetPath timesheetPath, bool submitViaNotes, SmtpServer smtpServer, Port port, EmailUsername emailUsername, bool enableSSL, EmailAddress emailAddress)
         {
             CommonConstructor(staffID, staffNumber, tCheckPath, timesheetPath, submitViaNotes);
             NotSubmitViaNotesConstructor(smtpServer, port, emailUsername, enableSSL, emailAddress);
@@ -73,7 +74,7 @@ namespace TimesheetProgramLogic
         /// <param name="enableSSL">if set to <c>true</c> [enable SSL].</param>
         /// <param name="emailAddress">The email address.</param>
         /// <param name="password">The password.</param>
-        public Settings(string staffID, int staffNumber, string tCheckPath, string timesheetPath, bool submitViaNotes, string smtpServer, int port, string emailUsername, bool enableSSL, string emailAddress, string password)
+        public Settings(StaffID staffID, StaffNumber staffNumber, TCheckPath tCheckPath, TimesheetPath timesheetPath, bool submitViaNotes, SmtpServer smtpServer, Port port, EmailUsername emailUsername, bool enableSSL, EmailAddress emailAddress, SecureString password)
         {
             CommonConstructor(staffID, staffNumber, tCheckPath, timesheetPath, submitViaNotes);
             NotSubmitViaNotesConstructor(smtpServer, port, emailUsername, enableSSL, emailAddress);
@@ -86,7 +87,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The staff ID.
         /// </value>
-        public string StaffID
+        public StaffID StaffID
         {
             get;
             set;
@@ -98,7 +99,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The staff number.
         /// </value>
-        public int StaffNumber
+        public StaffNumber StaffNumber
         {
             get;
             set;
@@ -110,7 +111,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The T check path.
         /// </value>
-        public string TCheckPath
+        public TCheckPath TCheckPath
         {
             get;
             set;
@@ -122,7 +123,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The timesheet path.
         /// </value>
-        public string TimesheetPath
+        public TimesheetPath TimesheetPath
         {
             get;
             set;
@@ -142,7 +143,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The email address.
         /// </value>
-        public string EmailAddress { get; set; }
+        public EmailAddress EmailAddress { get; set; }
 
         /// <summary>
         /// Gets or sets the email username.
@@ -150,7 +151,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The email username.
         /// </value>
-        public string EmailUsername { get; set; }
+        public EmailUsername EmailUsername { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -166,7 +167,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The SMTP server.
         /// </value>
-        public string SmtpServer { get; set; }
+        public SmtpServer SmtpServer { get; set; }
 
         /// <summary>
         /// Gets or sets the port.
@@ -174,7 +175,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The port.
         /// </value>
-        public int Port { get; set; }
+        public Port Port { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [enable SSL].
@@ -190,7 +191,7 @@ namespace TimesheetProgramLogic
         /// <returns>The default settings</returns>
         public static Settings DefaultSettings()
         {
-            return new Settings("WALDM", 699, "K:\\Timesheets", "C:\\Users\\WALDM\\Desktop", true);
+            return new Settings(new StaffID("WALDM"), new StaffNumber(699), new TCheckPath("K:\\Timesheets"), new TimesheetPath("C:\\Users\\WALDM\\Desktop"), true);
         }
 
         /// <summary>
@@ -270,7 +271,7 @@ namespace TimesheetProgramLogic
         /// <param name="emailUsername">The email username.</param>
         /// <param name="enableSSL">if set to <c>true</c> [enable SSL].</param>
         /// <param name="emailAddress">The email address.</param>
-        private void NotSubmitViaNotesConstructor(string smtpServer, int port, string emailUsername, bool enableSSL, string emailAddress)
+        private void NotSubmitViaNotesConstructor(SmtpServer smtpServer, Port port, EmailUsername emailUsername, bool enableSSL, EmailAddress emailAddress)
         {
             this.SmtpServer = smtpServer;
             this.Port = port;
@@ -287,7 +288,7 @@ namespace TimesheetProgramLogic
         /// <param name="tCheckPath">The t check path.</param>
         /// <param name="timesheetPath">The timesheet path.</param>
         /// <param name="submitViaNotes">if set to <c>true</c> [submit via notes].</param>
-        private void CommonConstructor(string staffID, int staffNumber, string tCheckPath, string timesheetPath, bool submitViaNotes)
+        private void CommonConstructor(StaffID staffID, StaffNumber staffNumber, TCheckPath tCheckPath, TimesheetPath timesheetPath, bool submitViaNotes)
         {
             this.StaffID = staffID;
             this.StaffNumber = staffNumber;

@@ -106,12 +106,6 @@
                     AddEntry(newEntry.Entry);
                     return;
                 }
-                catch (SqlException ex)
-                {
-                    MessageBox.Show(ex.Message, "Invalid Start Time", MessageBoxButton.OK, MessageBoxImage.Error);
-                    AddEntry(newEntry.Entry);
-                    return;
-                }
 
                 UpdateGUI();
             }
@@ -343,7 +337,7 @@
             }
 
             saveAs.DefaultExt = fileExtension;
-            saveAs.FileName = controller.Settings.StaffID;
+            saveAs.FileName = controller.Settings.StaffID.ID;
 
             return saveAs;
         }

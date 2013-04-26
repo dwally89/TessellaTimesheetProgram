@@ -1,5 +1,6 @@
 ﻿namespace TimesheetProgramWPF
 {
+    using System;
     using System.Windows;
     using TimesheetProgramLogic;
 
@@ -23,20 +24,7 @@
         public SettingsWindow(Settings settings)
         {
             InitializeComponent();
-            txtStaffID.Text = settings.StaffID;
-            txtStaffNumber.Text = settings.StaffNumber.ToString();
-            txtTCheckPath.Text = settings.TCheckPath;
-            txtTimesheetPath.Text = settings.TimesheetPath;
-
-            txtEmailAddress.Text = settings.EmailAddress;
-            txtEmailUsername.Text = settings.EmailUsername;
-            txtPort.Text = settings.Port.ToString();
-            txtSMTPServer.Text = settings.SmtpServer;
-            chkEnableSSL.IsChecked = settings.EnableSSL;
-
-            chkSubmitViaNotes.IsChecked = settings.SubmitViaNotes;
-
-            ChkSubmitViaNotesChanged();
+            SetupGUI(settings);
         }
 
         /// <summary>
@@ -74,77 +62,33 @@
         /// <param name="e">The <see cref="RoutedEventArgs" /> instance containing the event data.</param>
         private void BtnOK_Click(object sender, RoutedEventArgs e)
         {
-            int staffNumber;
-            string staffID = txtStaffID.Text;
-            if (int.TryParse(txtStaffNumber.Text, out staffNumber))
-            {
-                if (staffNumber >= 1000 || staffNumber < 1)
-                {
-                    MessageBox.Show("Staff number must be less than 1000", "Invalid Staff Number", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else if (staffID.Length >= 6 || staffID.Equals(string.Empty))
-                {
-                    MessageBox.Show("Staff ID must be less than 6 characters", "Invalid Staff ID", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else if (txtTCheckPath.Text.Equals(string.Empty))
-                {
-                    MessageBox.Show("TCheck path cannot be empty", "Invalid TCheck Path", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else if (txtTimesheetPath.Text.Equals(string.Empty))
-                {
-                    MessageBox.Show("Timesheet path cannot be empty", "Invalid Timesheet Path", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
-                else
-                {
-                    if (chkSubmitViaNotes.IsChecked == false)
-                    {
-                        if (txtEmailAddress.Text.Equals(string.Empty))
-                        {
-                            MessageBox.Show("Email address must be specified", "Invalid Email Address", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        }
-                        else if (txtEmailUsername.Text.Equals(string.Empty))
-                        {
-                            MessageBox.Show("Email username must be specified", "Invalid Email Username", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        }
-                        else if (txtSMTPServer.Text.Equals(string.Empty))
-                        {
-                            MessageBox.Show("SMTP server must be specified", "Invalid SMTP Server", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        }
-                        else if (txtPort.Text.Equals(string.Empty))
-                        {
-                            MessageBox.Show("Port must be specified", "Invalid Port", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        }
-                        else
-                        {
-                            DialogResult = true;
-                        }
-                    }
-                    else
-                    {
-                        DialogResult = true;
-                    }
-                }                
-            }
-            else
-            {
-                MessageBox.Show("Invalid staff number", "Invalid Staff Number", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-            }
+            NewSettings = new Settings();
 
-            if (DialogResult == true)            
+            try
             {
-                NewSettings = new Settings();
-                NewSettings.StaffID = txtStaffID.Text;
-                NewSettings.StaffNumber = staffNumber;
-                NewSettings.TCheckPath = txtTCheckPath.Text;
-                NewSettings.TimesheetPath = txtTimesheetPath.Text;
+                NewSettings.StaffNumber = new StaffNumber(txtStaffNumber.Text);
+                NewSettings.StaffID = new StaffID(txtStaffID.Text);
+                NewSettings.TCheckPath = new TCheckPath(txtTCheckPath.Text);
+                NewSettings.TimesheetPath = new TimesheetPath(txtTimesheetPath.Text);
+
+                if (chkSubmitViaNotes.IsChecked == false)
+                {
+                    NewSettings.EmailAddress = new EmailAddress(txtEmailAddress.Text);
+                    NewSettings.EmailUsername = new EmailUsername(txtEmailUsername.Text);
+                    NewSettings.SmtpServer = new SmtpServer(txtSMTPServer.Text);
+                    NewSettings.Port = new Port(txtPort.Text);
+                }
+
                 NewSettings.SubmitViaNotes = (bool)chkSubmitViaNotes.IsChecked;
-                NewSettings.SmtpServer = txtSMTPServer.Text;
-                NewSettings.Port = int.Parse(txtPort.Text);
-                NewSettings.EmailUsername = txtEmailUsername.Text;
-                NewSettings.EmailAddress = txtEmailAddress.Text;
                 NewSettings.Password = null;
                 NewSettings.EnableSSL = (bool)chkEnableSSL.IsChecked;
             }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "Invalid Setting", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            DialogResult = true;            
         }
 
         /// <summary>
@@ -217,6 +161,45 @@
             txtSMTPServer.IsEnabled = !(bool)chkSubmitViaNotes.IsChecked;
             txtPort.IsEnabled = !(bool)chkSubmitViaNotes.IsChecked;
             chkEnableSSL.IsEnabled = !(bool)chkSubmitViaNotes.IsChecked;
+        }
+
+        /// <summary>
+        /// Setups the GUI.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        private void SetupGUI(Settings settings)
+        {
+            SetupGeneralTab(settings);
+            SetupEmailTab(settings);
+        }
+
+        /// <summary>
+        /// Setups the email tab.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        private void SetupEmailTab(Settings settings)
+        {
+            txtEmailAddress.Text = settings.EmailAddress.Value;
+            txtEmailUsername.Text = settings.EmailUsername.Value;
+            txtPort.Text = settings.Port.Value.ToString();
+            txtSMTPServer.Text = settings.SmtpServer.Value;
+            chkEnableSSL.IsChecked = settings.EnableSSL;
+
+            chkSubmitViaNotes.IsChecked = settings.SubmitViaNotes;
+
+            ChkSubmitViaNotesChanged();
+        }
+
+        /// <summary>
+        /// Setups the general tab.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        private void SetupGeneralTab(Settings settings)
+        {
+            txtStaffID.Text = settings.StaffID.ID;
+            txtStaffNumber.Text = settings.StaffNumber.ToString();
+            txtTCheckPath.Text = settings.TCheckPath.Value;
+            txtTimesheetPath.Text = settings.TimesheetPath.Value;
         }
     }
 }

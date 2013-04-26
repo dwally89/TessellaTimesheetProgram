@@ -26,7 +26,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="staffNumber">The staff number.</param>
         /// <param name="staffID">The staff ID.</param>
-        public Timesheet(int staffNumber, string staffID)
+        public Timesheet(StaffNumber staffNumber, StaffID staffID)
         {
             Entries = new List<Entry>();
             this.StaffNumber = staffNumber;
@@ -82,7 +82,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The staff number.
         /// </value>
-        public int StaffNumber { get; set; }
+        public StaffNumber StaffNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the staff ID.
@@ -90,7 +90,7 @@ namespace TimesheetProgramLogic
         /// <value>
         /// The staff ID.
         /// </value>
-        public string StaffID { get; set; }
+        public StaffID StaffID { get; set; }
 
         /// <summary>
         /// Gets or sets the entries.
@@ -109,7 +109,7 @@ namespace TimesheetProgramLogic
         /// </summary>
         /// <param name="staffNumber">The staff number.</param>
         /// <param name="staffID">The staff ID.</param>
-        public void UpdateStaffDetails(int staffNumber, string staffID)
+        public void UpdateStaffDetails(StaffNumber staffNumber, StaffID staffID)
         {
             this.StaffID = staffID;
             this.StaffNumber = staffNumber;
